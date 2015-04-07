@@ -39,14 +39,27 @@ class DefaultController extends Controller
     public function orderBookAction() {
       $ob = new OrderBook();
 
+      $stats = array();
+      foreach (['bids', 'asks'] as $list) {
+        $stats += [
+          "$list min" => $ob->$list()->min(),
+          "$list max" => $ob->$list()->max(),
+          "$list volume" => ['n/a', $ob->$list()->totalVolume()],
+          "$list 0.01%" => $ob->$list()->percentile(0.0001),
+          "$list 0.1%" => $ob->$list()->percentile(0.001),
+          "$list 1%" => $ob->$list()->percentile(0.01),
+          "$list Q1" => $ob->$list()->percentile(0.25),
+          "$list median" => $ob->$list()->percentile(0.5),
+          "$list Q2" => $ob->$list()->percentile(0.75),
+          "$list 99%" => $ob->$list()->percentile(0.99),
+          "$list 99.9%" => $ob->$list()->percentile(0.999),
+          "$list 99.99%" => $ob->$list()->percentile(0.9999),
+          '-' => ['-', '-'],
+        ];
+      }
+
       return $this->render('AppBundle::order-book.html.twig', [
-        'stats' => [
-          'min bid' => $ob->min($ob->bids()),
-          'max bid' => $ob->max($ob->bids()),
-          'bids volume' => $ob->totalVolume($ob->bids()),
-          'min ask' => $ob->min($ob->asks()),
-          'max ask' => $ob->max($ob->asks()),
-        ],
+        'stats' => $stats,
       ]);
     }
 

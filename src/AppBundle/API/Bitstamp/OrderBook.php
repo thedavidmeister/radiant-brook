@@ -3,11 +3,16 @@
 namespace AppBundle\API\Bitstamp;
 
 use AppBundle\API\Bitstamp\BitstampAPI;
+use AppBundle\API\Bitstamp\OrderList;
 
 class OrderBook extends PublicBitstampAPI
 {
 
   const ENDPOINT = 'order_book';
+
+  protected $bidlist;
+
+  protected $asklist;
 
   public function data()
   {
@@ -18,60 +23,22 @@ class OrderBook extends PublicBitstampAPI
 
   public function bids()
   {
-    return $this->data()['bids'];
+    if (!isset($this->bidlist)) {
+      $this->bidlist = new OrderList($this->data()['bids']);
+    }
+
+    return $this->bidlist;
   }
 
   public function asks()
   {
-    return $this->data()['asks'];
-  }
-
-  // @todo test me.
-  public function sort($array, $params)
-  {
-    // Merge in defaults.
-    $params += [
-      'order' => 'asc',
-    ];
-
-    if ($params['order'] === 'asc') {
-      usort($array, function($a, $b) {
-        if ($a[0] == $b[0]) {
-          return 0;
-        }
-        return $a[0] < $b[0] ? -1 : 1;
-      });
+    if (!isset($this->asklist)) {
+      $this->asklist = new OrderList($this->data()['asks']);
     }
 
-    if ($params['order'] === 'desc') {
-      usort($array, function($a, $b) {
-        if ($a[0] == $b[0]) {
-          return 0;
-        }
-        return $a[0] > $b[0] ? -1 : 1;
-      });
-    }
-
-    return $array;
+    return $this->asklist;
   }
 
-  public function min($orders)
-  {
-    return $this->sort($orders, ['order' => 'asc'])[0];
-  }
 
-  public function max($orders)
-  {
-    return $this->sort($orders, ['order' => 'desc'])[0];
-  }
-
-  public function totalVolume($orders)
-  {
-    $sum = 0;
-    foreach ($orders as $order) {
-      $sum += $order[1];
-    }
-    return $sum;
-  }
 
 }
