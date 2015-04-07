@@ -54,6 +54,16 @@ class DefaultController extends Controller
           "$list 99%" => $ob->$list()->percentile(0.99),
           "$list 99.9%" => $ob->$list()->percentile(0.999),
           "$list 99.99%" => $ob->$list()->percentile(0.9999),
+          "$list total cap" => ['n/a', $ob->$list()->totalCap()],
+          "$list 0.01% cap" => $ob->$list()->percentCap(0.0001),
+          "$list 0.1% cap" => $ob->$list()->percentCap(0.001),
+          "$list 1% cap" => $ob->$list()->percentCap(0.01),
+          "$list 25% cap" => $ob->$list()->percentCap(0.25),
+          "$list 50% cap" => $ob->$list()->percentCap(0.50),
+          "$list 75% cap" => $ob->$list()->percentCap(0.75),
+          "$list 99% cap" => $ob->$list()->percentCap(0.99),
+          "$list 99.9% cap" => $ob->$list()->percentCap(0.999),
+          "$list 99.99% cap" => $ob->$list()->percentCap(0.9999),
           '-' => ['-', '-'],
         ];
       }

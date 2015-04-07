@@ -41,7 +41,7 @@ class OrderList
    */
   public function percentile($pc) {
     if ($pc < 0 || $pc > 1) {
-      throw new \Exception('Percentile must be between 0 - 1.');
+      throw new \Exception('Percentage must be between 0 - 1.');
     }
     $index = $pc * $this->totalVolume();
     $this->sortAsc();
@@ -74,6 +74,31 @@ class OrderList
       $sum += $datum[1];
     }
     return $sum;
+  }
+
+  public function totalCap() {
+    $sum = 0;
+    foreach ($this->data as $datum) {
+      $sum += $datum[0] * $datum[1];
+    }
+    return $sum;
+  }
+
+  public function percentCap($pc) {
+    if ($pc < 0 || $pc > 1) {
+      throw new \Exception('Percentage must be between 0 - 1.');
+    }
+
+    $index = $pc * $this->totalCap();
+    $this->sortAsc();
+
+    $sum = 0;
+    foreach ($this->data as $datum) {
+      $sum += $datum[0] * $datum[1];
+      if ($index <= $sum) {
+        return $datum;
+      }
+    }
   }
 
 }
