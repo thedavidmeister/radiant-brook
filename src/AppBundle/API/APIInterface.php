@@ -12,14 +12,22 @@ interface APIInterface
    *   The domain and static URI components that HTTP API endpoints will be
    *   concatenated to.
    */
-  public function getDomain();
+  public function domain();
 
   /**
-   * Returns the endpoint for a given API call.
+   * Returns the endpoint URI for a given API call.
    *
    * @return string
    *   The API endpoint.
    */
-  public function getEndpoint();
+  public function endpoint();
+
+  /**
+   * Returns the absolute URL to the endpoint for a given API call.
+   *
+   * @return string
+   *   The API endpoint.
+   */
+  public function url();
 
 }

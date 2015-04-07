@@ -13,9 +13,15 @@ class DefaultController extends Controller
      */
     public function indexAction()
     {
-      $ticker = new Ticker;
-      print $ticker->getDomain();
-      print $ticker->getEndpoint();
         return $this->render('AppBundle::index.html.twig');
+    }
+
+    /**
+     * @Route("/ticker", name="ticker")
+     */
+    public function tickerAction() {
+      $ticker = new Ticker;
+      dump($ticker->data());
+      return $this->render('AppBundle::index.html.twig');
     }
 }
