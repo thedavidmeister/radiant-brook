@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use AppBundle\API\Bitstamp\OrderBook;
+use AppBundle\API\Bitstamp\BitstampTradePairs;
 
 class DefaultController extends Controller
 {
@@ -71,6 +72,16 @@ class DefaultController extends Controller
       return $this->render('AppBundle::order-book.html.twig', [
         'stats' => $stats,
       ]);
+    }
+
+    /**
+     * @Route("trade", name="trade")
+     */
+    public function tradeIndex() {
+      $tp = new BitstampTradePairs();
+      print $tp->percentileIsProfitable(0.01);
+
+      return $this->render('AppBundle::index.html.twig');
     }
 
 }
