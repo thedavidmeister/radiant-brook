@@ -4,11 +4,11 @@ namespace AppBundle\API\Bitstamp;
 
 use AppBundle\API\Bitstamp\PrivateBitstampAPI;
 
-class Balance extends PrivateBitstampAPI
+class CancelOrder extends PrivateBitstampAPI
 {
-  const ENDPOINT = 'balance';
+  const ENDPOINT = 'cancel_order';
 
   public function requiredParams() {
-    return [];
+    return ['id'];
   }
 }

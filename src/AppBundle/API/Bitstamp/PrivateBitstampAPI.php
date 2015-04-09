@@ -89,7 +89,7 @@ abstract class PrivateBitstampAPI extends BitstampAPI
     }
 
     $this->authenticate();
-    $this->client->post($this->url(), $this->params);
+    return $this->client->post($this->url(), $this->params)->json();
   }
 
   public function setParam($name, $value) {

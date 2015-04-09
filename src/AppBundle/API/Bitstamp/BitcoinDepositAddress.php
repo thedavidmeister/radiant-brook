@@ -4,9 +4,9 @@ namespace AppBundle\API\Bitstamp;
 
 use AppBundle\API\Bitstamp\PrivateBitstampAPI;
 
-class Balance extends PrivateBitstampAPI
+class BitcoinDepositAddress extends PrivateBitstampAPI
 {
-  const ENDPOINT = 'balance';
+  const ENDPOINT = 'bitcoin_deposit_address';
 
   public function requiredParams() {
     return [];

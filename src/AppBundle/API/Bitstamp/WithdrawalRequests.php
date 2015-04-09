@@ -4,9 +4,9 @@ namespace AppBundle\API\Bitstamp;
 
 use AppBundle\API\Bitstamp\PrivateBitstampAPI;
 
-class Balance extends PrivateBitstampAPI
+class WithdrawalRequests extends PrivateBitstampAPI
 {
-  const ENDPOINT = 'balance';
+  const ENDPOINT = 'withdrawal_requests';
 
   public function requiredParams() {
     return [];

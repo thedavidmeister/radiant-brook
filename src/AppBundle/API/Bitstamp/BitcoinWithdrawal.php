@@ -4,11 +4,11 @@ namespace AppBundle\API\Bitstamp;
 
 use AppBundle\API\Bitstamp\PrivateBitstampAPI;
 
-class Balance extends PrivateBitstampAPI
+class BitcoinWithdrawal extends PrivateBitstampAPI
 {
-  const ENDPOINT = 'balance';
+  const ENDPOINT = 'bitcoin_withdrawal';
 
   public function requiredParams() {
-    return [];
+    return ['amount', 'address'];
   }
 }
