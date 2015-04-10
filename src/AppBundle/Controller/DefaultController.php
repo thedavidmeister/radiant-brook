@@ -79,7 +79,7 @@ class DefaultController extends Controller
      */
     public function tradeIndex() {
       $tp = new BitstampTradePairs();
-      print $tp->percentileIsProfitable(0.01);
+      print $tp->percentileIsProfitable();
 
       return $this->render('AppBundle::index.html.twig');
     }

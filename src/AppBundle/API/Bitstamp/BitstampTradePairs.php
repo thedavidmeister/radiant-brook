@@ -19,11 +19,13 @@ class BitstampTradePairs
   // Bitstamp limits the fidelity of BTC trades.
   const BTC_FIDELITY = 8;
 
-  public function __construct($percentile)
+  // The percentile of cap/volume we'd like to trade to.
+  const PERCENTILE = 0.01;
+
+  public function __construct()
   {
     $this->orderBook = new OrderBook();
     $this->balance = new Balance();
-    $this->percentile = $percentile;
   }
 
   public function fee()
@@ -32,13 +34,6 @@ class BitstampTradePairs
       $this->_fee = $this->balance->execute()['fee'];
     }
     return $this->_fee;
-  }
-
-  public function bidPrice()
-  {
-    // For bids, we use the cap percentile as it's harder for other users to
-    // manipulate and we want 1 - $pc as bids are decending, not ascending.
-    return $this->orderBook->bids()->percentCap(1 - $this->percentile)[0];
   }
 
   public function volumeUSD()
@@ -78,6 +73,17 @@ class BitstampTradePairs
     return ceil($this->volumeUSD() * $this->fee() * 100) / 100;
   }
 
+  /**
+   * BIDS
+   */
+
+  public function bidPrice()
+  {
+    // For bids, we use the cap percentile as it's harder for other users to
+    // manipulate and we want 1 - PERCENTILE as bids are decending.
+    return $this->orderBook->bids()->percentCap(1 - $this::PERCENTILE)[0];
+  }
+
   // @todo test this lots.
   public function bidBTCVolume()
   {
@@ -97,34 +103,60 @@ class BitstampTradePairs
     return ($this->bidPrice() * $this->bidBTCVolume() + $this->feeAbsolute()) / $this->bidBTCVolume();
   }
 
+  /**
+   * ASKS
+   */
+
+  public function askPrice()
+  {
+    // For asks, we use the BTC volume percentile as it's harder for other users
+    // to manipulate. Asks are sorted ascending so we can use $pc directly.
+    return $this->orderBook->asks()->percentile($this::PERCENTILE)[0];
+  }
+
+  public function askBTCVolume()
+  {
+    $rounded = round($this->volumeUSD() / $this->askPrice(), $this::BTC_FIDELITY);
+    // @see bidBTCVolume()
+    // @todo - handle this better using native PHP rounding.
+    if (($rounded * $this->askPrice()) > $this->volumeUSD()) {
+      $rounded -= 10 ** -($this::BTC_FIDELITY - 1);
+    }
+    return $rounded;
+  }
+
+  public function askPriceEffective()
+  {
+    return ($this->askPrice() * $this->askBTCVolume() - $this->feeAbsolute()) / $this->askBTCVolume();
+  }
+
+  /**
+   * DIFF
+   */
+
+  public function profit()
+  {
+    return $this->bidPriceEffective() * $this->bidBTCVolume() - $this->askPriceEffective() * $this->askBTCVolume();
+  }
+
   public function percentileIsProfitable()
   {
     $b = '<br />';
     $things = [
-      $this->bidPrice(),
       $this->volumeUSD(),
+      '<b>bids:</b>',
+      $this->bidPrice(),
       $this->bidBTCVolume(),
       $this->bidBTCVolume() * $this->bidPrice(),
       $this->bidPriceEffective(),
+      '<b>asks:</b>',
+      $this->askPrice(),
+      $this->askBTCVolume(),
+      $this->askPriceEffective(),
+      '<b>diff:</b>',
+      $this->profit(),
     ];
     print implode($b, $things);
-
-
-    // For bids, we use the cap percentile as it's harder for other users to
-    // manipulate and we want 1 - $pc as bids are decending, not ascending.
-    // $bids_amount = $this->orderBook->bids()->percentCap(1 - $pc)[0];
-    // print_r('bid raw: ' . $bids_amount . '<br />');
-    // print 'bid BTC volume: ' . $this->bidBTCVolume($bids_amount) . '<br />';
-    // print $this->bidBTCVolume($bids_amount) * $bids_amount . '<br />';
-    // $fee = $this->bidFee($bids_amount);
-    // print_r('bid fees: ' . $fee . '<br />');
-    // $post_fees = ($this->bidBTCVolume($bids_amount) * $bids_amount + $fee) / $this->bidBTCVolume($bids_amount);
-    // print 'bid price post fees: ' . $post_fees . '<br />';
-
-    // // For asks, we use the BTC volume percentile as it's harder for other users
-    // // to manipulate. Asks are sorted ascending so we can use $pc directly.
-    // $asks_amount = $this->orderBook->asks()->percentile($pc)[0];
-    // print 'asks amount: ' . $asks_amount;
 
   }
 }
