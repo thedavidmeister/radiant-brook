@@ -12,7 +12,6 @@ class BitstampTradePairs
 
   protected $_volume;
 
-  // @todo add a way to calculate volume.
   // As of May 15, 2014 the minimum allowable trade will be USD $5.
   const MIN_VOLUME_USD = 5;
 
@@ -20,7 +19,7 @@ class BitstampTradePairs
   const BTC_FIDELITY = 8;
 
   // The percentile of cap/volume we'd like to trade to.
-  const PERCENTILE = 0.01;
+  const PERCENTILE = 0.05;
 
   public function __construct()
   {
@@ -58,7 +57,7 @@ class BitstampTradePairs
       $fee_absolute_rounded = ceil($fee_absolute * 100) / 100;
 
       // We can bump our volume up to the next integer fee value without
-      // incurring extra cost while achieving improved effective prices.
+      // incurring extra cost to achieve improved effective prices.
       $volume_adjusted = ($fee_absolute_rounded / $fee_absolute) * $volume;
 
       $this->_volume = $volume_adjusted;
@@ -136,7 +135,8 @@ class BitstampTradePairs
 
   public function profit()
   {
-    return $this->bidPriceEffective() * $this->bidBTCVolume() - $this->askPriceEffective() * $this->askBTCVolume();
+    // @todo - figure out how fees fit into this.
+    return $this->bidBTCVolume() - $this->askBTCVolume();
   }
 
   public function percentileIsProfitable()
@@ -157,6 +157,5 @@ class BitstampTradePairs
       $this->profit(),
     ];
     print implode($b, $things);
-
   }
 }
