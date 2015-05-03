@@ -64,12 +64,25 @@ abstract class PrivateBitstampAPI extends BitstampAPI
 
   protected function secrets() {
     if (!isset($this->keysArray)) {
-      $finder = new Finder();
-      // @todo - make this less hacky.
-      $keys = $finder->in(__DIR__ . '/../../Resources/keys')->files();
-      foreach ($keys as $key) {
-        $this->keysArray[$key->getFilename()] = trim(file_get_contents($key->getRealpath()));
+      $keynames = [$this::CLIENT_ID, $this::KEY, $this::SECRET];
+
+      // First try environment variables.
+      foreach ($keynames as $keyname) {
+        if (getenv($keyname)) {
+          $this->keysArray[$keyname] = trim(getenv($keyname));
+        }
       }
+
+      // Try file based API key storage.
+      if (empty($this->keysArray)) {
+        $finder = new Finder();
+        // @todo - make this less hacky.
+        $keys = $finder->in(__DIR__ . '/../../Resources/keys')->files();
+        foreach ($keys as $key) {
+          $this->keysArray[$key->getFilename()] = trim(file_get_contents($key->getRealpath()));
+        }
+      }
+
     }
     return $this->keysArray;
   }
