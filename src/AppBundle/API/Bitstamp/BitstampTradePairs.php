@@ -33,6 +33,8 @@ class BitstampTradePairs
     $this->orderBook = new OrderBook();
     $this->balance = new Balance();
     $this->openOrders = new OpenOrders();
+    $this->sell = new Sell();
+    $this->buy = new Buy();
   }
 
   public function fee()
@@ -194,6 +196,18 @@ class BitstampTradePairs
       'bids' => $bid_dupes,
       'asks' => $ask_dupes,
     ];
+  }
+
+  public function execute() {
+    $this->sell
+      ->setParam('price', $this->askPrice())
+      ->setParam('amount', $this->askBTCVolume())
+      ->execute();
+
+    $this->buy
+      ->setParam('price', $this->bidPrice())
+      ->setParam('amount', $this->bidBTCVolume())
+      ->execute();
   }
 
   /**

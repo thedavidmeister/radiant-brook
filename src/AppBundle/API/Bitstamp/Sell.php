@@ -9,6 +9,6 @@ class Sell extends PrivateBitstampAPI
   const ENDPOINT = 'sell';
 
   public function requiredParams() {
-    return ['amount', 'price', 'limit_price'];
+    return ['amount', 'price'];
   }
 }

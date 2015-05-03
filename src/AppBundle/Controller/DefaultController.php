@@ -114,7 +114,8 @@ class DefaultController extends Controller
       $form->handleRequest($request);
 
       if ($form->isValid()) {
-
+        $tp->execute();
+        print 'Executed trade!';
       }
 
       return $this->render('AppBundle::index.html.twig', [
