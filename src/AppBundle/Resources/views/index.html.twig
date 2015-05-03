@@ -1,5 +1,11 @@
 {% extends 'AppBundle::base.html.twig' %}
 
+{% block stylesheets %}
+    {% stylesheets 'bundles/app/css/*' %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
 {% block body %}
 
 {% endblock %}
