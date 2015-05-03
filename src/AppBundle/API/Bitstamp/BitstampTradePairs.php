@@ -4,6 +4,7 @@ namespace AppBundle\API\Bitstamp;
 
 use AppBundle\API\Bitstamp\OrderBook;
 use AppBundle\API\Bitstamp\Balance;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class BitstampTradePairs
 {
@@ -195,33 +196,18 @@ class BitstampTradePairs
     ];
   }
 
-  public function percentileIsProfitable()
+  /**
+   * @Assert\True(message="This trade is not profitable")
+   */
+  public function isProfitable()
   {
     return $this->profitUSD() >= round($this::MIN_PROFIT_USD, 2) && $this->profitBTC() > 0;
-    $b = '<br />';
-    $things = [
-      $this->volumeUSDBid(),
-      '<b>bids/buy:</b>',
-      $this->bidBTCVolume(),
-      $this->bidPrice(),
-      $this->bidBTCVolume() * $this->bidPrice(),
-      $this->bidPriceEffective(),
-      '<b>asks/sell:</b>',
-      $this->askBTCVolume(),
-      $this->askPrice(),
-      $this->askPriceEffective(),
-      '<b>diff:</b>',
-      '<i>' . $this->profitBTC() . '</i>',
-      $this->midprice(),
-      $this->profitBTC() * $this->midprice(),
-      '<b>dupes:</b>',
-      $this->bidPrice() * $this::DUPE_RANGE_MULTIPLIER,
-      $this->askPrice() * $this::DUPE_RANGE_MULTIPLIER,
-    ];
-    print implode($b, $things);
-    print '<br />';
-    print '<pre>';
-    print_r($this->dupes());
-    print '</pre>';
+  }
+
+  /**
+   * @assert\False(message="There are currently dupes")
+   */
+  public function hasDupes() {
+    return !empty($this->dupes()['bids']) || !empty($this->dupes()['asks']);
   }
 }

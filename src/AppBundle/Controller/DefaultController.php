@@ -6,6 +6,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use AppBundle\API\Bitstamp\OrderBook;
 use AppBundle\API\Bitstamp\BitstampTradePairs;
+use Symfony\Component\HttpFoundation\Request;
 
 class DefaultController extends Controller
 {
@@ -77,7 +78,7 @@ class DefaultController extends Controller
     /**
      * @Route("trade/trade", name="trade")
      */
-    public function tradeIndex() {
+    public function tradeIndex(Request $request) {
       $tp = new BitstampTradePairs();
 
       $stats = [
@@ -97,16 +98,29 @@ class DefaultController extends Controller
         'BTC Profit' => $tp->profitBTC(),
         'BTC Profit USD value (midpoint)' => $tp->profitBTC() * $tp->midprice(),
         'USD Profit' => $tp->profitUSD(),
-        'Is profitable' => $tp->percentileIsProfitable() ? 'Yes' : 'No',
+        'Is profitable' => $tp->isProfitable() ? 'Yes' : 'No',
         '-Dupes-' => '',
         'Dupe bid range' => $tp->bidPrice() * $tp::DUPE_RANGE_MULTIPLIER,
         'Dupe bids' => var_export($tp->dupes()['bids'], TRUE),
         'Dupe ask range' => $tp->askPrice() * $tp::DUPE_RANGE_MULTIPLIER,
         'Dupe asks' => var_export($tp->dupes()['asks'], TRUE),
       ];
-      // print $tp->percentileIsProfitable();
 
-      return $this->render('AppBundle::index.html.twig', ['stats' => $stats]);
+      // @todo - turn this into a separate class?
+      $form = $this->createFormBuilder($tp)
+        ->add('save', 'submit', ['label' => 'Execute trade'])
+        ->getForm();
+
+      $form->handleRequest($request);
+
+      if ($form->isValid()) {
+
+      }
+
+      return $this->render('AppBundle::index.html.twig', [
+        'stats' => $stats,
+        'form' => $form->createView(),
+      ]);
     }
 
 }
