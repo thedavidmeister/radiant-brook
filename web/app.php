@@ -22,6 +22,10 @@ $kernel = new AppKernel('prod', false);
 $kernel->loadClassCache();
 //$kernel = new AppCache($kernel);
 
+// http://symfony.com/doc/current/cookbook/request/load_balancer_reverse_proxy.html
+// http://stackoverflow.com/questions/16180486/heroku-trusted-proxies
+Request::setTrustedProxies(array($_SERVER['REMOTE_ADDR']));
+
 // When using the HttpCache, you need to call the method in your front controller instead of relying on the configuration parameter
 //Request::enableHttpMethodParameterOverride();
 $request = Request::createFromGlobals();
