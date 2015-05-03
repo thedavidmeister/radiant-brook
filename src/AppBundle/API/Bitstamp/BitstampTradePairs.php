@@ -22,7 +22,7 @@ class BitstampTradePairs
   const PERCENTILE = 0.05;
 
   // The minimum amount of USD profit we need to commit to a pair.
-  const MIN_PROFIT_USD = 0.01;
+  const MIN_PROFIT_USD = 0.02;
 
   // Multiplier on a bid/ask price to consider it a dupe with existing orders.
   const DUPE_RANGE_MULTIPLIER = 0.01;
