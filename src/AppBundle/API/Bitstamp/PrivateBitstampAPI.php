@@ -68,7 +68,7 @@ abstract class PrivateBitstampAPI extends BitstampAPI
       // @todo - make this less hacky.
       $keys = $finder->in(__DIR__ . '/../../Resources/keys')->files();
       foreach ($keys as $key) {
-        $this->keysArray[$key->getFilename()] = file_get_contents($key->getRealpath());
+        $this->keysArray[$key->getFilename()] = trim(file_get_contents($key->getRealpath()));
       }
     }
     return $this->keysArray;
@@ -89,7 +89,7 @@ abstract class PrivateBitstampAPI extends BitstampAPI
     }
 
     $this->authenticate();
-    return $this->client->post($this->url(), $this->params)->json();
+    return $this->client->post($this->url(), ['body' => $this->params])->json();
   }
 
   public function setParam($name, $value) {
