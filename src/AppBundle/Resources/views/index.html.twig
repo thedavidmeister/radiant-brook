@@ -7,5 +7,14 @@
 {% endblock %}
 
 {% block body %}
-
+  <table class="pure-table pure-table-striped">
+    <tr>
+      <th>Key</th><th>Value</th>
+    </tr>
+    {% for key, value in stats %}
+    <tr>
+      <td>{{ key }} </td><td>{{ value }}</td>
+    </tr>
+    {% endfor %}
+  </table>
 {% endblock %}

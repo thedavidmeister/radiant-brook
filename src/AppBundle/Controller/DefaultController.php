@@ -79,9 +79,34 @@ class DefaultController extends Controller
      */
     public function tradeIndex() {
       $tp = new BitstampTradePairs();
-      print $tp->percentileIsProfitable();
 
-      return $this->render('AppBundle::index.html.twig');
+      $stats = [
+        '-Facts-' => '',
+        'Fees' => $tp->fee(),
+        '-Bids-' => '',
+        'bid/buy USD Base Volume' => $tp->volumeUSDBid(),
+        'bid/buy BTC Volume' => $tp->bidBTCVolume(),
+        'bid/buy USD Price' => $tp->bidPrice(),
+        'bid/buy USD Volume post fees' => $tp->volumeUSDBidPostFees(),
+        '-Asks-' => '',
+        'ask/sell USD Base Volume' => $tp->volumeUSDAsk(),
+        'ask/sell BTC Volume' => $tp->askBTCVolume(),
+        'ask/sell USD Price' => $tp->askPrice(),
+        'ask/sell USD Volume post fees' => $tp->volumeUSDAskPostFees(),
+        '-Diff-' => '',
+        'BTC Profit' => $tp->profitBTC(),
+        'BTC Profit USD value (midpoint)' => $tp->profitBTC() * $tp->midprice(),
+        'USD Profit' => $tp->profitUSD(),
+        'Is profitable' => $tp->percentileIsProfitable() ? 'Yes' : 'No',
+        '-Dupes-' => '',
+        'Dupe bid range' => $tp->bidPrice() * $tp::DUPE_RANGE_MULTIPLIER,
+        'Dupe bids' => var_export($tp->dupes()['bids'], TRUE),
+        'Dupe ask range' => $tp->askPrice() * $tp::DUPE_RANGE_MULTIPLIER,
+        'Dupe asks' => var_export($tp->dupes()['asks'], TRUE),
+      ];
+      // print $tp->percentileIsProfitable();
+
+      return $this->render('AppBundle::index.html.twig', ['stats' => $stats]);
     }
 
 }

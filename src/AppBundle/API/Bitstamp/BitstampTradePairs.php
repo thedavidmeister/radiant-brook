@@ -22,7 +22,7 @@ class BitstampTradePairs
   const PERCENTILE = 0.05;
 
   // The minimum amount of USD profit we need to commit to a pair.
-  const MIN_PROFIT_USD = 0.02;
+  const MIN_PROFIT_USD = 0.01;
 
   // Multiplier on a bid/ask price to consider it a dupe with existing orders.
   const DUPE_RANGE_MULTIPLIER = 0.01;
@@ -34,7 +34,7 @@ class BitstampTradePairs
     $this->openOrders = new OpenOrders();
   }
 
-  protected function fee()
+  public function fee()
   {
     if (!isset($this->_fee)) {
       // Bitstamp sends us the fee as a percentage represented as a decimal,
@@ -45,7 +45,7 @@ class BitstampTradePairs
     return $this->_fee;
   }
 
-  protected function volumeUSDBid()
+  public function volumeUSDBid()
   {
     if (!isset($this->_volume)) {
       // Start with the minimum volume allowable.
@@ -76,12 +76,16 @@ class BitstampTradePairs
     return $this->_volume;
   }
 
+  public function volumeUSDBidPostFees() {
+    return ceil($this->bidBTCVolume() * $this->bidPrice() * (1 + $this->fee()) * 100) / 100;
+  }
+
   /**
    * Returns the USD volume required to cover the bid USD + fees.
    */
-  protected function volumeUSDAsk() {
+  public function volumeUSDAsk() {
     // @todo - Is (1 + $this->fee() * 2) correct?
-    return $this->volumeUSDBid() * (1 + $this->fee() * 2) + $this::MIN_PROFIT_USD;
+    return $this->volumeUSDBidPostFees() * (1 + $this->fee() * 2) + $this::MIN_PROFIT_USD;
   }
 
   // We can't use this inside volumeUSDBid because we'd have circular deps.
@@ -94,7 +98,7 @@ class BitstampTradePairs
    * BIDS
    */
 
-  protected function bidPrice()
+  public function bidPrice()
   {
     // For bids, we use the cap percentile as it's harder for other users to
     // manipulate and we want 1 - PERCENTILE as bids are decending.
@@ -102,7 +106,7 @@ class BitstampTradePairs
   }
 
   // @todo test this lots.
-  protected function bidBTCVolume()
+  public function bidBTCVolume()
   {
     $rounded = round($this->volumeUSDBid() / $this->bidPrice(), $this::BTC_FIDELITY);
     // Its very important that when we lodge our bid with Bitstamp, the volume
@@ -123,14 +127,18 @@ class BitstampTradePairs
    * ASKS
    */
 
-  protected function askPrice()
+  public function volumeUSDAskPostFees() {
+    return floor($this->askBTCVolume() * $this->askPrice() * (1 - $this->fee()) * 100) / 100;
+  }
+
+  public function askPrice()
   {
     // For asks, we use the BTC volume percentile as it's harder for other users
     // to manipulate. Asks are sorted ascending so we can use $pc directly.
     return $this->orderBook->asks()->percentile($this::PERCENTILE)[0];
   }
 
-  protected function askBTCVolume()
+  public function askBTCVolume()
   {
     $rounded = round($this->volumeUSDAsk() / $this->askPrice(), $this::BTC_FIDELITY);
     // @see bidBTCVolume()
@@ -149,9 +157,13 @@ class BitstampTradePairs
    * DIFF
    */
 
-  public function profit()
+  public function profitBTC()
   {
     return $this->bidBTCVolume() * (1 - $this->fee()) - $this->askBTCVolume() * (1 + $this->fee());
+  }
+
+  public function profitUSD() {
+    return floor(($this->volumeUSDAskPostFees() - $this->volumeUSDBidPostFees()) * 100) / 100;
   }
 
   public function midprice() {
@@ -185,6 +197,7 @@ class BitstampTradePairs
 
   public function percentileIsProfitable()
   {
+    return $this->profitUSD() >= round($this::MIN_PROFIT_USD, 2) && $this->profitBTC() > 0;
     $b = '<br />';
     $things = [
       $this->volumeUSDBid(),
@@ -198,9 +211,9 @@ class BitstampTradePairs
       $this->askPrice(),
       $this->askPriceEffective(),
       '<b>diff:</b>',
-      '<i>' . $this->profit() . '</i>',
+      '<i>' . $this->profitBTC() . '</i>',
       $this->midprice(),
-      $this->profit() * $this->midprice(),
+      $this->profitBTC() * $this->midprice(),
       '<b>dupes:</b>',
       $this->bidPrice() * $this::DUPE_RANGE_MULTIPLIER,
       $this->askPrice() * $this::DUPE_RANGE_MULTIPLIER,
