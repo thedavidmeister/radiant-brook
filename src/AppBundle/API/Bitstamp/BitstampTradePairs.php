@@ -24,6 +24,9 @@ class BitstampTradePairs
   // The minimum amount of USD profit we need to commit to a pair.
   const MIN_PROFIT_USD = 0.01;
 
+  // Multiplier on a bid/ask price to consider it a dupe with existing orders.
+  const DUPE_RANGE_MULTIPLIER = 0.01;
+
   public function __construct()
   {
     $this->orderBook = new OrderBook();
@@ -156,14 +159,28 @@ class BitstampTradePairs
   }
 
   public function dupes() {
-    $dupes = $this->openOrders->search([
+    $base_search_params = [
       'key' => 'price',
       'unit' => '=',
-      'operator' => '>',
-      'value' => 230.1,
+      'operator' => '~',
+    ];
+
+    $bid_dupes = $this->openOrders->search([
+      'range' => $this->bidPrice() * $this::DUPE_RANGE_MULTIPLIER,
+      'value' => $this->bidPrice(),
       'type' => $this->openOrders->typeBuy(),
-    ]);
-    print_r($dupes);
+    ] + $base_search_params);
+
+    $ask_dupes = $this->openOrders->search([
+      'range' => $this->askPrice() * $this::DUPE_RANGE_MULTIPLIER,
+      'value' => $this->askPrice(),
+      'type' => $this->openOrders->typeSell(),
+    ] + $base_search_params);
+
+    return [
+      'bids' => $bid_dupes,
+      'asks' => $ask_dupes,
+    ];
   }
 
   public function percentileIsProfitable()
@@ -185,8 +202,11 @@ class BitstampTradePairs
       $this->midprice(),
       $this->profit() * $this->midprice(),
       '<b>dupes:</b>',
-      $this->dupes(),
+      $this->bidPrice() * $this::DUPE_RANGE_MULTIPLIER,
+      $this->askPrice() * $this::DUPE_RANGE_MULTIPLIER,
     ];
     print implode($b, $things);
+    print '<br />';
+    print_r($this->dupes());
   }
 }

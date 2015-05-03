@@ -51,8 +51,6 @@ class OpenOrders extends PrivateBitstampAPI
    *     'operator' => '=, <, >, ~',
    *     // Range, only applies to >< operator.
    *     'range' => <float goes here>
-   *     // Multiplier or absolute.
-   *     'unit' => '*, =',
    *     // The type (optional).
    *     'type' => TYPE_BUY, TYPE_SELL,
    *   ]
@@ -60,16 +58,11 @@ class OpenOrders extends PrivateBitstampAPI
    */
   public function search($params) {
     // Don't attempt malformed searches.
-    $requireds = ['key', 'value', 'operator', 'unit'];
+    $requireds = ['key', 'value', 'operator'];
     foreach ($requireds as $required) {
       if (!isset($params[$required])) {
         throw new \Exception("$required must be set");
       }
-    }
-
-    $valid_units = ['*', '='];
-    if (!in_array($params['unit'], $valid_units)) {
-      throw new \Exception("Unsupported unit: $unit");
     }
 
     $found = [];
@@ -78,55 +71,34 @@ class OpenOrders extends PrivateBitstampAPI
       $check = (float) round($order[$params['key']], $this::SEARCH_PRECISION);
       switch ($params['operator']) {
         case '=':
-          if ($params['unit'] === '*') {
-            throw new \Exception('= operator does not support * unit');
-          }
-
-          if ($params['unit'] === '='
-            && $check === $params['value']) {
-            print $check;
+          if($check == $params['value']) {
             $found[] = $order;
           }
           break;
 
         case '<':
-          if ($params['unit'] === '*'
-            && $check < ($check * $params['value'])) {
-            $found[] = $order;
-          }
-
-          if ($params['unit'] === '='
-            && $check < $params['value']) {
+          if ($check < $params['value']) {
             $found[] = $order;
           }
           break;
 
         case '>':
-          if ($params['unit'] === '*'
-            && $check > ($check * $params['value'])) {
-            $found[] = $order;
-          }
-
-          if ($params['unit'] === '='
-            && $check > $params['value']) {
+          if ($check > $params['value']) {
             $found[] = $order;
           }
           break;
 
-        case '><':
-          if ($params['unit'] === '*'
-            && $check > $check * (1 - $params['value'])
-            && $check < $check * (1 + $params['value'])
-          ) {
-            $found[] = $order;
-          }
-
-          if ($params['unit'] === '='
-            && $check > $params['value'] - $params['range']
+        case '~':
+          if (
+            $check > $params['value'] - $params['range']
             && $check < $params['value'] + $params['range']
           ) {
             $found[] = $order;
           }
+          break;
+
+        default:
+          throw new \Exception('Unknown operator');
           break;
       }
     }
