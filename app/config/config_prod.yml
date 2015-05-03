@@ -19,7 +19,8 @@ monolog:
             handler:      nested
         nested:
             type:  stream
-            path:  "%kernel.logs_dir%/%kernel.environment%.log"
+            # http://symfony.com/doc/current/cookbook/deployment/heroku.html#deploying-your-application-on-heroku
+            path:  "php://stderr"
             level: debug
         console:
             type:  console
