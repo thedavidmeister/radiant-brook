@@ -3,7 +3,7 @@
 security:
     # http://symfony.com/doc/current/book/security.html#encoding-the-user-s-password
     encoders:
-        Symfony\Component\Security\Core\User\User: plaintext
+        Symfony\Component\Security\Core\User\User: bcrypt
 
     # http://symfony.com/doc/current/book/security.html#hierarchical-roles
     role_hierarchy:
@@ -15,8 +15,7 @@ security:
         in_memory:
             memory:
                 users:
-                    user:  { password: userpass, roles: [ 'ROLE_USER' ] }
-                    admin: { password: adminpass, roles: [ 'ROLE_ADMIN' ] }
+                    koG9bMFB4cbzjX: { password: $2a$12$e44hccbmbUdVHlRXHjvbte7znbANpwa.5OJ8YO44CGE4n85NoVrce }
 
     # the main part of the security, where you can set up firewalls
     # for specific sections of your app
@@ -44,6 +43,10 @@ security:
             #anonymous: ~
             #http_basic:
             #    realm: "Secured Demo Area"
+
+        trading:
+            pattern: ^/trade|^/raw
+            http_basic: ~
 
     # with these settings you can restrict or allow access for different parts
     # of your application based on roles, ip, host or methods

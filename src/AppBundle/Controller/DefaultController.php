@@ -35,7 +35,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("order_book", name="order_book")
+     * @Route("trade/order_book", name="order_book")
      */
     public function orderBookAction() {
       $ob = new OrderBook();
@@ -75,7 +75,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("trade", name="trade")
+     * @Route("trade/trade", name="trade")
      */
     public function tradeIndex() {
       $tp = new BitstampTradePairs();
