@@ -198,7 +198,7 @@ class BitstampTradePairs
       $this->askPrice(),
       $this->askPriceEffective(),
       '<b>diff:</b>',
-      $this->profit(),
+      '<i>' . $this->profit() . '</i>',
       $this->midprice(),
       $this->profit() * $this->midprice(),
       '<b>dupes:</b>',
@@ -207,6 +207,8 @@ class BitstampTradePairs
     ];
     print implode($b, $things);
     print '<br />';
+    print '<pre>';
     print_r($this->dupes());
+    print '</pre>';
   }
 }
