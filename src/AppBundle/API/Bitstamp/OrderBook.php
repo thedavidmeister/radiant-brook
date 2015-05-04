@@ -39,6 +39,4 @@ class OrderBook extends PublicBitstampAPI
     return $this->asklist;
   }
 
-
-
 }

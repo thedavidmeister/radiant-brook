@@ -37,6 +37,10 @@ class BitstampTradePairs
     $this->buy = new Buy();
   }
 
+  public function datetime($service) {
+    return $this->{$service}->datetime();
+  }
+
   public function fee()
   {
     if (!isset($this->_fee)) {

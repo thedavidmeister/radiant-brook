@@ -14,6 +14,8 @@ abstract class PrivateBitstampAPI extends BitstampAPI
 
   protected $params;
 
+  protected $datetime;
+
   const NONCE = 'nonce';
 
   const KEY = 'key';
@@ -94,6 +96,10 @@ abstract class PrivateBitstampAPI extends BitstampAPI
       ->ensureSignature();
   }
 
+  public function datetime() {
+    return $this->datetime;
+  }
+
   public function execute() {
     foreach ($this->requiredParams() as $required) {
       if (!isset($this->params[$required])) {
@@ -102,6 +108,7 @@ abstract class PrivateBitstampAPI extends BitstampAPI
     }
 
     $this->authenticate();
+    $this->datetime = new \DateTime();
     return $this->client->post($this->url(), ['body' => $this->params])->json();
   }
 

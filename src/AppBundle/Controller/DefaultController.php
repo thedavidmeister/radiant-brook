@@ -81,9 +81,9 @@ class DefaultController extends Controller
     public function tradeIndex(Request $request) {
       $tp = new BitstampTradePairs();
 
+      $time_format = 'Y-m-d H:i:s';
+
       $stats = [
-        '-Facts-' => '',
-        'Fees' => $tp->fee(),
         '-Bids-' => '',
         'bid/buy USD Base Volume' => $tp->volumeUSDBid(),
         'bid/buy BTC Volume' => $tp->bidBTCVolume(),
@@ -104,6 +104,13 @@ class DefaultController extends Controller
         'Dupe bids' => var_export($tp->dupes()['bids'], TRUE),
         'Dupe ask range' => $tp->askPrice() * $tp::DUPE_RANGE_MULTIPLIER,
         'Dupe asks' => var_export($tp->dupes()['asks'], TRUE),
+        '-Facts-' => '',
+        'Fees' => $tp->fee(),
+        // Sticking times at the bottom is a hack to ensure that we've hit
+        // the endpoints.
+        'Book time' => $tp->datetime('orderBook')->format($time_format),
+        'Balance time' => $tp->datetime('balance')->format($time_format),
+        'Open orders time' => $tp->datetime('openOrders')->format($time_format),
       ];
 
       // @todo - turn this into a separate class?

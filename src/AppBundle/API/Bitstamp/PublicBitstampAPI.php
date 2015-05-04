@@ -9,13 +9,21 @@ abstract class PublicBitstampAPI extends BitstampAPI
 
   protected $data;
 
+  // The DateTime of the last data save.
+  protected $datetime;
+
   public function data()
   {
     if (!isset($this->data)) {
+      $this->datetime = new \DateTime();
       $this->data = $this->client->get($this->url())->json();
     }
 
     return $this->data;
+  }
+
+  public function datetime() {
+    return $this->datetime;
   }
 
 }
