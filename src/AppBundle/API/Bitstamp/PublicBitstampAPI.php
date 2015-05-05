@@ -19,6 +19,7 @@ abstract class PublicBitstampAPI extends BitstampAPI
       $this->data = $this->client->get($this->url())->json();
     }
 
+    // @todo - add logging!
     return $this->data;
   }
 

@@ -202,16 +202,21 @@ class BitstampTradePairs
     ];
   }
 
-  public function execute() {
-    $this->sell
-      ->setParam('price', $this->askPrice())
-      ->setParam('amount', $this->askBTCVolume())
-      ->execute();
+  public function execute($bypass_safety = FALSE) {
+    if (($this->isProfitable() && !$this->hasDupes()) || $bypass_safety) {
+      $this->sell
+        ->setParam('price', $this->askPrice())
+        ->setParam('amount', $this->askBTCVolume())
+        ->execute();
 
-    $this->buy
-      ->setParam('price', $this->bidPrice())
-      ->setParam('amount', $this->bidBTCVolume())
-      ->execute();
+      $this->buy
+        ->setParam('price', $this->bidPrice())
+        ->setParam('amount', $this->bidBTCVolume())
+        ->execute();
+    }
+    else {
+      throw new \Exception('It is not safe to execute a trade pair at this time.');
+    }
   }
 
   /**

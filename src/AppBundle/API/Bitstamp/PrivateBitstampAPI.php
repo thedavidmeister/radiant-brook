@@ -109,7 +109,9 @@ abstract class PrivateBitstampAPI extends BitstampAPI
 
     $this->authenticate();
     $this->datetime = new \DateTime();
-    return $this->client->post($this->url(), ['body' => $this->params])->json();
+    // @todo - add logging!
+    $result = $this->client->post($this->url(), ['body' => $this->params])->json();
+    return $result;
   }
 
   public function setParam($name, $value) {
@@ -118,5 +120,11 @@ abstract class PrivateBitstampAPI extends BitstampAPI
     }
 
     $this->params[$name] = $value;
+
+    return $this;
+  }
+
+  public function getParams() {
+    return $this->params;
   }
 }
