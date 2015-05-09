@@ -4,6 +4,30 @@ parameters:
 #    parameter_name: value
 
 services:
-#    service_name:
-#        class: AppBundle\Directory\ClassName
-#        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
+  bitstamp.eur_usd:
+    class: AppBundle\API\Bitstamp\EURUSD
+
+  bitstamp.transactions:
+    class: AppBundle\API\Bitstamp\Transactions
+
+  bitstamp.ticker:
+    class: AppBundle\API\Bitstamp\Ticker
+
+  bitstamp.balance:
+    class: AppBundle\API\Bitstamp\Balance
+
+  bitstamp.order_book:
+    class: AppBundle\API\Bitstamp\OrderBook
+
+  bitstamp.open_orders:
+    class: AppBundle\API\Bitstamp\OpenOrders
+
+  bitstamp.sell:
+    class: AppBundle\API\Bitstamp\Sell
+
+  bitstamp.buy:
+    class: AppBundle\API\Bitstamp\Buy
+
+  bitstamp.trade_pairs:
+    class: AppBundle\API\Bitstamp\BitstampTradePairs
+    arguments: [@bitstamp.balance, @bitstamp.order_book, @bitstamp.open_orders, @bitstamp.sell, @bitstamp.buy]

@@ -2,8 +2,6 @@
 
 namespace AppBundle\API\Bitstamp;
 
-use AppBundle\API\Bitstamp\OrderBook;
-use AppBundle\API\Bitstamp\Balance;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class BitstampTradePairs
@@ -28,13 +26,18 @@ class BitstampTradePairs
   // Multiplier on a bid/ask price to consider it a dupe with existing orders.
   const DUPE_RANGE_MULTIPLIER = 0.01;
 
-  public function __construct()
+  public function __construct(
+    Balance $balance,
+    OrderBook $orderbook,
+    OpenOrders $openorders,
+    Sell $sell,
+    Buy $buy)
   {
-    $this->orderBook = new OrderBook();
-    $this->balance = new Balance();
-    $this->openOrders = new OpenOrders();
-    $this->sell = new Sell();
-    $this->buy = new Buy();
+    $this->balance = $balance;
+    $this->orderBook = $orderbook;
+    $this->openOrders = $openorders;
+    $this->sell = $sell;
+    $this->buy = $buy;
   }
 
   public function datetime($service) {

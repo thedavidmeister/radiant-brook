@@ -14,24 +14,11 @@ class DefaultController extends Controller
      * @Route("raw/{endpoint}", name="raw")
      */
     public function rawAction($endpoint) {
-      switch ($endpoint) {
-        case 'ticker':
-          $raw = new \AppBundle\API\Bitstamp\Ticker();
-          break;
-
-        case 'order_book':
-          $raw = new OrderBook();
-          break;
-
-        case 'transactions':
-          $raw = new \AppBundle\API\Bitstamp\Transactions();
-          break;
-
-        case 'eur_usd':
-          $raw = new \AppBundle\API\Bitstamp\EURUSD();
-          break;
-
+      $endpoints = ['ticker', 'order_book', 'transactions', 'eur_usd'];
+      if (!in_array($endpoint, $endpoints)) {
+        throw new \Exception("Invalid endpoint $endpoint");
       }
+      $raw = $this->get("bitstamp.$endpoint");
       ldd($raw->data());
     }
 
@@ -39,7 +26,7 @@ class DefaultController extends Controller
      * @Route("trade/order_book", name="order_book")
      */
     public function orderBookAction() {
-      $ob = new OrderBook();
+      $ob = $this->get('bitstamp.order_book');
 
       $stats = array();
       foreach (['bids', 'asks'] as $list) {
@@ -79,7 +66,7 @@ class DefaultController extends Controller
      * @Route("trade/trade", name="trade")
      */
     public function tradeIndex(Request $request) {
-      $tp = new BitstampTradePairs();
+      $tp = $this->get('bitstamp.trade_pairs');
 
       $time_format = 'Y-m-d H:i:s';
 
