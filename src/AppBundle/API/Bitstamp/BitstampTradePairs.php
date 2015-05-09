@@ -31,13 +31,15 @@ class BitstampTradePairs
     OrderBook $orderbook,
     OpenOrders $openorders,
     Sell $sell,
-    Buy $buy)
+    Buy $buy,
+    \Symfony\Component\Validator\ValidatorInterface $validator)
   {
     $this->balance = $balance;
     $this->orderBook = $orderbook;
     $this->openOrders = $openorders;
     $this->sell = $sell;
     $this->buy = $buy;
+    $this->validator = $validator;
   }
 
   public function datetime($service) {
@@ -205,8 +207,8 @@ class BitstampTradePairs
     ];
   }
 
-  public function execute($bypass_safety = FALSE) {
-    if (($this->isProfitable() && !$this->hasDupes()) || $bypass_safety) {
+  public function execute() {
+    if ($this->isValid()) {
       $this->sell
         ->setParam('price', $this->askPrice())
         ->setParam('amount', $this->askBTCVolume())
@@ -220,6 +222,15 @@ class BitstampTradePairs
     else {
       throw new \Exception('It is not safe to execute a trade pair at this time.');
     }
+  }
+
+  /**
+   * Validates the proposed trade pairs.
+   *
+   * @return boolean true if valid.
+   */
+  public function isValid() {
+    return empty($this->validator->validate($this));
   }
 
   /**
