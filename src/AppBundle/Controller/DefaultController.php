@@ -86,6 +86,8 @@ class DefaultController extends Controller
         'BTC Profit USD value (midpoint)' => $tp->profitBTC() * $tp->midprice(),
         'USD Profit' => $tp->profitUSD(),
         'Is profitable' => $tp->isProfitable() ? 'Yes' : 'No',
+        'Has dupes' => $tp->hasDupes() ? 'Yes' : 'No',
+        'Is valid trade' => $tp->isValid() ? 'Yes' : 'No',
         '-Dupes-' => '',
         'Dupe bid range' => $tp->bidPrice() * $tp::DUPE_RANGE_MULTIPLIER,
         'Dupe bids' => var_export($tp->dupes()['bids'], TRUE),

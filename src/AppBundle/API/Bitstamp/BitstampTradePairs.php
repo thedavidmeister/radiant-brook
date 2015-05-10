@@ -230,7 +230,7 @@ class BitstampTradePairs
    * @return boolean true if valid.
    */
   public function isValid() {
-    return empty($this->validator->validate($this));
+    return !count($this->validator->validate($this));
   }
 
   /**
