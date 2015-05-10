@@ -30,4 +30,4 @@ services:
 
   bitstamp.trade_pairs:
     class: AppBundle\API\Bitstamp\BitstampTradePairs
-    arguments: [@bitstamp.balance, @bitstamp.order_book, @bitstamp.open_orders, @bitstamp.sell, @bitstamp.buy, @validator]
+    arguments: [@bitstamp.balance, @bitstamp.order_book, @bitstamp.open_orders, @bitstamp.sell, @bitstamp.buy, @validator, @logger]

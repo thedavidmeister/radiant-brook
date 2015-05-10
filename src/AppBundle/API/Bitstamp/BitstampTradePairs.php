@@ -32,7 +32,8 @@ class BitstampTradePairs
     OpenOrders $openorders,
     Sell $sell,
     Buy $buy,
-    \Symfony\Component\Validator\ValidatorInterface $validator)
+    \Symfony\Component\Validator\ValidatorInterface $validator,
+    \Psr\Log\LoggerInterface $logger)
   {
     $this->balance = $balance;
     $this->orderBook = $orderbook;
@@ -40,6 +41,7 @@ class BitstampTradePairs
     $this->sell = $sell;
     $this->buy = $buy;
     $this->validator = $validator;
+    $this->logger = $logger;
   }
 
   public function datetime($service) {
@@ -218,8 +220,11 @@ class BitstampTradePairs
         ->setParam('price', $this->bidPrice())
         ->setParam('amount', $this->bidBTCVolume())
         ->execute();
+
+      $this->logger->info('Trade pairs executed');
     }
     else {
+      $this->logger->error('It is not safe to execute a trade pair at this time.');
       throw new \Exception('It is not safe to execute a trade pair at this time.');
     }
   }
