@@ -25,7 +25,8 @@
         "raulfraile/ladybug-bundle": "~1.0"
     },
     "require-dev": {
-        "sensio/generator-bundle": "~2.3"
+        "sensio/generator-bundle": "~2.3",
+        "leaphub/phpcs-symfony2-standard": "~2.0.0"
     },
     "scripts": {
         "post-root-package-install": [
