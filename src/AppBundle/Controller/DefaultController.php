@@ -8,53 +8,67 @@ use AppBundle\API\Bitstamp\OrderBook;
 use AppBundle\API\Bitstamp\BitstampTradePairs;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Default controller for AppBundle.
+ */
 class DefaultController extends Controller
 {
     /**
+     * Prints raw responses from Bitstamp endpoints.
+     *
      * @Route("raw/{endpoint}", name="raw")
+     *
+     * @param string $endpoint
+     *   The name of the Bitstamp API endpoint to hit.
+     *
+     * @return Response
      */
-    public function rawAction($endpoint) 
+    public function rawAction($endpoint)
     {
         $endpoints = ['ticker', 'order_book', 'transactions', 'eur_usd'];
         if (!in_array($endpoint, $endpoints)) {
-            throw new \Exception("Invalid endpoint $endpoint");
+            throw new \Exception('Invalid endpoint ' . $endpoint);
         }
-        $raw = $this->get("bitstamp.$endpoint");
+        $raw = $this->get('bitstamp.' . $endpoint);
         ldd($raw->data());
     }
 
     /**
+     * Calculates summary statistics for the current order book.
+     *
      * @Route("trade/order_book", name="order_book")
+     *
+     * @return Response
      */
-    public function orderBookAction() 
+    public function orderBookAction()
     {
         $ob = $this->get('bitstamp.order_book');
 
         $stats = array();
         foreach (['bids', 'asks'] as $list) {
             $stats += [
-            "$list min" => $ob->$list()->min(),
-            "$list max" => $ob->$list()->max(),
-            "$list volume" => ['n/a', $ob->$list()->totalVolume()],
-            "$list 0.01%" => $ob->$list()->percentile(0.0001),
-            "$list 0.1%" => $ob->$list()->percentile(0.001),
-            "$list 1%" => $ob->$list()->percentile(0.01),
-            "$list Q1" => $ob->$list()->percentile(0.25),
-            "$list median" => $ob->$list()->percentile(0.5),
-            "$list Q2" => $ob->$list()->percentile(0.75),
-            "$list 99%" => $ob->$list()->percentile(0.99),
-            "$list 99.9%" => $ob->$list()->percentile(0.999),
-            "$list 99.99%" => $ob->$list()->percentile(0.9999),
-            "$list total cap" => ['n/a', $ob->$list()->totalCap()],
-            "$list 0.01% cap" => $ob->$list()->percentCap(0.0001),
-            "$list 0.1% cap" => $ob->$list()->percentCap(0.001),
-            "$list 1% cap" => $ob->$list()->percentCap(0.01),
-            "$list 25% cap" => $ob->$list()->percentCap(0.25),
-            "$list 50% cap" => $ob->$list()->percentCap(0.50),
-            "$list 75% cap" => $ob->$list()->percentCap(0.75),
-            "$list 99% cap" => $ob->$list()->percentCap(0.99),
-            "$list 99.9% cap" => $ob->$list()->percentCap(0.999),
-            "$list 99.99% cap" => $ob->$list()->percentCap(0.9999),
+            $list . 'min' => $ob->$list()->min(),
+            $list . 'max' => $ob->$list()->max(),
+            $list . 'volume' => ['n/a', $ob->$list()->totalVolume()],
+            $list . '0.01%' => $ob->$list()->percentile(0.0001),
+            $list . '0.1%' => $ob->$list()->percentile(0.001),
+            $list . '1%' => $ob->$list()->percentile(0.01),
+            $list . 'Q1' => $ob->$list()->percentile(0.25),
+            $list . 'median' => $ob->$list()->percentile(0.5),
+            $list . 'Q2' => $ob->$list()->percentile(0.75),
+            $list . '99%' => $ob->$list()->percentile(0.99),
+            $list . '99.9%' => $ob->$list()->percentile(0.999),
+            $list . '99.99%' => $ob->$list()->percentile(0.9999),
+            $list . 'total cap' => ['n/a', $ob->$list()->totalCap()],
+            $list . '0.01% cap' => $ob->$list()->percentCap(0.0001),
+            $list . '0.1% cap' => $ob->$list()->percentCap(0.001),
+            $list . '1% cap' => $ob->$list()->percentCap(0.01),
+            $list . '25% cap' => $ob->$list()->percentCap(0.25),
+            $list . '50% cap' => $ob->$list()->percentCap(0.50),
+            $list . '75% cap' => $ob->$list()->percentCap(0.75),
+            $list . '99% cap' => $ob->$list()->percentCap(0.99),
+            $list . '99.9% cap' => $ob->$list()->percentCap(0.999),
+            $list . '99.99% cap' => $ob->$list()->percentCap(0.9999),
             '-' => ['-', '-'],
             ];
         }
@@ -65,13 +79,19 @@ class DefaultController extends Controller
     }
 
     /**
+     * Show information about trading pairs and automatically execute.
+     *
      * @Route("trade/trade", name="trade")
+     *
+     * @param Request $request Symfony request
+     *
+     * @return Response
      */
-    public function tradeIndex(Request $request) 
+    public function tradeIndex(Request $request)
     {
         $tp = $this->get('bitstamp.trade_pairs');
 
-        $time_format = 'Y-m-d H:i:s';
+        $timeFormat = 'Y-m-d H:i:s';
 
         $stats = [
         '-Bids-' => '',
@@ -100,9 +120,9 @@ class DefaultController extends Controller
         'Fees' => $tp->fee(),
         // Sticking times at the bottom is a hack to ensure that we've hit
         // the endpoints.
-        'Book time' => $tp->datetime('orderBook')->format($time_format),
-        'Balance time' => $tp->datetime('balance')->format($time_format),
-        'Open orders time' => $tp->datetime('openOrders')->format($time_format),
+        'Book time' => $tp->datetime('orderBook')->format($timeFormat),
+        'Balance time' => $tp->datetime('balance')->format($timeFormat),
+        'Open orders time' => $tp->datetime('openOrders')->format($timeFormat),
         ];
 
         // @todo - turn this into a separate class?

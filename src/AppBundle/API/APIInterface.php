@@ -2,6 +2,9 @@
 
 namespace AppBundle\API;
 
+/**
+ * Interface for API endpoint wrappers.
+ */
 interface APIInterface
 {
 

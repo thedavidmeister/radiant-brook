@@ -4,69 +4,71 @@ namespace AppBundle\API\Bitstamp;
 
 use AppBundle\API\Bitstamp\PrivateBitstampAPI;
 
+/**
+ * Bitstamp open orders private API endpoint wrapper.
+ */
 class OpenOrders extends PrivateBitstampAPI
 {
+    // {@inheritdoc}
     const ENDPOINT = 'open_orders';
 
+    // Bitstamp representation of a "buy" order type.
     const TYPE_BUY = 0;
 
+    // Bitstamp representation of a "sell" order type.
     const TYPE_SELL = 1;
 
+    // The precision to use in float comparison for search().
     const SEARCH_PRECISION = 2;
 
-    protected $_data;
-
-    public function requiredParams() 
-    {
-        return [];
-    }
-
-    public function typeSell() 
+    /**
+     * Returns the Bitstamp representation of a "sell" order type.
+     *
+     * @return int
+     */
+    public function typeSell()
     {
         return $this::TYPE_SELL;
     }
 
-    public function typeBuy() 
+    /**
+     * Returns the Bitstamp representation of a "buy" order type.
+     *
+     * @return int
+     */
+    public function typeBuy()
     {
         return $this::TYPE_BUY;
     }
 
-    public function data() 
-    {
-        if (!isset($this->_data)) {
-            $this->_data = $this->execute();
-        }
-        return (array) $this->_data;
-    }
-
     /**
-   * Return a filtered array of all open order data matching search parameters.
-   *
-   * @todo Test this.
-   *
-   * @param array $params
-   *   Looks like:
-   *   [
-   *     // The key to search for.
-   *     'key' => 'price, amount',
-   *     // The value to compare orders against.
-   *     'value' => <float goes here>,
-   *     // Equals, less than, great than, roughly.
-   *     'operator' => '=, <, >, ~',
-   *     // Range, only applies to >< operator.
-   *     'range' => <float goes here>
-   *     // The type (optional).
-   *     'type' => TYPE_BUY, TYPE_SELL,
-   *   ]
-   * @return [type]         [description]
-   */
-    public function search($params) 
+     * Return a filtered array of all open order data matching search parameters.
+     *
+     * @todo Test this.
+     *
+     * @param array $params
+     *   Looks like:
+     *   [
+     *     // The key to search for.
+     *     'key' => 'price, amount',
+     *     // The value to compare orders against.
+     *     'value' => <float goes here>,
+     *     // Equals, less than, great than, roughly.
+     *     'operator' => '=, <, >, ~',
+     *     // Range, only applies to >< operator.
+     *     'range' => <float goes here>
+     *     // The type (optional).
+     *     'type' => TYPE_BUY, TYPE_SELL,
+     *   ]
+     * @return [type]         [description]
+     */
+    public function search($params)
     {
         // Don't attempt malformed searches.
         $requireds = ['key', 'value', 'operator'];
         foreach ($requireds as $required) {
             if (!isset($params[$required])) {
-                throw new \Exception("$required must be set");
+                throw new \Exception($required . 'must be set');
             }
         }
 
@@ -116,6 +118,7 @@ class OpenOrders extends PrivateBitstampAPI
                 }
             }
         }
+
         return $found;
     }
 }

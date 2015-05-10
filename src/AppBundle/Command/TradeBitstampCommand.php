@@ -7,6 +7,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Console command to execute Bitstamp trades.
+ */
 class TradeBitstampCommand extends ContainerAwareCommand
 {
     protected function configure()

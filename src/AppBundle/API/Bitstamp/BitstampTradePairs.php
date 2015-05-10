@@ -4,6 +4,9 @@ namespace AppBundle\API\Bitstamp;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * Suggests and executes profitable trade pairs.
+ */
 class BitstampTradePairs
 {
 
@@ -26,6 +29,29 @@ class BitstampTradePairs
     // Multiplier on a bid/ask price to consider it a dupe with existing orders.
     const DUPE_RANGE_MULTIPLIER = 0.01;
 
+    /**
+     * Constructor to store services passed by Symfony.
+     * @param Balance                                         $balance
+     *   Bitstamp balance service.
+     *
+     * @param OrderBook                                       $orderbook
+     *   Bitstamp order book service.
+     *
+     * @param OpenOrders                                      $openorders
+     *   Bitstamp open orders service.
+     *
+     * @param Sell                                            $sell
+     *   Bitstamp sell service.
+     *
+     * @param Buy                                             $buy
+     *   Bitstamp buy service.
+     *
+     * @param \Symfony\Component\Validator\ValidatorInterface $validator
+     *   Symfony validator service.
+     *
+     * @param \Psr\Log\LoggerInterface                        $logger
+     *   Symfony logger service.
+     */
     public function __construct(
     Balance $balance,
     OrderBook $orderbook,
@@ -44,11 +70,26 @@ class BitstampTradePairs
         $this->logger = $logger;
     }
 
-    public function datetime($service) 
+    /**
+     * Returns the DateTime object for the requested service.
+     *
+     * Will be based on execute() or data() as appropriate.
+     *
+     * @param string $service
+     *   The name of the service to get the DateTime for.
+     *
+     * @return DateTime
+     */
+    public function datetime($service)
     {
         return $this->{$service}->datetime();
     }
 
+    /**
+     * The percentage fee charged by Bitstamp for our user account.
+     *
+     * @return float
+     */
     public function fee()
     {
         if (!isset($this->_fee)) {
@@ -57,9 +98,15 @@ class BitstampTradePairs
             // all subsequent math difficult, so it's worth massaging the value here.
             $this->_fee = $this->balance->execute()['fee'] / 100;
         }
+
         return $this->_fee;
     }
 
+    /**
+     * The USD bid volume pre-fees.
+     *
+     * @return float
+     */
     public function volumeUSDBid()
     {
         if (!isset($this->_volume)) {
@@ -70,7 +117,7 @@ class BitstampTradePairs
             $fee = $this->fee();
 
             // Calculate the absolute fee at the min USD volume.
-            $fee_absolute = $volume * $fee;
+            $feeAbsolute = $volume * $fee;
 
             // We kindly ask our users to take note on Bitstamp's policy regarding fee
             // calculation. As our fees are calculated to two decimal places, all fees
@@ -79,42 +126,62 @@ class BitstampTradePairs
             // digit value higher than it was before the rounding up. For example; a
             // fee of 0.111 will be charged as 0.12.
             // @see https://www.bitstamp.net/fee_schedule/
-            $fee_absolute_rounded = ceil($fee_absolute * 100) / 100;
+            $feeAbsoluteRounded = ceil($feeAbsolute * 100) / 100;
 
             // We can bump our volume up to the next integer fee value without
             // incurring extra cost to achieve improved effective prices.
-            $volume_adjusted = ($fee_absolute_rounded / $fee_absolute) * $volume;
+            $volumeAdjusted = ($feeAbsoluteRounded / $feeAbsolute) * $volume;
 
-            $this->_volume = $volume_adjusted;
+            $this->_volume = $volumeAdjusted;
         }
 
         return $this->_volume;
     }
 
-    public function volumeUSDBidPostFees() 
+    /**
+     * The USD bid volume required to cover fees.
+     *
+     * @return float
+     */
+    public function volumeUSDBidPostFees()
     {
         return ceil($this->bidBTCVolume() * $this->bidPrice() * (1 + $this->fee()) * 100) / 100;
     }
 
     /**
-   * Returns the USD volume required to cover the bid USD + fees.
-   */
-    public function volumeUSDAsk() 
+     * Returns the USD volume required to cover the bid USD + fees.
+     *
+     * @return float
+     */
+    public function volumeUSDAsk()
     {
         // @todo - Is (1 + $this->fee() * 2) correct?
         return $this->volumeUSDBidPostFees() * (1 + $this->fee() * 2) + $this::MIN_PROFIT_USD;
     }
 
-    // We can't use this inside volumeUSDBid because we'd have circular deps.
+    /**
+     * The absolute USD value of fees in cents.
+     *
+     * Handles the weird Bitstamp rounding policy.
+     *
+     * We can't use this inside volumeUSDBid because we'd have circular deps.
+     *
+     * @return int
+     */
     protected function feeAbsolute()
     {
         return ceil($this->volumeUSDBid() * $this->fee() * 100) / 100;
     }
 
     /**
-   * BIDS
-   */
+     * BIDS
+     */
 
+    /**
+     * The bid USD price of the suggested pair.
+     *
+     * @return float
+     */
     public function bidPrice()
     {
         // For bids, we use the cap percentile as it's harder for other users to
@@ -122,7 +189,13 @@ class BitstampTradePairs
         return $this->orderBook->bids()->percentCap(1 - $this::PERCENTILE)[0];
     }
 
-    // @todo test this lots.
+    /**
+     * The bid BTC volume of the suggested pair.
+     *
+     * @todo test this lots.
+     *
+     * @return float
+     */
     public function bidBTCVolume()
     {
         $rounded = round($this->volumeUSDBid() / $this->bidPrice(), $this::BTC_FIDELITY);
@@ -132,9 +205,15 @@ class BitstampTradePairs
         if (($rounded * $this->bidPrice()) > $this->volumeUSDBid()) {
             $rounded -= 10 ** -($this::BTC_FIDELITY - 1);
         }
+
         return $rounded;
     }
 
+    /**
+     * The effective USD bid price includes fees.
+     *
+     * @return float
+     */
     protected function bidPriceEffective()
     {
         return ($this->bidPrice() * $this->bidBTCVolume() + $this->feeAbsolute()) / $this->bidBTCVolume();
@@ -144,11 +223,21 @@ class BitstampTradePairs
    * ASKS
    */
 
-    public function volumeUSDAskPostFees() 
+    /**
+     * The asking USD Volume required to cover fees.
+     *
+     * @return float
+     */
+    public function volumeUSDAskPostFees()
     {
         return floor($this->askBTCVolume() * $this->askPrice() * (1 - $this->fee()) * 100) / 100;
     }
 
+    /**
+     * The asking USD price in the suggested pair.
+     *
+     * @return float
+     */
     public function askPrice()
     {
         // For asks, we use the BTC volume percentile as it's harder for other users
@@ -156,6 +245,11 @@ class BitstampTradePairs
         return $this->orderBook->asks()->percentile($this::PERCENTILE)[0];
     }
 
+    /**
+     * The asking volume of BTC in the suggested pair.
+     *
+     * @return float
+     */
     public function askBTCVolume()
     {
         $rounded = round($this->volumeUSDAsk() / $this->askPrice(), $this::BTC_FIDELITY);
@@ -163,60 +257,91 @@ class BitstampTradePairs
         if (($rounded * $this->askPrice()) < $this->volumeUSDAsk()) {
             $rounded += 10 ** -($this::BTC_FIDELITY - 1);
         }
+
         return $rounded;
     }
 
+    /**
+     * The effective ask price is post-fees.
+     */
     protected function askPriceEffective()
     {
         return ($this->askPrice() * $this->askBTCVolume() - $this->feeAbsolute()) / $this->askBTCVolume();
     }
 
     /**
-   * DIFF
-   */
+     * DIFF
+     */
 
+    /**
+     * Returns the BTC profit of the suggested pair.
+     *
+     * @return float
+     */
     public function profitBTC()
     {
         return $this->bidBTCVolume() * (1 - $this->fee()) - $this->askBTCVolume() * (1 + $this->fee());
     }
 
-    public function profitUSD() 
+    /**
+     * Returns the USD profit of the suggested pair.
+     *
+     * @return float
+     */
+    public function profitUSD()
     {
         return floor(($this->volumeUSDAskPostFees() - $this->volumeUSDBidPostFees()) * 100) / 100;
     }
 
-    public function midprice() 
+    /**
+     * Returns the average of the bid and ask price.
+     *
+     * @return float
+     */
+    public function midprice()
     {
         return ($this->bidPrice() + $this->askPrice()) / 2;
     }
 
-    public function dupes() 
+    /**
+     * Returns open orders that duplicate either leg of the suggested pair.
+     *
+     * @return array
+     *   A list of open duplicate bids and asks.
+     */
+    public function dupes()
     {
-        $base_search_params = [
+        $baseSearchParams = [
         'key' => 'price',
         'unit' => '=',
         'operator' => '~',
         ];
 
-        $bid_dupes = $this->openOrders->search([
+        $bidDupes = $this->openOrders->search([
             'range' => $this->bidPrice() * $this::DUPE_RANGE_MULTIPLIER,
             'value' => $this->bidPrice(),
             'type' => $this->openOrders->typeBuy(),
-        ] + $base_search_params);
+        ] + $baseSearchParams);
 
-        $ask_dupes = $this->openOrders->search([
+        $askDupes = $this->openOrders->search([
             'range' => $this->askPrice() * $this::DUPE_RANGE_MULTIPLIER,
             'value' => $this->askPrice(),
             'type' => $this->openOrders->typeSell(),
-        ] + $base_search_params);
+        ] + $baseSearchParams);
 
         return [
-        'bids' => $bid_dupes,
-        'asks' => $ask_dupes,
+        'bids' => $bidDupes,
+        'asks' => $askDupes,
         ];
     }
 
-    public function execute() 
+    /**
+     * Execute the suggested trade pairs with Bitstamp.
+     *
+     * If $this fails validation, the trade pairs will not be executed and an
+     * exception thrown, to protect against unprofitable and duplicate orders.
+     */
+    public function execute()
     {
         if ($this->isValid()) {
             $this->sell
@@ -237,27 +362,35 @@ class BitstampTradePairs
     }
 
     /**
-   * Validates the proposed trade pairs.
-   *
-   * @return boolean true if valid.
-   */
-    public function isValid() 
+     * Validates the proposed trade pairs.
+     *
+     * @return boolean true if valid.
+     */
+    public function isValid()
     {
         return !count($this->validator->validate($this));
     }
 
     /**
-   * @Assert\True(message="This trade is not profitable")
-   */
+     * Asserts the suggested pairs are profitable.
+     *
+     * @Assert\True(message="This trade is not profitable")
+     *
+     * @return bool
+     */
     public function isProfitable()
     {
         return $this->profitUSD() >= round($this::MIN_PROFIT_USD, 2) && $this->profitBTC() > 0;
     }
 
     /**
-   * @assert\False(message="There are currently dupes")
-   */
-    public function hasDupes() 
+     * Asserts there are no duplicate open orders with the suggested pairs.
+     *
+     * @assert\False(message="There are currently dupes")
+     *
+     * @return bool
+     */
+    public function hasDupes()
     {
         return !empty($this->dupes()['bids']) || !empty($this->dupes()['asks']);
     }
