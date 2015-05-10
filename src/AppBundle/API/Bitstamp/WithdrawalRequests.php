@@ -6,9 +6,10 @@ use AppBundle\API\Bitstamp\PrivateBitstampAPI;
 
 class WithdrawalRequests extends PrivateBitstampAPI
 {
-  const ENDPOINT = 'withdrawal_requests';
+    const ENDPOINT = 'withdrawal_requests';
 
-  public function requiredParams() {
-    return [];
-  }
+    public function requiredParams() 
+    {
+        return [];
+    }
 }

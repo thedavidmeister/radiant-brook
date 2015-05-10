@@ -7,6 +7,6 @@ use AppBundle\API\Bitstamp\BitstampAPI;
 class EURUSD extends PublicBitstampAPI
 {
 
-  const ENDPOINT = 'eur_usd';
+    const ENDPOINT = 'eur_usd';
 
 }

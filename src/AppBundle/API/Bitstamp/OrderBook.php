@@ -8,28 +8,28 @@ use AppBundle\API\Bitstamp\OrderList;
 class OrderBook extends PublicBitstampAPI
 {
 
-  const ENDPOINT = 'order_book';
+    const ENDPOINT = 'order_book';
 
-  protected $bidlist;
+    protected $bidlist;
 
-  protected $asklist;
+    protected $asklist;
 
-  public function bids()
-  {
-    if (!isset($this->bidlist)) {
-      $this->bidlist = new OrderList($this->data()['bids']);
+    public function bids()
+    {
+        if (!isset($this->bidlist)) {
+            $this->bidlist = new OrderList($this->data()['bids']);
+        }
+
+        return $this->bidlist;
     }
 
-    return $this->bidlist;
-  }
+    public function asks()
+    {
+        if (!isset($this->asklist)) {
+            $this->asklist = new OrderList($this->data()['asks']);
+        }
 
-  public function asks()
-  {
-    if (!isset($this->asklist)) {
-      $this->asklist = new OrderList($this->data()['asks']);
+        return $this->asklist;
     }
-
-    return $this->asklist;
-  }
 
 }

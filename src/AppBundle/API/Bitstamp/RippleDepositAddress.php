@@ -6,9 +6,10 @@ use AppBundle\API\Bitstamp\PrivateBitstampAPI;
 
 class RippleDepositAddress extends PrivateBitstampAPI
 {
-  const ENDPOINT = 'ripple_address';
+    const ENDPOINT = 'ripple_address';
 
-  public function requiredParams() {
-    return [];
-  }
+    public function requiredParams() 
+    {
+        return [];
+    }
 }

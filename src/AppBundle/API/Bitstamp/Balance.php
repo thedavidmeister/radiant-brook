@@ -6,10 +6,11 @@ use AppBundle\API\Bitstamp\PrivateBitstampAPI;
 
 class Balance extends PrivateBitstampAPI
 {
-  const ENDPOINT = 'balance';
+    const ENDPOINT = 'balance';
 
-  public function requiredParams() {
-    return [];
-  }
+    public function requiredParams() 
+    {
+        return [];
+    }
 
 }

@@ -7,6 +7,6 @@ use AppBundle\API\Bitstamp\BitstampAPI;
 class Transactions extends PublicBitstampAPI
 {
 
-  const ENDPOINT = 'transactions';
+    const ENDPOINT = 'transactions';
 
 }

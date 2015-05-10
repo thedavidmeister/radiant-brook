@@ -6,9 +6,10 @@ use AppBundle\API\Bitstamp\PrivateBitstampAPI;
 
 class BitcoinWithdrawal extends PrivateBitstampAPI
 {
-  const ENDPOINT = 'bitcoin_withdrawal';
+    const ENDPOINT = 'bitcoin_withdrawal';
 
-  public function requiredParams() {
-    return ['amount', 'address'];
-  }
+    public function requiredParams() 
+    {
+        return ['amount', 'address'];
+    }
 }

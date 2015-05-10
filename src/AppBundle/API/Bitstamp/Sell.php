@@ -6,9 +6,10 @@ use AppBundle\API\Bitstamp\PrivateBitstampAPI;
 
 class Sell extends PrivateBitstampAPI
 {
-  const ENDPOINT = 'sell';
+    const ENDPOINT = 'sell';
 
-  public function requiredParams() {
-    return ['amount', 'price'];
-  }
+    public function requiredParams() 
+    {
+        return ['amount', 'price'];
+    }
 }

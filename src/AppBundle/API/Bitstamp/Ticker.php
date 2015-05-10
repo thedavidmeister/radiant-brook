@@ -7,6 +7,6 @@ use AppBundle\API\Bitstamp\BitstampAPI;
 class Ticker extends PublicBitstampAPI
 {
 
-  const ENDPOINT = 'ticker';
+    const ENDPOINT = 'ticker';
 
 }

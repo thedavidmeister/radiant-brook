@@ -4,4 +4,10 @@ task :phpcs do
   puts `#{cmd}`
 end
 
-task :default => :foo
+desc 'attempts to automatically fix coding standards'
+task :phpcbf do
+  cmd = "bin/phpcbf --standard=vendor/leaphub/phpcs-symfony2-standard/leaphub/phpcs/Symfony2/ --extensions=php src/"
+  puts `#{cmd}`
+end
+
+task :default => :phpcs
