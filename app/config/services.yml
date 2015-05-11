@@ -4,29 +4,56 @@ parameters:
 #    parameter_name: value
 
 services:
-  bitstamp.eur_usd:
-    class: AppBundle\API\Bitstamp\EURUSD
+  guzzle.http_client:
+    class: GuzzleHttp\Client
 
-  bitstamp.transactions:
-    class: AppBundle\API\Bitstamp\Transactions
+  bitstamp.api:
+    class: AppBundle\API\Bitstamp\BitstampAPI
+    arguments: [@guzzle.http_client]
 
-  bitstamp.ticker:
-    class: AppBundle\API\Bitstamp\Ticker
+  # Private API
+  bitstamp.private_api:
+    class: AppBundle\API\Bitstamp\PrivateBitstampAPI
+    parent: bitstamp.api
 
   bitstamp.balance:
     class: AppBundle\API\Bitstamp\Balance
+    parent: bitstamp.private_api
 
   bitstamp.order_book:
     class: AppBundle\API\Bitstamp\OrderBook
+    parent: bitstamp.private_api
 
   bitstamp.open_orders:
     class: AppBundle\API\Bitstamp\OpenOrders
+    parent: bitstamp.private_api
 
   bitstamp.sell:
     class: AppBundle\API\Bitstamp\Sell
+    parent: bitstamp.private_api
 
   bitstamp.buy:
     class: AppBundle\API\Bitstamp\Buy
+    parent: bitstamp.private_api
+
+  # @todo - define the rest of the services.
+
+  # Public API
+  bitstamp.public_api:
+    class: AppBundle\API\Bitstamp\PublicBitstampAPI
+    parent: bitstamp.api
+
+  bitstamp.eur_usd:
+    class: AppBundle\API\Bitstamp\EURUSD
+    parent: bitstamp.public_api
+
+  bitstamp.transactions:
+    class: AppBundle\API\Bitstamp\Transactions
+    parent: bitstamp.public_api
+
+  bitstamp.ticker:
+    class: AppBundle\API\Bitstamp\Ticker
+    parent: bitstamp.public_api
 
   bitstamp.trade_pairs:
     class: AppBundle\API\Bitstamp\BitstampTradePairs

@@ -29,9 +29,9 @@ abstract class BitstampAPI implements APIInterface
      *
      * Creates a Guzzle client needed to interact with the remote API endpoint.
      */
-    public function __construct()
+    public function __construct(Client $client)
     {
-        $this->client = new Client(['base_url' => $this->domain()]);
+        $this->client = $client;
     }
 
     /**
