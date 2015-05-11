@@ -125,21 +125,8 @@ class DefaultController extends Controller
         'Open orders time' => $tp->datetime('openOrders')->format($timeFormat),
         ];
 
-        // @todo - turn this into a separate class?
-        $form = $this->createFormBuilder($tp)
-        ->add('save', 'submit', ['label' => 'Execute trade'])
-        ->getForm();
-
-        $form->handleRequest($request);
-
-        if ($form->isValid()) {
-            $tp->execute();
-            print 'Executed trade!';
-        }
-
         return $this->render('AppBundle::index.html.twig', [
             'stats' => $stats,
-            'form' => $form->createView(),
         ]);
     }
 
