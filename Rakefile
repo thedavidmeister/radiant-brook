@@ -10,4 +10,10 @@ task :phpcbf do
   puts `#{cmd}`
 end
 
+desc 'run automated tests'
+task :tests do
+  cmd = "phpunit -c app/"
+  puts `#{cmd}`
+end
+
 task :default => :phpcs
