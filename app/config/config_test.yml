@@ -14,3 +14,12 @@ web_profiler:
 
 swiftmailer:
     disable_delivery: true
+
+# Create a test user admin:password so we can get past HTTP basic auth in the
+# test environment.
+security:
+  providers:
+    in_memory:
+      memory:
+        users:
+          admin: { password: $2a$12$WM9TodxuGa0tIW27KVVdGORPiMo/NkLv7ipHL.u5ko/XgdRBIiA.y, roles: ['ROLE_ADMIN'] }
