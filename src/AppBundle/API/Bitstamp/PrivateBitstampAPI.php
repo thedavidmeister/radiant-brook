@@ -20,9 +20,6 @@ abstract class PrivateBitstampAPI extends BitstampAPI
     // Parameters storage.
     protected $params;
 
-    // DateTime for last execute().
-    protected $datetime;
-
     // Storage for data().
     protected $_data;
 
@@ -138,16 +135,6 @@ abstract class PrivateBitstampAPI extends BitstampAPI
     }
 
     /**
-     * Returns the DateTime of the most recent execution.
-     *
-     * @return DateTime
-     */
-    public function datetime()
-    {
-        return $this->datetime;
-    }
-
-    /**
      * Execute the authenticated, private API call.
      *
      * This uses the parameters previously set with $this->setParams() to hit
@@ -171,7 +158,8 @@ abstract class PrivateBitstampAPI extends BitstampAPI
         }
 
         $this->authenticate();
-        $this->datetime = new \DateTime();
+        $this->datetime(new \DateTime());
+
         // @todo - add logging!
         $result = $this->client->post($this->url(), ['body' => $this->params])->json();
 

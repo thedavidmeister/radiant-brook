@@ -24,12 +24,32 @@ abstract class BitstampAPI implements APIInterface
 
     protected $client;
 
+    // The DateTime of the last API call.
+    protected $datetime;
+
+    /**
+     * Returns the DateTime of the most recent execution.
+     *
+     * @return DateTime
+     */
+    public function datetime($new = null)
+    {
+        if (isset($new)) {
+            if (!($new instanceof \DateTime)) {
+                throw new \Exception('New datetime must be a DateTime object.');
+            }
+            $this->datetime = $new;
+        }
+
+        return $this->datetime;
+    }
+
     /**
      * Constructor.
      *
      * Creates a Guzzle client needed to interact with the remote API endpoint.
      */
-    public function __construct(Client $client)
+    public function __construct(Client $client, \DateTime $datetime)
     {
         $this->client = $client;
     }
