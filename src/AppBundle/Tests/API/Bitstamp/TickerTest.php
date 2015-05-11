@@ -25,18 +25,34 @@ class TickerTest extends \PHPUnit_Framework_TestCase
       ]);
     }
 
+    protected function client() {
+      $client = new Client();
+
+      // Add the mock subscriber to the client.
+      $client->getEmitter()->attach($this->mock());
+
+      return $client;
+    }
+
     /**
      * Returns a Ticker object with Mocks preconfigured.
      *
      * @return Ticker
      */
     protected function ticker() {
-      $client = new Client();
+      return new Ticker($this->client(), new \DateTime());
+    }
 
-      // Add the mock subscriber to the client.
-      $client->getEmitter()->attach($this->mock());
+    /**
+     * Returns a Ticker object created Jan 1st 1970.
+     *
+     * @return Ticker
+     */
+    protected function tickerOld() {
+      $nineteenseventy = new \DateTime();
+      $nineteenseventy->setTimestamp(0);
 
-      return new Ticker($client, new \DateTime);
+      return new Ticker($this->client(), $nineteenseventy);
     }
 
     public function testData() {
@@ -59,5 +75,22 @@ class TickerTest extends \PHPUnit_Framework_TestCase
       $this->assertSame('https://www.bitstamp.net/api/', $ticker->domain());
       $this->assertSame('ticker', $ticker->endpoint());
       $this->assertSame('https://www.bitstamp.net/api/ticker/', $ticker->url());
+    }
+
+    public function testDates() {
+      // Our ticker should start with whatever date we give it.
+      $tickerOld = $this->tickerOld();
+      $this->assertSame($tickerOld->datetime()->format('U'), '0');
+
+      // Get a DateTime for now.
+      $now = new \DateTime();
+      // Trigger an API call that should update the internal DateTime.
+      $tickerOld->data();
+      $this->assertSame($tickerOld->datetime()->format('U'), $now->format('U'));
+
+      // A new ticker with no time modifications should start with time "now".
+      // @todo - is this actually the logic we want? wouldn't null be better?
+      $ticker = $this->ticker();
+      $this->assertSame($ticker->datetime()->format('U'), $now->format('U'));
     }
 }

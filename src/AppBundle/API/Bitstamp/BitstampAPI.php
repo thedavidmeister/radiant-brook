@@ -52,6 +52,7 @@ abstract class BitstampAPI implements APIInterface
     public function __construct(Client $client, \DateTime $datetime)
     {
         $this->client = $client;
+        $this->datetime = $datetime;
     }
 
     /**
