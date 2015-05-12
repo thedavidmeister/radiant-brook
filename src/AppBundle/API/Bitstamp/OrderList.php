@@ -22,6 +22,13 @@ class OrderList
     }
 
     /**
+     * Expose the data without allowing modification.
+     */
+    public function data() {
+        return $this->data;
+    }
+
+    /**
      * Utility function for sorting ascending.
      *
      * @todo Test me.
