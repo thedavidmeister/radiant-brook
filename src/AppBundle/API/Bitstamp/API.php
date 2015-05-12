@@ -30,6 +30,9 @@ abstract class API implements APIInterface
     /**
      * Returns the DateTime of the most recent execution.
      *
+     * @param DateTime $new
+     *   The new DateTime to lodge as last updated time.
+     *
      * @return DateTime
      */
     public function datetime($new = null)
@@ -47,7 +50,8 @@ abstract class API implements APIInterface
     /**
      * Constructor.
      *
-     * Creates a Guzzle client needed to interact with the remote API endpoint.
+     * @param Client $client
+     *   A Guzzle compatible HTTP client.
      */
     public function __construct(Client $client)
     {

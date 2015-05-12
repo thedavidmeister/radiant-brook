@@ -4,6 +4,9 @@ namespace AppBundle\Tests\API\Bitstamp\PublicAPI;
 
 use AppBundle\API\Bitstamp\PublicAPI\Ticker;
 
+/**
+ * Tests the Bitstamp Ticker class.
+ */
 class TickerTest extends PublicAPITest
 {
     protected $endpoint = 'ticker';
@@ -17,6 +20,6 @@ class TickerTest extends PublicAPITest
      */
     protected function getClass()
     {
-      return new Ticker($this->client());
+          return new Ticker($this->client());
     }
 }

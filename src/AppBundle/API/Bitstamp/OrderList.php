@@ -23,8 +23,12 @@ class OrderList
 
     /**
      * Expose the data without allowing modification.
+     *
+     * @return array
+     *   The internal data array.
      */
-    public function data() {
+    public function data()
+    {
         return $this->data;
     }
 

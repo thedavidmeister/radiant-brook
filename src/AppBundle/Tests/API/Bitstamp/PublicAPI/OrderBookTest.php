@@ -5,6 +5,9 @@ namespace AppBundle\Tests\API\Bitstamp\PublicAPI;
 use AppBundle\API\Bitstamp\PublicAPI\OrderBook;
 use AppBundle\API\Bitstamp\OrderList;
 
+/**
+ * Tests Bitstamp order book class.
+ */
 class OrderBookTest extends PublicAPITest
 {
     protected $endpoint = 'order_book';
@@ -12,7 +15,8 @@ class OrderBookTest extends PublicAPITest
     /**
      * Test bids() and asks() methods for OrderBook.
      */
-    public function testBidsAsks() {
+    public function testBidsAsks()
+    {
 
         $methods = ['bids', 'asks'];
 
@@ -28,10 +32,10 @@ class OrderBookTest extends PublicAPITest
 
         // Test that the created OrderList represents the correct data.
         $class = $this->getClass();
-        $this->assertEquals($class->bids()->data()[0], ["239.53", "0.20874212"]);
-        $this->assertEquals($class->bids()->data()[1], ["238.92", "0.92129583"]);
-        $this->assertEquals($class->asks()->data()[0], ["239.78", "0.08472315"]);
-        $this->assertEquals($class->asks()->data()[1], ["239.79", "13.50000000"]);
+        $this->assertEquals($class->bids()->data()[0], ['239.53', '0.20874212']);
+        $this->assertEquals($class->bids()->data()[1], ['238.92', '0.92129583']);
+        $this->assertEquals($class->asks()->data()[0], ['239.78', '0.08472315']);
+        $this->assertEquals($class->asks()->data()[1], ['239.79', '13.50000000']);
     }
 
     /**
@@ -41,7 +45,7 @@ class OrderBookTest extends PublicAPITest
      */
     protected function getClass()
     {
-      return new OrderBook($this->client());
+        return new OrderBook($this->client());
     }
 
     // Real order books are far larger than this.
