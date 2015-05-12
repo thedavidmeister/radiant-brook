@@ -10,6 +10,8 @@ use GuzzleHttp\Stream\Stream;
 
 class TickerTest extends \PHPUnit_Framework_TestCase
 {
+    protected $endpoint = 'ticker';
+    protected $domain = 'https://www.bitstamp.net/api/';
     protected $sample = '{"high": "242.90", "last": "240.83", "timestamp": "1431351913", "bid": "240.55", "vwap": "239.57", "volume": "6435.83679504", "low": "237.99", "ask": "240.83"}';
     protected $sample2 = '{"high": "242.60", "last": "241.85", "timestamp": "1431353704", "bid": "240.97", "vwap": "239.59", "volume": "6517.73015869", "low": "237.99", "ask": "241.25"}';
 
@@ -43,18 +45,6 @@ class TickerTest extends \PHPUnit_Framework_TestCase
       return new Ticker($this->client(), new \DateTime());
     }
 
-    /**
-     * Returns a Ticker object created Jan 1st 1970.
-     *
-     * @return Ticker
-     */
-    protected function tickerOld() {
-      $nineteenseventy = new \DateTime();
-      $nineteenseventy->setTimestamp(0);
-
-      return new Ticker($this->client(), $nineteenseventy);
-    }
-
     public function testData() {
       $ticker = $this->ticker();
 
@@ -72,25 +62,27 @@ class TickerTest extends \PHPUnit_Framework_TestCase
     public function testEndpoints() {
       $ticker = $this->ticker();
 
-      $this->assertSame('https://www.bitstamp.net/api/', $ticker->domain());
-      $this->assertSame('ticker', $ticker->endpoint());
-      $this->assertSame('https://www.bitstamp.net/api/ticker/', $ticker->url());
+      $this->assertSame($this->domain, $ticker->domain());
+      $this->assertSame($this->endpoint, $ticker->endpoint());
+      $this->assertSame($this->domain . $this->endpoint . '/', $ticker->url());
     }
 
     public function testDates() {
-      // Our ticker should start with whatever date we give it.
-      $tickerOld = $this->tickerOld();
-      $this->assertSame($tickerOld->datetime()->format('U'), '0');
-
       // Get a DateTime for now.
-      $now = new \DateTime();
-      // Trigger an API call that should update the internal DateTime.
-      $tickerOld->data();
-      $this->assertSame($tickerOld->datetime()->format('U'), $now->format('U'));
-
-      // A new ticker with no time modifications should start with time "now".
-      // @todo - is this actually the logic we want? wouldn't null be better?
       $ticker = $this->ticker();
+
+      // datetime() should be null at first.
+      $this->assertSame($ticker->datetime(), null);
+
+      // Trigger an API call that should update the internal DateTime.
+      $now = new \DateTime();
+      $ticker->data();
+      $this->assertSame($ticker->datetime()->format('U'), $now->format('U'));
+
+      // Even after a second, and a new data call, datetime should not change as
+      // data() should be cached.
+      sleep(1);
+      $ticker->data();
       $this->assertSame($ticker->datetime()->format('U'), $now->format('U'));
     }
 }

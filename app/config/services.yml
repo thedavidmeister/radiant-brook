@@ -4,15 +4,13 @@ parameters:
 #    parameter_name: value
 
 services:
-  datetime:
-   class: DateTime
 
   guzzle.http_client:
     class: GuzzleHttp\Client
 
   bitstamp.api:
     class: AppBundle\API\Bitstamp\BitstampAPI
-    arguments: [@guzzle.http_client, @datetime]
+    arguments: [@guzzle.http_client]
 
   # Private API
   bitstamp.private_api:
