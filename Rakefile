@@ -16,6 +16,12 @@ task :phpunit do
   puts `#{cmd}`
 end
 
+desc 'run phpunit tests excluding livedata tests'
+task ":phpunit-nolive" do
+  cmd = "phpunit -c app/ --exclude-group livedata"
+  puts `#{cmd}`
+end
+
 desc 'run all tests'
 task :tests => [:phpcs, :phpunit]
 

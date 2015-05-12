@@ -74,6 +74,8 @@ class DefaultControllerTest extends WebTestCase
 
     /**
      * Tests that /trade/trade is producing trade pair suggestions.
+     *
+     * @group livedata
      */
     public function testTrade()
     {
@@ -114,6 +116,8 @@ class DefaultControllerTest extends WebTestCase
 
     /**
      * Tests that /trade/orderbook is producing stats.
+     *
+     * @group livedata
      */
     public function testOrderBook()
     {
