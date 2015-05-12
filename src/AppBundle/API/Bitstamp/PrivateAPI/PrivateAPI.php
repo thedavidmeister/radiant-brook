@@ -1,14 +1,15 @@
 <?php
 
-namespace AppBundle\API\Bitstamp;
+namespace AppBundle\API\Bitstamp\PrivateAPI;
 
-use AppBundle\API\Bitstamp\BitstampAPI;
+use AppBundle\API\Bitstamp\API;
 use Symfony\Component\Finder\Finder;
+use AppBundle\Secrets;
 
 /**
  * Base class for private Bitstamp API endpoint wrappers.
  */
-abstract class PrivateBitstampAPI extends BitstampAPI
+abstract class PrivateAPI extends API
 {
 
     // Last used nonce storage.
@@ -99,25 +100,12 @@ abstract class PrivateBitstampAPI extends BitstampAPI
     protected function secrets()
     {
         if (!isset($this->keysArray)) {
+            $secrets = new Secrets();
             $keynames = [$this::CLIENT_ID, $this::KEY, $this::SECRET];
 
-            // First try environment variables.
             foreach ($keynames as $keyname) {
-                if (getenv($keyname)) {
-                    $this->keysArray[$keyname] = trim(getenv($keyname));
-                }
+                $this->keysArray[$keyname] = $secrets->get($keyname);
             }
-
-            // Try file based API key storage.
-            if (empty($this->keysArray)) {
-                $finder = new Finder();
-                // @todo - make this less hacky.
-                $keys = $finder->in(__DIR__ . '/../../Resources/keys')->files();
-                foreach ($keys as $key) {
-                    $this->keysArray[$key->getFilename()] = trim(file_get_contents($key->getRealpath()));
-                }
-            }
-
         }
 
         return $this->keysArray;

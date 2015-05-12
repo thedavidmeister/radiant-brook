@@ -1,13 +1,14 @@
 <?php
 
-namespace AppBundle\API\Bitstamp;
+namespace AppBundle\API\Bitstamp\PublicAPI;
 
-use AppBundle\API\Bitstamp\BitstampAPI;
+use AppBundle\API\Bitstamp\API;
+use AppBundle\API\PublicAPIInterface;
 
 /**
  * Base class for all Bitstamp public API endpoint wrappers.
  */
-abstract class PublicBitstampAPI extends BitstampAPI
+abstract class PublicAPI extends API
 {
 
     protected $data;

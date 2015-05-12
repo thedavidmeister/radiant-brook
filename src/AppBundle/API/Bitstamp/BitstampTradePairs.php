@@ -53,11 +53,11 @@ class BitstampTradePairs
      *   Symfony logger service.
      */
     public function __construct(
-    Balance $balance,
-    OrderBook $orderbook,
-    OpenOrders $openorders,
-    Sell $sell,
-    Buy $buy,
+    PrivateAPI\Balance $balance,
+    PublicAPI\OrderBook $orderbook,
+    PrivateAPI\OpenOrders $openorders,
+    PrivateAPI\Sell $sell,
+    PrivateAPI\Buy $buy,
     \Symfony\Component\Validator\ValidatorInterface $validator,
     \Psr\Log\LoggerInterface $logger)
     {

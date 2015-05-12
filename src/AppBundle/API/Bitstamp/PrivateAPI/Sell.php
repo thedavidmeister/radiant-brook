@@ -1,13 +1,13 @@
 <?php
 
-namespace AppBundle\API\Bitstamp;
+namespace AppBundle\API\Bitstamp\PrivateAPI;
 
-use AppBundle\API\Bitstamp\PrivateBitstampAPI;
+use AppBundle\API\Bitstamp\PrivateAPI\PrivateAPI;
 
 /**
  * Bitstamp sell API endpoint wrapper.
  */
-class Sell extends PrivateBitstampAPI
+class Sell extends PrivateAPI
 {
     const ENDPOINT = 'sell';
 

@@ -1,14 +1,14 @@
 <?php
 
-namespace AppBundle\API\Bitstamp;
+namespace AppBundle\API\Bitstamp\PublicAPI;
 
-use AppBundle\API\Bitstamp\BitstampAPI;
+use AppBundle\API\Bitstamp\PublicAPI\PublicAPI;
 use AppBundle\API\Bitstamp\OrderList;
 
 /**
  * Wraps a Bitstamp order book with some useful methods for data extraction.
  */
-class OrderBook extends PublicBitstampAPI
+class OrderBook extends PublicAPI
 {
 
     const ENDPOINT = 'order_book';

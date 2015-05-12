@@ -14,27 +14,27 @@ services:
 
   # Private API
   bitstamp.private_api:
-    class: AppBundle\API\Bitstamp\PrivateBitstampAPI
+    class: AppBundle\API\Bitstamp\PrivateAPI\PrivateAPI
     parent: bitstamp.api
 
   bitstamp.balance:
-    class: AppBundle\API\Bitstamp\Balance
+    class: AppBundle\API\Bitstamp\PrivateAPI\Balance
     parent: bitstamp.private_api
 
   bitstamp.order_book:
-    class: AppBundle\API\Bitstamp\OrderBook
+    class: AppBundle\API\Bitstamp\PublicAPI\OrderBook
     parent: bitstamp.private_api
 
   bitstamp.open_orders:
-    class: AppBundle\API\Bitstamp\OpenOrders
+    class: AppBundle\API\Bitstamp\PrivateAPI\OpenOrders
     parent: bitstamp.private_api
 
   bitstamp.sell:
-    class: AppBundle\API\Bitstamp\Sell
+    class: AppBundle\API\Bitstamp\PrivateAPI\Sell
     parent: bitstamp.private_api
 
   bitstamp.buy:
-    class: AppBundle\API\Bitstamp\Buy
+    class: AppBundle\API\Bitstamp\PrivateAPI\Buy
     parent: bitstamp.private_api
 
   # @todo - define the rest of the services.

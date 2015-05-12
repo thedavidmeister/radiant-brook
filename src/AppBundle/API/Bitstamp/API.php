@@ -8,7 +8,7 @@ use GuzzleHttp\Client;
 /**
  * Implements APIInterface for Bitstamp.
  */
-abstract class BitstampAPI implements APIInterface
+abstract class API implements APIInterface
 {
     /**
      * The domain of the Bitstamp API.

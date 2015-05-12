@@ -1,8 +1,8 @@
 <?php
 
-namespace AppBundle\Tests\API\Bitstamp;
+namespace AppBundle\Tests\API\Bitstamp\PublicAPI;
 
-use AppBundle\API\Bitstamp\Ticker;
+use AppBundle\API\Bitstamp\PublicAPI\Ticker;
 use GuzzleHttp\Client;
 use GuzzleHttp\Subscriber\Mock;
 use GuzzleHttp\Message\Response;

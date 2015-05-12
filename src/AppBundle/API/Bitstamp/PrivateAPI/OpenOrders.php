@@ -1,13 +1,13 @@
 <?php
 
-namespace AppBundle\API\Bitstamp;
+namespace AppBundle\API\Bitstamp\PrivateAPI;
 
-use AppBundle\API\Bitstamp\PrivateBitstampAPI;
+use AppBundle\API\Bitstamp\PrivateAPI\PrivateAPI;
 
 /**
  * Bitstamp open orders private API endpoint wrapper.
  */
-class OpenOrders extends PrivateBitstampAPI
+class OpenOrders extends PrivateAPI
 {
     // {@inheritdoc}
     const ENDPOINT = 'open_orders';
