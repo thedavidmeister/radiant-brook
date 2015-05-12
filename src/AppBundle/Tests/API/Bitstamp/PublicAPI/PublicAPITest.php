@@ -41,6 +41,23 @@ abstract class PublicAPITest extends WebTestCase
         return $client;
     }
 
+    protected function objectToArrayRecursive($obj) {
+        if(is_object($obj)) {
+            $obj = (array) $obj;
+        }
+        if(is_array($obj)) {
+            $new = array();
+            foreach($obj as $key => $val) {
+                $new[$key] = $this->objectToArrayRecursive($val);
+            }
+        }
+        else {
+            $new = $obj;
+        }
+
+        return $new;
+    }
+
     /**
      * Tests that the class can be built as a service.
      */
@@ -60,7 +77,7 @@ abstract class PublicAPITest extends WebTestCase
 
         // Guzzle uses the json_decode() method of PHP and uses arrays rather than
         // stdClass objects for objects.
-        $expected = (array) json_decode($this->sample);
+        $expected = $this->objectToArrayRecursive(json_decode($this->sample));
 
         $this->assertSame($expected, $class->data());
 

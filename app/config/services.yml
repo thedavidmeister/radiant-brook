@@ -49,7 +49,7 @@ services:
     parent: bitstamp.public_api
 
   bitstamp.transactions:
-    class: AppBundle\API\Bitstamp\Transactions
+    class: AppBundle\API\Bitstamp\PublicAPI\Transactions
     parent: bitstamp.public_api
 
   bitstamp.ticker:
