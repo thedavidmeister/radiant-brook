@@ -45,7 +45,7 @@ services:
     parent: bitstamp.api
 
   bitstamp.eur_usd:
-    class: AppBundle\API\Bitstamp\EURUSD
+    class: AppBundle\API\Bitstamp\PublicAPI\EURUSD
     parent: bitstamp.public_api
 
   bitstamp.transactions:
@@ -53,7 +53,7 @@ services:
     parent: bitstamp.public_api
 
   bitstamp.ticker:
-    class: AppBundle\API\Bitstamp\Ticker
+    class: AppBundle\API\Bitstamp\PublicAPI\Ticker
     parent: bitstamp.public_api
 
   bitstamp.trade_pairs:

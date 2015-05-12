@@ -3,7 +3,6 @@
 namespace AppBundle\API\Bitstamp\PublicAPI;
 
 use AppBundle\API\Bitstamp\API;
-use AppBundle\API\PublicAPIInterface;
 
 /**
  * Base class for all Bitstamp public API endpoint wrappers.

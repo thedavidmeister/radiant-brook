@@ -2,7 +2,6 @@
 
 namespace AppBundle\API\Bitstamp\PublicAPI;
 
-use AppBundle\API\Bitstamp\PublicAPI\PublicAPI;
 use AppBundle\API\Bitstamp\OrderList;
 
 /**

@@ -11,6 +11,7 @@ use AppBundle\API\Bitstamp\OrderList;
 class OrderBookTest extends PublicAPITest
 {
     protected $endpoint = 'order_book';
+    protected $servicename = 'bitstamp.order_book';
 
     /**
      * Test bids() and asks() methods for OrderBook.

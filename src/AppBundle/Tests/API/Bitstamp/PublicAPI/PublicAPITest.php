@@ -6,11 +6,12 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Subscriber\Mock;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Stream\Stream;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Standard tests that can be run on all public API classes.
  */
-abstract class PublicAPITest extends \PHPUnit_Framework_TestCase
+abstract class PublicAPITest extends WebTestCase
 {
     protected $endpoint;
     protected $domain = 'https://www.bitstamp.net/api/';
@@ -38,6 +39,16 @@ abstract class PublicAPITest extends \PHPUnit_Framework_TestCase
         $client->getEmitter()->attach($this->mock());
 
         return $client;
+    }
+
+    /**
+     * Tests that the class can be built as a service.
+     */
+    public function testService() {
+        $kernel = static::createKernel();
+        $kernel->boot();
+
+        $kernel->getContainer()->get($this->servicename);
     }
 
     /**
