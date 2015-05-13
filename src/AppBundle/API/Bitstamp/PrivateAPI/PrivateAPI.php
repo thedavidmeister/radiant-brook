@@ -149,9 +149,9 @@ abstract class PrivateAPI extends API
         $this->datetime(new \DateTime());
 
         // @todo - add logging!
-        $result = $this->client->post($this->url(), ['body' => $this->params])->json();
+        $result = $this->client->post($this->url(), ['body' => $this->params]);
 
-        return $result;
+        return $result->json();
     }
 
     /**

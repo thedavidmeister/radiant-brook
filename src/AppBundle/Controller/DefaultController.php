@@ -25,7 +25,7 @@ class DefaultController extends Controller
      */
     public function rawAction($endpoint)
     {
-        $endpoints = ['ticker', 'order_book', 'transactions', 'eur_usd'];
+        $endpoints = ['ticker', 'order_book', 'transactions', 'eur_usd', 'balance'];
         if (!in_array($endpoint, $endpoints)) {
             throw new \Exception('Invalid endpoint ' . $endpoint);
         }
