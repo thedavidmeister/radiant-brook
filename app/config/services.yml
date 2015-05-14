@@ -5,6 +5,9 @@ parameters:
 
 services:
 
+  app.secrets:
+    class: AppBundle\Secrets
+
   guzzle.http_client:
     class: GuzzleHttp\Client
 
@@ -13,9 +16,13 @@ services:
     arguments: [@guzzle.http_client]
 
   # Private API
+  bitstamp.private_api_authenticator:
+    class: AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator
+    arguments: [@app.secrets]
+
   bitstamp.private_api:
     class: AppBundle\API\Bitstamp\PrivateAPI\PrivateAPI
-    parent: bitstamp.api
+    arguments: [@guzzle.http_client, @bitstamp.private_api_authenticator]
 
   bitstamp.balance:
     class: AppBundle\API\Bitstamp\PrivateAPI\Balance

@@ -3,6 +3,8 @@
 namespace AppBundle\Tests\API\Bitstamp\PrivateAPI;
 
 use AppBundle\API\Bitstamp\PrivateAPI\Balance;
+use AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator;
+use AppBundle\Secrets;
 
 /**
  * Tests the Bitstamp EURUSD class.
@@ -21,6 +23,6 @@ class BalanceTest extends PrivateAPITest
      */
     protected function getClass()
     {
-          return new Balance($this->client());
+          return new Balance($this->client(), $this->getMockAuthenticator());
     }
 }

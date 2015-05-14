@@ -3,8 +3,7 @@
 namespace AppBundle\API\Bitstamp\PrivateAPI;
 
 use AppBundle\API\Bitstamp\API;
-use Symfony\Component\Finder\Finder;
-use AppBundle\Secrets;
+use GuzzleHttp\Client;
 
 /**
  * Base class for private Bitstamp API endpoint wrappers.
@@ -12,114 +11,18 @@ use AppBundle\Secrets;
 abstract class PrivateAPI extends API
 {
 
-    // Last used nonce storage.
-    protected $_nonce;
-
-    // Secrets storage.
-    protected $keysArray;
-
     // Parameters storage.
     protected $params;
 
     // Storage for data().
     protected $_data;
 
-    // Nonce parameter name.
-    const NONCE = 'nonce';
-
-    // API key parameter name.
-    const KEY = 'key';
-
-    // HMAC signature parameter name.
-    const SIGNATURE = 'signature';
-
-    // Client ID parameter name.
-    const CLIENT_ID = 'client_id';
-
-    // API key secret parameter name.
-    const SECRET = 'secret';
-
-    /**
-     * Returns a Nonce required by Bitstamp.
-     *
-     * Nonce is a regular integer number. It must be increasing with every request
-     * you make. Read more about it here. Example: if you set nonce to 1 in your
-     * first request, you must set it to at least 2 in your second request. You
-     * are not required to start with 1. A common practice is to use unix time for
-     * that parameter.
-     *
-     * @see http://en.wikipedia.org/wiki/Cryptographic_nonce
-     */
-    protected function nonce()
-    {
-        // @todo - test this.
-        if (!isset($this->_nonce)) {
-            // Generate a nonce as microtime, with as-string handling to avoid problems
-            // with 32bits systems.
-            $mt = explode(' ', microtime());
-            $this->_nonce = $mt[1] . substr($mt[0], 2, 6);
-        }
-        // @todo - sleep for one microsecond to ensure we never repeat a nonce.
-        return $this->_nonce;
-    }
-
-    /**
-     * Ensures the cryptographic nonce is set as per Bitstamp API docs.
-     */
-    protected function ensureNonce()
-    {
-        $this->params[$this::NONCE] = $this->nonce();
-
-        return $this;
-    }
-
-    /**
-     * Ensures the secret API key is set as per Bitstamp API docs.
-     */
-    protected function ensureKey()
-    {
-        $this->params[$this::KEY] = $this->secrets()[$this::KEY];
-
-        return $this;
-    }
-
-    /**
-     * Ensures the HMAC signature is set as per Bitstamp API docs.
-     */
-    protected function ensureSignature()
-    {
-        $data = $this->nonce() . $this->secrets()[$this::CLIENT_ID] . $this->secrets()[$this::KEY];
-        $this->params[$this::SIGNATURE] = strtoupper(hash_hmac('sha256', $data, $this->secrets()[$this::SECRET]));
-
-        return $this;
-    }
-
-    /**
-     * Extracts secret keys from the file system or environment variables.
-     */
-    protected function secrets()
-    {
-        if (!isset($this->keysArray)) {
-            $secrets = new Secrets();
-            $keynames = [$this::CLIENT_ID, $this::KEY, $this::SECRET];
-
-            foreach ($keynames as $keyname) {
-                $this->keysArray[$keyname] = $secrets->get($keyname);
-            }
-        }
-
-        return $this->keysArray;
-    }
-
-    /**
-     * Handles required authentication parameters for Bitstamp API security.
-     */
-    protected function authenticate()
-    {
-        $this
-        ->ensureKey()
-        ->ensureNonce()
-        ->ensureSignature();
+    public function __construct(
+        Client $client,
+        PrivateAPIAuthenticator $auth
+    ) {
+        $this->auth = $auth;
+        parent::__construct($client);
     }
 
     /**
@@ -145,11 +48,12 @@ abstract class PrivateAPI extends API
             }
         }
 
-        $this->authenticate();
         $this->datetime(new \DateTime());
 
+        $body = array_merge((array) $this->params, $this->auth->getAuthParams());
+
         // @todo - add logging!
-        $result = $this->client->post($this->url(), ['body' => $this->params]);
+        $result = $this->client->post($this->url(), ['body' => $body]);
 
         return $result->json();
     }
@@ -194,6 +98,14 @@ abstract class PrivateAPI extends API
     public function requiredParams()
     {
         return [];
+    }
+
+    public function setParams($array) {
+        foreach ((array) $array as $key => $value) {
+            $this->setParam($key, $value);
+        }
+
+        return $this;
     }
 
     /**
