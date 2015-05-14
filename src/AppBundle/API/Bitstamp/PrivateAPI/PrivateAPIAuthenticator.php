@@ -26,8 +26,9 @@ class PrivateAPIAuthenticator
     // API key secret parameter name.
     const SECRET = 'secret';
 
-    public function __construct(\AppBundle\Secrets $secrets) {
-      $this->secrets = $secrets;
+    public function __construct(\AppBundle\Secrets $secrets) 
+    {
+        $this->secrets = $secrets;
     }
 
     /**
@@ -46,7 +47,8 @@ class PrivateAPIAuthenticator
      *
      * @see http://en.wikipedia.org/wiki/Cryptographic_nonce
      */
-    protected function generateNonce() {
+    protected function generateNonce() 
+    {
         // Generate a nonce as microtime, with as-string handling to avoid problems
         // with 32bits systems.
         $mt = explode(' ', microtime());
@@ -54,13 +56,13 @@ class PrivateAPIAuthenticator
 
         if ($candidate <= $this->_nonce) {
             $this->_nonce++;
-        }
-        else {
+        } else {
             $this->_nonce = $candidate;
         }
     }
 
-    protected function nonce() {
+    protected function nonce() 
+    {
         return $this->_nonce;
     }
 

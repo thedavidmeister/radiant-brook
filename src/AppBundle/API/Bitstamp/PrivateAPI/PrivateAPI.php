@@ -20,7 +20,8 @@ abstract class PrivateAPI extends API
     public function __construct(
         Client $client,
         PrivateAPIAuthenticator $auth
-    ) {
+    ) 
+    {
         $this->auth = $auth;
         parent::__construct($client);
     }
@@ -106,7 +107,8 @@ abstract class PrivateAPI extends API
         return [];
     }
 
-    public function setParams($array) {
+    public function setParams($array) 
+    {
         foreach ((array) $array as $key => $value) {
             $this->setParam($key, $value);
         }

@@ -13,35 +13,36 @@ use AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator;
 
 abstract class PrivateAPITest extends APITest
 {
-  public function getMockAuthenticator() {
-    $authenticator = $this
+    public function getMockAuthenticator() 
+    {
+        $authenticator = $this
         ->getMockBuilder('\AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator')
         ->disableOriginalConstructor()
         ->getMock();
 
-    $authenticator->method('getAuthParams')->willReturn([
-        'key' => 'foo',
-        'nonce' => 'bar',
-        'signature' => 'baz',
-    ]);
+        $authenticator->method('getAuthParams')->willReturn([
+            'key' => 'foo',
+            'nonce' => 'bar',
+            'signature' => 'baz',
+        ]);
 
-    return $authenticator;
-  }
+        return $authenticator;
+    }
 
-  public function testAuthenticationParams()
-  {
-    $class = $this->getClass();
+    public function testAuthenticationParams()
+    {
+        $class = $this->getClass();
 
-    // Trigger an execute to test what is being sent off.
-    $class->execute();
+        // Trigger an execute to test what is being sent off.
+        $class->execute();
 
-    $lastRequest = $this->history->getLastRequest();
+        $lastRequest = $this->history->getLastRequest();
 
-    // All the authentication params should match our mock.
-    $this->assertSame($lastRequest->getBody()->getField('key'), 'foo');
-    $this->assertSame($lastRequest->getBody()->getField('nonce'), 'bar');
-    $this->assertSame($lastRequest->getBody()->getField('signature'), 'baz');
-  }
+        // All the authentication params should match our mock.
+        $this->assertSame($lastRequest->getBody()->getField('key'), 'foo');
+        $this->assertSame($lastRequest->getBody()->getField('nonce'), 'bar');
+        $this->assertSame($lastRequest->getBody()->getField('signature'), 'baz');
+    }
 
     /**
      * Test mocks of the data() method.
