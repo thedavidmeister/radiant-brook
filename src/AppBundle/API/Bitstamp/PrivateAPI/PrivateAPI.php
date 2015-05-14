@@ -52,10 +52,16 @@ abstract class PrivateAPI extends API
 
         $body = array_merge((array) $this->params, $this->auth->getAuthParams());
 
-        // @todo - add logging!
-        $result = $this->client->post($this->url(), ['body' => $body]);
+        $response = $this->client->post($this->url(), ['body' => $body]);
 
-        return $result->json();
+        $data = $response->json();
+
+        // @todo - add logging!
+        if (!empty($data['error'])) {
+            throw new \Exception('Bitstamp error: ' . $data['error']);
+        }
+
+        return $data;
     }
 
     /**

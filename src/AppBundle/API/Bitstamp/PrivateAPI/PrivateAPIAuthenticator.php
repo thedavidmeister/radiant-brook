@@ -39,39 +39,37 @@ class PrivateAPIAuthenticator
      * are not required to start with 1. A common practice is to use unix time for
      * that parameter.
      *
+     * We generate the nonce separate to getting it because it must be exactly
+     * the same per request in 'nonce' and embedded in 'signature' BUT must
+     * always be different between requests. This is easier to handle with two
+     * dedicated methods.
+     *
      * @see http://en.wikipedia.org/wiki/Cryptographic_nonce
      */
-    protected function nonce()
-    {
-        // @todo - test this.
-        if (!isset($this->_nonce)) {
-            // Generate a nonce as microtime, with as-string handling to avoid problems
-            // with 32bits systems.
-            $mt = explode(' ', microtime());
-            $this->_nonce = $mt[1] . substr($mt[0], 2, 6);
+    protected function generateNonce() {
+        // Generate a nonce as microtime, with as-string handling to avoid problems
+        // with 32bits systems.
+        $mt = explode(' ', microtime());
+        $candidate = $mt[1] . substr($mt[0], 2, 6);
+
+        if ($candidate <= $this->_nonce) {
+            $this->_nonce++;
         }
-        // @todo - sleep for one microsecond to ensure we never repeat a nonce.
-        return $this->_nonce;
+        else {
+            $this->_nonce = $candidate;
+        }
     }
 
-    /**
-     * Ensures the cryptographic nonce is set as per Bitstamp API docs.
-     */
-    protected function ensureNonce()
-    {
-        $this->params[$this::NONCE] = $this->nonce();
-
-        return $this;
+    protected function nonce() {
+        return $this->_nonce;
     }
 
     /**
      * Ensures the secret API key is set as per Bitstamp API docs.
      */
-    protected function ensureKey()
+    protected function key()
     {
-        $this->params[$this::KEY] = $this->secrets->get($this::KEY);
-
-        return $this;
+        return $this->secrets->get($this::KEY);
     }
 
     /**
@@ -80,9 +78,7 @@ class PrivateAPIAuthenticator
     protected function ensureSignature()
     {
         $data = $this->nonce() . $this->secrets->get($this::CLIENT_ID) . $this->secrets->get($this::KEY);
-        $this->params[$this::SIGNATURE] = strtoupper(hash_hmac('sha256', $data, $this->secrets->get($this::SECRET)));
-
-        return $this;
+        return strtoupper(hash_hmac('sha256', $data, $this->secrets->get($this::SECRET)));
     }
 
     /**
@@ -90,11 +86,13 @@ class PrivateAPIAuthenticator
      */
     public function getAuthParams()
     {
-        $this
-        ->ensureKey()
-        ->ensureNonce()
-        ->ensureSignature();
+        // Generate a new nonce for this set of params.
+        $this->generateNonce();
 
-        return $this->params;
+        return [
+            $this::NONCE => $this->nonce(),
+            $this::KEY => $this->key(),
+            $this::SIGNATURE => $this->ensureSignature(),
+        ];
     }
 }

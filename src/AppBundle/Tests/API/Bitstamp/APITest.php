@@ -109,8 +109,10 @@ abstract class APITest extends WebTestCase
 
     /**
      * Test that timestamp dates are recorded properly.
+     *
+     * @group slow
      */
-    public function testDates()
+    public function testDatesData()
     {
         // Get a DateTime for now.
         $class = $this->getClass();
