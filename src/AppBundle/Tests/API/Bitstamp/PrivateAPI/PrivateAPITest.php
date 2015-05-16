@@ -72,4 +72,19 @@ abstract class PrivateAPITest extends APITest
         $expected2 = $this->objectToArrayRecursive(json_decode($this->sample2));
         $this->assertSame($expected2, $class->execute());
     }
+
+    /**
+     * Returns an API object from $this->className with Mocks preconfigured.
+     *
+     * @return mixed
+     */
+    protected function getClass()
+    {
+          $class = new $this->className($this->client(), $this->getMockAuthenticator());
+          if (isset($this->requiredParamsFixture)) {
+              $class->setParams($this->requiredParamsFixture);
+          }
+
+          return $class;
+    }
 }

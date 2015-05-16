@@ -2,10 +2,6 @@
 
 namespace AppBundle\Tests\API\Bitstamp\PrivateAPI;
 
-use AppBundle\API\Bitstamp\PrivateAPI\Balance;
-use AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator;
-use AppBundle\Secrets;
-
 /**
  * Tests the Bitstamp EURUSD class.
  */
@@ -15,14 +11,5 @@ class BalanceTest extends PrivateAPITest
     protected $servicename = 'bitstamp.balance';
     protected $sample = '{"btc_reserved": "0.03280538", "fee": "0.2500", "btc_available": "0.17162632", "usd_reserved": "16.04", "btc_balance": "0.20443170", "usd_balance": "24.49", "usd_available": "8.45"}';
     protected $sample2 = '{"btc_reserved": "0.03280538", "fee": "0.1500", "btc_available": "0.17162632", "usd_reserved": "16.04", "btc_balance": "0.20443170", "usd_balance": "24.49", "usd_available": "8.45"}';
-
-    /**
-     * Returns a Ticker object with Mocks preconfigured.
-     *
-     * @return Ticker
-     */
-    protected function getClass()
-    {
-          return new Balance($this->client(), $this->getMockAuthenticator());
-    }
+    protected $className = 'AppBundle\API\Bitstamp\PrivateAPI\Balance';
 }
