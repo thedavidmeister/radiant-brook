@@ -36,6 +36,10 @@ services:
     class: AppBundle\API\Bitstamp\PrivateAPI\BitcoinWithdrawal
     parent: bitstamp.private_api
 
+  bitstamp.cancel_order:
+    class: AppBundle\API\Bitstamp\PrivateAPI\CancelOrder
+    parent: bitstamp.private_api
+
   bitstamp.order_book:
     class: AppBundle\API\Bitstamp\PublicAPI\OrderBook
     parent: bitstamp.private_api

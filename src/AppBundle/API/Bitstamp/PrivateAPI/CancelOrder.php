@@ -1,13 +1,11 @@
 <?php
 
-namespace AppBundle\API\Bitstamp;
-
-use AppBundle\API\Bitstamp\PrivateBitstampAPI;
+namespace AppBundle\API\Bitstamp\PrivateAPI;
 
 /**
  * Bitstamp cancel order Private API endpoint wrapper.
  */
-class CancelOrder extends PrivateBitstampAPI
+class CancelOrder extends PrivateAPI
 {
     const ENDPOINT = 'cancel_order';
 
