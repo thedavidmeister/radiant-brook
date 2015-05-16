@@ -5,7 +5,7 @@ namespace AppBundle\Tests\API\Bitstamp\PublicAPI;
 use AppBundle\API\Bitstamp\PublicAPI\Transactions;
 
 /**
- * Tests the Bitstamp EURUSD class.
+ * Tests the Bitstamp Transaction class.
  */
 class TransactionsTest extends PublicAPITest
 {

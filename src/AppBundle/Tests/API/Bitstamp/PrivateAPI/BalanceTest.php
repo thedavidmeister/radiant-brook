@@ -3,7 +3,7 @@
 namespace AppBundle\Tests\API\Bitstamp\PrivateAPI;
 
 /**
- * Tests the Bitstamp EURUSD class.
+ * Tests the Bitstamp Balance class.
  */
 class BalanceTest extends PrivateAPITest
 {
