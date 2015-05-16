@@ -6,6 +6,8 @@ use AppBundle\API\Bitstamp\OrderList;
 
 /**
  * Wraps a Bitstamp order book with some useful methods for data extraction.
+ *
+ * Returns JSON dictionary with "bids" and "asks". Each is a list of open orders and each order is represented as a list of price and amount.
  */
 class OrderBook extends PublicAPI
 {
