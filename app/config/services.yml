@@ -15,6 +15,10 @@ services:
     class: AppBundle\API\Bitstamp\BitstampAPI
     arguments: [@guzzle.http_client]
 
+  bitstamp.trade_pairs:
+    class: AppBundle\API\Bitstamp\BitstampTradePairs
+    arguments: [@bitstamp.balance, @bitstamp.order_book, @bitstamp.open_orders, @bitstamp.sell, @bitstamp.buy, @validator, @logger]
+
   # Private API
   bitstamp.private_api_authenticator:
     class: AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator
@@ -40,12 +44,12 @@ services:
     class: AppBundle\API\Bitstamp\PrivateAPI\CancelOrder
     parent: bitstamp.private_api
 
-  bitstamp.order_book:
-    class: AppBundle\API\Bitstamp\PublicAPI\OrderBook
-    parent: bitstamp.private_api
-
   bitstamp.open_orders:
     class: AppBundle\API\Bitstamp\PrivateAPI\OpenOrders
+    parent: bitstamp.private_api
+
+  bitstamp.ripple_address:
+    class: AppBundle\API\Bitstamp\PrivateAPI\RippleDepositAddress
     parent: bitstamp.private_api
 
   bitstamp.sell:
@@ -75,6 +79,6 @@ services:
     class: AppBundle\API\Bitstamp\PublicAPI\Ticker
     parent: bitstamp.public_api
 
-  bitstamp.trade_pairs:
-    class: AppBundle\API\Bitstamp\BitstampTradePairs
-    arguments: [@bitstamp.balance, @bitstamp.order_book, @bitstamp.open_orders, @bitstamp.sell, @bitstamp.buy, @validator, @logger]
+  bitstamp.order_book:
+    class: AppBundle\API\Bitstamp\PublicAPI\OrderBook
+    parent: bitstamp.public_api
