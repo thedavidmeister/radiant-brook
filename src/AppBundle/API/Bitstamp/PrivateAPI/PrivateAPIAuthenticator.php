@@ -2,6 +2,9 @@
 
 namespace AppBundle\API\Bitstamp\PrivateAPI;
 
+/**
+ * Service to provide POST parameters to authenticate with the Bitstamp API.
+ */
 class PrivateAPIAuthenticator
 {
 
@@ -26,7 +29,13 @@ class PrivateAPIAuthenticator
     // API key secret parameter name.
     const SECRET = 'secret';
 
-    public function __construct(\AppBundle\Secrets $secrets) 
+    /**
+     * Handles DI.
+     *
+     * @param \AppBundle\Secrets $secrets
+     *   Secrets service.
+     */
+    public function __construct(\AppBundle\Secrets $secrets)
     {
         $this->secrets = $secrets;
     }
@@ -47,7 +56,7 @@ class PrivateAPIAuthenticator
      *
      * @see http://en.wikipedia.org/wiki/Cryptographic_nonce
      */
-    protected function generateNonce() 
+    protected function generateNonce()
     {
         // Generate a nonce as microtime, with as-string handling to avoid problems
         // with 32bits systems.
@@ -61,7 +70,7 @@ class PrivateAPIAuthenticator
         }
     }
 
-    protected function nonce() 
+    protected function nonce()
     {
         return $this->_nonce;
     }
@@ -76,15 +85,25 @@ class PrivateAPIAuthenticator
 
     /**
      * Ensures the HMAC signature is set as per Bitstamp API docs.
+     *
+     * @see $this->nonce()
+     *
+     * @return string
+     *   An HMAC signature as per the Bitstamp API docs.
      */
     protected function ensureSignature()
     {
         $data = $this->nonce() . $this->secrets->get($this::CLIENT_ID) . $this->secrets->get($this::KEY);
+
         return strtoupper(hash_hmac('sha256', $data, $this->secrets->get($this::SECRET)));
     }
 
     /**
      * Handles required authentication parameters for Bitstamp API security.
+     *
+     * @return array
+     *   An associative array matching Bitstamp required private API key/value
+     *   pairs.
      */
     public function getAuthParams()
     {

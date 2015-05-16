@@ -11,8 +11,16 @@ use AppBundle\Tests\API\Bitstamp\APITest;
 use AppBundle\Secrets;
 use AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator;
 
+/**
+ * Abstract class for testing bitstamp private API wrappers.
+ */
 abstract class PrivateAPITest extends APITest
 {
+    /**
+     * Creates a mock authenticator for private API tests.
+     *
+     * @return PrivateAPIAuthenticator
+     */
     public function getMockAuthenticator()
     {
         $authenticator = $this
@@ -29,6 +37,9 @@ abstract class PrivateAPITest extends APITest
         return $authenticator;
     }
 
+    /**
+     * Tests that Bitstamp private API executions include auth parameters.
+     */
     public function testAuthenticationParams()
     {
         $class = $this->getClass();

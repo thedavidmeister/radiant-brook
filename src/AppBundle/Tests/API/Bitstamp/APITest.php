@@ -21,7 +21,7 @@ abstract class APITest extends WebTestCase
 
     protected $history;
 
-    protected function getClass() 
+    protected function getClass()
     {
         throw new \Exception('Did you forget to define getClass() for your test?');
     }
@@ -51,7 +51,7 @@ abstract class APITest extends WebTestCase
         return $client;
     }
 
-    protected function objectToArrayRecursive($obj) 
+    protected function objectToArrayRecursive($obj)
     {
         if (is_object($obj)) {
             $obj = (array) $obj;
@@ -71,7 +71,7 @@ abstract class APITest extends WebTestCase
     /**
      * Tests that the class can be built as a service.
      */
-    public function testService() 
+    public function testService()
     {
         $kernel = static::createKernel();
         $kernel->boot();

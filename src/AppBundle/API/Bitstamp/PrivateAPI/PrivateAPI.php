@@ -17,10 +17,15 @@ abstract class PrivateAPI extends API
     // Storage for data().
     protected $_data;
 
+    /**
+     * Handles DI.
+     * @param Client                  $client
+     * @param PrivateAPIAuthenticator $auth
+     */
     public function __construct(
         Client $client,
         PrivateAPIAuthenticator $auth
-    ) 
+    )
     {
         $this->auth = $auth;
         parent::__construct($client);
@@ -107,7 +112,16 @@ abstract class PrivateAPI extends API
         return [];
     }
 
-    public function setParams($array) 
+    /**
+     * Set multiple parameters from an array.
+     *
+     * @param array $array
+     *   An associative array of parameters to set.
+     *
+     * @return PrivateAPI
+     *   Returns the PrivateAPI object to facilitate method chaining.
+     */
+    public function setParams(array $array)
     {
         foreach ((array) $array as $key => $value) {
             $this->setParam($key, $value);
