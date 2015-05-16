@@ -1,13 +1,11 @@
 <?php
 
-namespace AppBundle\API\Bitstamp;
-
-use AppBundle\API\Bitstamp\PrivateBitstampAPI;
+namespace AppBundle\API\Bitstamp\PrivateAPI;
 
 /**
  * Bitstamp bitcoin withdrawal private API endpoint wrapper.
  */
-class BitcoinWithdrawal extends PrivateBitstampAPI
+class BitcoinWithdrawal extends PrivateAPI
 {
     const ENDPOINT = 'bitcoin_withdrawal';
 

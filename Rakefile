@@ -17,7 +17,7 @@ task :phpunit do
 end
 
 desc 'run phpunit tests excluding livedata tests'
-task ":phpunit-noslow" do
+task :"phpunit-noslow" do
   cmd = "phpunit -c app/ --exclude-group slow"
   puts `#{cmd}`
 end
