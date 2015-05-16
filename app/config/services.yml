@@ -64,6 +64,10 @@ services:
     class: AppBundle\API\Bitstamp\PrivateAPI\Buy
     parent: bitstamp.private_api
 
+  bitstamp.unconfirmed_btc:
+    class: AppBundle\API\Bitstamp\PrivateAPI\UnconfirmedBitcoinDeposits
+    parent: bitstamp.private_api
+
   # @todo - define the rest of the services.
 
   # Public API
