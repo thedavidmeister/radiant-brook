@@ -44,6 +44,10 @@ services:
     class: AppBundle\API\Bitstamp\PrivateAPI\CancelOrder
     parent: bitstamp.private_api
 
+  bitstamp.cancel_all_orders:
+    class: AppBundle\API\Bitstamp\PrivateAPI\CancelAllOrders
+    parent: bitstamp.private_api
+
   bitstamp.open_orders:
     class: AppBundle\API\Bitstamp\PrivateAPI\OpenOrders
     parent: bitstamp.private_api
