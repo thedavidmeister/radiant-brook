@@ -68,6 +68,10 @@ services:
     class: AppBundle\API\Bitstamp\PrivateAPI\UnconfirmedBitcoinDeposits
     parent: bitstamp.private_api
 
+  bitstamp.withdrawal_requests:
+    class: AppBundle\API\Bitstamp\PrivateAPI\WithdrawalRequests
+    parent: bitstamp.private_api
+
   # @todo - define the rest of the services.
 
   # Public API
