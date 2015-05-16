@@ -8,7 +8,6 @@ namespace AppBundle\Tests\API\Bitstamp\PrivateAPI;
 class BuyTest extends PrivateAPITest
 {
     protected $endpoint = 'buy';
-    protected $servicename = 'bitstamp.buy';
     // @todo replace these samples with real data.
     protected $sample = '{"foo": "bar"}';
     protected $sample2 = '{"bing": "baz"}';

@@ -8,7 +8,6 @@ namespace AppBundle\Tests\API\Bitstamp\PrivateAPI;
 class BitcoinWithdrawalTest extends PrivateAPITest
 {
     protected $endpoint = 'bitcoin_withdrawal';
-    protected $servicename = 'bitstamp.bitcoin_withdrawal';
     // @todo replace these samples with real data.
     protected $sample = '{"foo": "bar"}';
     protected $sample2 = '{"bing": "baz"}';

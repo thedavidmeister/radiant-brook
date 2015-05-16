@@ -10,7 +10,6 @@ use AppBundle\API\Bitstamp\OrderList;
 class OrderBookTest extends PublicAPITest
 {
     protected $endpoint = 'order_book';
-    protected $servicename = 'bitstamp.order_book';
     protected $className = 'AppBundle\API\Bitstamp\PublicAPI\OrderBook';
 
     /**

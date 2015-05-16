@@ -8,7 +8,6 @@ namespace AppBundle\Tests\API\Bitstamp\PrivateAPI;
 class CancelAllOrdersTest extends PrivateAPITest
 {
     protected $endpoint = 'cancel_all_orders';
-    protected $servicename = 'bitstamp.cancel_all_orders';
     // @todo replace these samples with real data.
     protected $sample = '{"foo": "bar"}';
     protected $sample2 = '{"bing": "baz"}';

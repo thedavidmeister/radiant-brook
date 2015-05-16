@@ -14,11 +14,13 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  */
 abstract class APITest extends WebTestCase
 {
-    protected $endpoint;
     protected $domain = 'https://www.bitstamp.net/api/';
+    protected $serviceNamespace = 'bitstamp';
+
+    // These properties must be set on child classes.
+    protected $endpoint;
     protected $sample;
     protected $sample2;
-
     protected $history;
 
     /**
@@ -81,7 +83,7 @@ abstract class APITest extends WebTestCase
         $kernel = static::createKernel();
         $kernel->boot();
 
-        $kernel->getContainer()->get($this->servicename);
+        $kernel->getContainer()->get($this->serviceNamespace . '.' . $this->endpoint);
     }
 
     /**
