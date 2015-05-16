@@ -13,7 +13,7 @@ use AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator;
 
 abstract class PrivateAPITest extends APITest
 {
-    public function getMockAuthenticator() 
+    public function getMockAuthenticator()
     {
         $authenticator = $this
         ->getMockBuilder('\AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator')
