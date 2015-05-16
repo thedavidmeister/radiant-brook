@@ -28,6 +28,10 @@ services:
     class: AppBundle\API\Bitstamp\PrivateAPI\Balance
     parent: bitstamp.private_api
 
+  bitstamp.bitcoin_deposit_address:
+    class: AppBundle\API\Bitstamp\PrivateAPI\BitcoinDepositAddress
+    parent: bitstamp.private_api
+
   bitstamp.order_book:
     class: AppBundle\API\Bitstamp\PublicAPI\OrderBook
     parent: bitstamp.private_api
