@@ -9,11 +9,11 @@ use AppBundle\API\Bitstamp\PrivateAPI\Buy;
  */
 class BuyTest extends PrivateAPITest
 {
-    protected $endpoint = 'balance';
-    protected $servicename = 'bitstamp.balance';
+    protected $endpoint = 'buy';
+    protected $servicename = 'bitstamp.buy';
     // @todo replace these samples with real data.
-    protected $sample = 'foo';
-    protected $sample2 = 'bar';
+    protected $sample = '{"foo": "bar"}';
+    protected $sample2 = '{"bing": "baz"}';
 
     /**
      * Returns a Ticker object with Mocks preconfigured.
@@ -22,6 +22,9 @@ class BuyTest extends PrivateAPITest
      */
     protected function getClass()
     {
-          return new Buy($this->client(), $this->getMockAuthenticator());
+          $class = new Buy($this->client(), $this->getMockAuthenticator());
+          $class->setParams(['amount' => 0.1, 'price' => 0.1]);
+
+          return $class;
     }
 }
