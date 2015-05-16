@@ -2,7 +2,6 @@
 
 namespace AppBundle\Tests\API\Bitstamp\PublicAPI;
 
-use AppBundle\API\Bitstamp\PublicAPI\OrderBook;
 use AppBundle\API\Bitstamp\OrderList;
 
 /**
@@ -12,6 +11,7 @@ class OrderBookTest extends PublicAPITest
 {
     protected $endpoint = 'order_book';
     protected $servicename = 'bitstamp.order_book';
+    protected $className = 'AppBundle\API\Bitstamp\PublicAPI\OrderBook';
 
     /**
      * Test bids() and asks() methods for OrderBook.
@@ -37,16 +37,6 @@ class OrderBookTest extends PublicAPITest
         $this->assertEquals($class->bids()->data()[1], ['238.92', '0.92129583']);
         $this->assertEquals($class->asks()->data()[0], ['239.78', '0.08472315']);
         $this->assertEquals($class->asks()->data()[1], ['239.79', '13.50000000']);
-    }
-
-    /**
-     * Returns a Ticker object with Mocks preconfigured.
-     *
-     * @return Ticker
-     */
-    protected function getClass()
-    {
-        return new OrderBook($this->client());
     }
 
     // Real order books are far larger than this.

@@ -76,6 +76,8 @@ abstract class PrivateAPITest extends APITest
     /**
      * Returns an API object from $this->className with Mocks preconfigured.
      *
+     * PrivateAPI needs to mock an authenticator as well as a client.
+     *
      * @return mixed
      */
     protected function getClass()

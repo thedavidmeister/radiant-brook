@@ -21,9 +21,14 @@ abstract class APITest extends WebTestCase
 
     protected $history;
 
+    /**
+     * Returns an API object from $this->className with Mocks preconfigured.
+     *
+     * @return mixed
+     */
     protected function getClass()
     {
-        throw new \Exception('Did you forget to define getClass() for your test?');
+          return new $this->className($this->client());
     }
 
     /**
