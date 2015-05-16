@@ -3,7 +3,7 @@
 namespace AppBundle\API\Bitstamp\PrivateAPI;
 
 /**
- * Bitstamp cancel order Private API endpoint wrapper.
+ * Bitstamp cancel all orders Private API endpoint wrapper.
  *
  * This call will cancel all open orders.
  *

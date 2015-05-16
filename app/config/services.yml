@@ -52,6 +52,10 @@ services:
     class: AppBundle\API\Bitstamp\PrivateAPI\OpenOrders
     parent: bitstamp.private_api
 
+  bitstamp.order_status:
+    class: AppBundle\API\Bitstamp\PrivateAPI\OrderStatus
+    parent: bitstamp.private_api
+
   bitstamp.ripple_address:
     class: AppBundle\API\Bitstamp\PrivateAPI\RippleDepositAddress
     parent: bitstamp.private_api
