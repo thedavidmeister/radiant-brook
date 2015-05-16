@@ -1,13 +1,13 @@
 <?php
 
-namespace AppBundle\API\Bitstamp;
-
-use AppBundle\API\Bitstamp\PrivateBitstampAPI;
+namespace AppBundle\API\Bitstamp\PrivateAPI;
 
 /**
  * Bitstamp ripple withdrawal API endpoint wrapper.
+ *
+ * Returns true if successful.
  */
-class RippleWithdrawal extends PrivateBitstampAPI
+class RippleWithdrawal extends PrivateAPI
 {
     const ENDPOINT = 'ripple_withdrawal';
 

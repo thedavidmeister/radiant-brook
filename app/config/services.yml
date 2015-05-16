@@ -52,6 +52,10 @@ services:
     class: AppBundle\API\Bitstamp\PrivateAPI\RippleDepositAddress
     parent: bitstamp.private_api
 
+  bitstamp.ripple_withdrawal:
+    class: AppBundle\API\Bitstamp\PrivateAPI\RippleWithdrawal
+    parent: bitstamp.private_api
+
   bitstamp.sell:
     class: AppBundle\API\Bitstamp\PrivateAPI\Sell
     parent: bitstamp.private_api
