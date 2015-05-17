@@ -22,6 +22,12 @@ task :"phpunit-noslow" do
   puts `#{cmd}`
 end
 
+desc 'Attempt a trade on bitstamp, from Heroku'
+task :"heroku-trade-bitstamp" do
+  cmd = "heroku run 'php app/console trade:bitstamp'"
+  puts `#{cmd}`
+end
+
 desc 'run all tests'
 task :tests => [:phpcs, :phpunit]
 
