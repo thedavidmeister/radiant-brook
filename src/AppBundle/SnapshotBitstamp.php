@@ -49,6 +49,7 @@ class SnapshotBitstamp
      */
     public function persist()
     {
+        // @todo - logging.
         $this->keenio->addEvent(self::EVENT_NAME, $this->state);
     }
 }
