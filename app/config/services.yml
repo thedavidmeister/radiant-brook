@@ -10,7 +10,7 @@ services:
 
   app.snapshot_bitstamp:
     class: AppBundle\SnapshotBitstamp
-    arguments: [@keenio.client, @app.secrets, @bitstamp.balance]
+    arguments: [@keenio.client, @logger, @app.secrets, @bitstamp.balance]
 
   app.command.snapshot_bitstamp:
     class: AppBundle\Command\SnapshotBitstampCommand

@@ -19,9 +19,11 @@ class SnapshotBitstamp
      */
     public function __construct(
     \KeenIO\Client\KeenIOClient $keenio,
+    \Psr\Log\LoggerInterface $logger,
     Secrets $secrets,
     API\Bitstamp\PrivateAPI\Balance $balance)
     {
+        $this->logger = $logger;
         $this->secrets = $secrets;
 
         $this->keenio = $keenio->factory();
@@ -49,7 +51,7 @@ class SnapshotBitstamp
      */
     public function persist()
     {
-        // @todo - logging.
+        $this->logger->info('Persisting state to Keen projectID: ' . $this->secrets->get('keen/projectID'));
         $this->keenio->addEvent(self::EVENT_NAME, $this->state);
     }
 }
