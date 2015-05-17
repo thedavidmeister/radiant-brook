@@ -43,8 +43,9 @@ abstract class APITest extends WebTestCase
             // The default behaviour can just be setting the response status
             // code to whatever the "type" is.
             default:
-              return new Mock([new Response($type)]);
-              break;
+                return new Mock([new Response($type)]);
+                break;
+
         }
     }
 
@@ -58,10 +59,12 @@ abstract class APITest extends WebTestCase
           return new $this->className($this->client($mockType), $this->mockLogger());
     }
 
-    protected function mockLogger() {
+    protected function mockLogger()
+    {
         $logger = $this
             ->getMockBuilder('\Psr\Log\LoggerInterface')
             ->getMock();
+
         return $logger;
     }
 
@@ -94,10 +97,15 @@ abstract class APITest extends WebTestCase
         return $new;
     }
 
-    public function badResponseCodes() {
+    /**
+     * Data provider for testResponseErrorHandling.
+     * @return array
+     */
+    public function badResponseCodes()
+    {
         // Everything that is not a 200 is "bad" because we want to be very
         // careful when dealing with remote API weirdness.
-        // http://en.wikipedia.org/wiki/List_of_HTTP_status_codes
+        // @see http://en.wikipedia.org/wiki/List_of_HTTP_status_codes
         return [
             // 100 Continue.
             [100],
@@ -259,11 +267,15 @@ abstract class APITest extends WebTestCase
      * Tests that we can spot obvious errors in the API responses.
      *
      * @dataProvider badResponseCodes
+     *
+     * @param int $responseCode
+     *   The response code to test.
      */
-    public function testResponseErrorHandling($responseCode) {
+    public function testResponseErrorHandling($responseCode)
+    {
         $this->setExpectedExceptionRegExp(
-          'Exception',
-          '/^Server error response|^Client error response|^Bitstamp response was not a 200/'
+            'Exception',
+            '/^Server error response|^Client error response|^Bitstamp response was not a 200/'
         );
         $class = $this->getClass($responseCode);
         $class->execute();
