@@ -10,6 +10,12 @@ class SnapshotBitstamp
 
     const EVENT_NAME = 'bitstamp_balance';
 
+    const PROJECT_ID_SECRET_NAME = 'KEEN_PROJECT_ID';
+
+    const WRITE_KEY_SECRET_NAME = 'KEEN_WRITE_KEY';
+
+    const READ_KEY_SECRET_NAME = 'KEEN_READ_KEY';
+
     /**
      * Constructor for DI.
      *
@@ -29,9 +35,9 @@ class SnapshotBitstamp
 
         $this->keenio = $keenio->factory();
         // Initialise the secrets for Keen.
-        $this->keenio->setProjectID($this->secrets->get('KEEN_PROJECT_ID'));
-        $this->keenio->setWriteKey($this->secrets->get('KEEN_WRITE_KEY'));
-        $this->keenio->setReadKey($this->secrets->get('KEEN_READ_KEY'));
+        $this->keenio->setProjectID($this->secrets->get(self::PROJECT_ID_SECRET_NAME));
+        $this->keenio->setWriteKey($this->secrets->get(self::WRITE_KEY_SECRET_NAME));
+        $this->keenio->setReadKey($this->secrets->get(self::READ_KEY_SECRET_NAME));
 
         $this->balance = $balance;
     }
@@ -52,7 +58,7 @@ class SnapshotBitstamp
      */
     public function persist()
     {
-        $this->logger->info('Persisting state to Keen projectID: ' . $this->secrets->get('keen/projectID'));
+        $this->logger->info('Persisting state to Keen IO', ['projectID' => $this->secrets->get(self::PROJECT_ID_SECRET_NAME)]);
         $this->keenio->addEvent(self::EVENT_NAME, $this->state);
     }
 }
