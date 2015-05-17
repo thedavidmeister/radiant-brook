@@ -176,8 +176,8 @@ abstract class API implements APIInterface
             throw $e;
         }
 
-        $logData = $this->logFullResponse ? $data : '-- This enpoint does not have full response logging enabled --';
-        $this->logger->info('Response from ' . $this->endpoint, ['data' => $logData]);
+        $logData = $this->logFullResponse ? $data : '-- This endpoint does not have full response logging enabled --';
+        $this->logger->info('Response from ' . $this->endpoint(), ['data' => $logData]);
 
         $this->datetime(new \DateTime());
 
