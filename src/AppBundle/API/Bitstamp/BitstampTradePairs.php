@@ -356,6 +356,7 @@ class BitstampTradePairs
 
             $this->logger->info('Trade pairs executed');
         } else {
+            // @todo - log the reasons?
             $e = new \Exception('It is not safe to execute a trade pair at this time.');
             $this->logger->error('It is not safe to execute a trade pair at this time.', ['exception' => $e]);
             throw $e;
