@@ -5,6 +5,19 @@ parameters:
 
 services:
 
+  keenio.client:
+    class: KeenIO\Client\KeenIOClient
+
+  app.snapshot_bitstamp:
+    class: AppBundle\SnapshotBitstamp
+    arguments: [@keenio.client, @app.secrets, @bitstamp.balance]
+
+  app.command.snapshot_bitstamp:
+    class: AppBundle\Command\SnapshotBitstampCommand
+    arguments: [@app.snapshot_bitstamp]
+    tags:
+        -  { name: console.command }
+
   app.secrets:
     class: AppBundle\Secrets
 
