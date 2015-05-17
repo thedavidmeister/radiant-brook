@@ -14,6 +14,7 @@ class SnapshotBitstamp
      * Constructor for DI.
      *
      * @param \KeenIO\Client\KeenIOClient     $keenio
+     * @param \Psr\Log\LoggerInterface        $logger
      * @param Secrets                         $secrets
      * @param API\Bitstamp\PrivateAPI\Balance $balance
      */
