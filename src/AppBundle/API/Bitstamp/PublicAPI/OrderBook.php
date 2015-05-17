@@ -18,6 +18,8 @@ class OrderBook extends PublicAPI
 
     protected $asklist;
 
+    protected $logFullResponse = false;
+
     /**
      * Gets an OrderList for the order book bids.
      *

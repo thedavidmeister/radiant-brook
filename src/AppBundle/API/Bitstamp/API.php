@@ -33,6 +33,11 @@ abstract class API implements APIInterface
     // Parameters storage.
     protected $params = [];
 
+    // If set to true, the full JSON response will be logged during execute().
+    // This is impractical for some endpoints, such as logging full OrderBook
+    // info, which is huge, so we expose a way to disable this behaviour.
+    protected $logFullResponse = true;
+
     /**
      * Constructor.
      *
@@ -170,7 +175,9 @@ abstract class API implements APIInterface
             $this->logger->error('Bitstamp error' . ['exception' => $e]);
             throw $e;
         }
-        $this->logger->info('Response', ['data' => $data]);
+
+        $logData = $this->logFullResponse ? $data : '-- This enpoint does not have full response logging enabled --';
+        $this->logger->info('Response from ' . $this->endpoint, ['data' => $logData]);
 
         $this->datetime(new \DateTime());
 
