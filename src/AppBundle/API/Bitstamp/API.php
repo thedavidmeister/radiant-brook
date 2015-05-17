@@ -34,6 +34,21 @@ abstract class API implements APIInterface
     protected $params = [];
 
     /**
+     * Constructor.
+     *
+     * @param Client $client
+     *   A Guzzle compatible HTTP client.
+     *
+     * @param Logger $logger
+     *   A PSR3 compatible Logger.
+     */
+    public function __construct(Client $client, \Psr\Log\LoggerInterface $logger)
+    {
+        $this->client = $client;
+        $this->logger = $logger;
+    }
+
+    /**
      * Returns an array of required parameter keys that must be set.
      *
      * $this->execute() will always fail until the required parameters have been
@@ -151,8 +166,11 @@ abstract class API implements APIInterface
 
         // @todo - add logging!
         if (!empty($data['error'])) {
-            throw new \Exception('Bitstamp error: ' . $data['error']);
+            $e = new \Exception('Bitstamp error: ' . $data['error']);
+            $this->logger->error('Bitstamp error' . ['exception' => $e]);
+            throw $e;
         }
+        $this->logger->info('Response', ['data' => $data]);
 
         $this->datetime(new \DateTime());
 
@@ -205,17 +223,6 @@ abstract class API implements APIInterface
         }
 
         return $this->datetime;
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param Client $client
-     *   A Guzzle compatible HTTP client.
-     */
-    public function __construct(Client $client)
-    {
-        $this->client = $client;
     }
 
     /**
