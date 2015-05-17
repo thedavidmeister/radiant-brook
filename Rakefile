@@ -10,9 +10,15 @@ task :phpcbf do
   puts `#{cmd}`
 end
 
-desc 'run phpunit tests'
+desc 'run phpunit tests including functional tests'
 task :phpunit do
-  cmd = "bin/phpunit -c app/ --coverage-html coverage"
+  cmd = "bin/phpunit -c app/"
+  puts `#{cmd}`
+end
+
+desc 'run phpunit unit tests and create coverage report'
+task :"phpunit-coverage" do
+  cmd = "bin/phpunit -c app/ --exclude-group functional --coverage-html coverage"
   puts `#{cmd}`
 end
 
