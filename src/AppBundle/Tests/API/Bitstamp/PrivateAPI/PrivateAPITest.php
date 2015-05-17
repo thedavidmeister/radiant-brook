@@ -56,24 +56,6 @@ abstract class PrivateAPITest extends APITest
     }
 
     /**
-     * Test mocks of the data() method.
-     */
-    public function testExecute()
-    {
-        $class = $this->getClass();
-
-        // Guzzle uses the json_decode() method of PHP and uses arrays rather than
-        // stdClass objects for objects.
-        $expected = $this->objectToArrayRecursive(json_decode($this->sample));
-        $this->assertSame($expected, $class->execute());
-
-        // execute() has no internal cache, unlike data(). We should see fresh
-        // samples every time.
-        $expected2 = $this->objectToArrayRecursive(json_decode($this->sample2));
-        $this->assertSame($expected2, $class->execute());
-    }
-
-    /**
      * Returns an API object from $this->className with Mocks preconfigured.
      *
      * PrivateAPI needs to mock an authenticator as well as a client.
@@ -82,11 +64,11 @@ abstract class PrivateAPITest extends APITest
      */
     protected function getClass()
     {
-          $class = new $this->className($this->client(), $this->getMockAuthenticator());
-          if (isset($this->requiredParamsFixture)) {
-              $class->setParams($this->requiredParamsFixture);
-          }
+        $class = new $this->className($this->client(), $this->getMockAuthenticator());
+        if (isset($this->requiredParamsFixture)) {
+            $class->setParams($this->requiredParamsFixture);
+        }
 
-          return $class;
+        return $class;
     }
 }

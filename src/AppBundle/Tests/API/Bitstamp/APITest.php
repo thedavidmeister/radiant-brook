@@ -87,6 +87,25 @@ abstract class APITest extends WebTestCase
     }
 
     /**
+     * Test mocks of the execute() method.
+     */
+    public function testExecute()
+    {
+        $class = $this->getClass();
+
+        // Guzzle uses the json_decode() method of PHP and uses arrays rather than
+        // stdClass objects for objects.
+        $expected = $this->objectToArrayRecursive(json_decode($this->sample));
+        $this->assertSame($expected, $class->execute());
+
+        // execute() has no internal cache, unlike data(). We should see fresh
+        // samples every time.
+        $expected2 = $this->objectToArrayRecursive(json_decode($this->sample2));
+        $this->assertSame($expected2, $class->execute());
+    }
+
+
+    /**
      * Test mocks of the data() method.
      */
     public function testData()

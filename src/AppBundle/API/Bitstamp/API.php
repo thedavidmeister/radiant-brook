@@ -27,6 +27,166 @@ abstract class API implements APIInterface
     // The DateTime of the last API call.
     protected $datetime;
 
+    // Storage for data().
+    protected $data;
+
+    // Parameters storage.
+    protected $params = [];
+
+    /**
+     * Returns an array of required parameter keys that must be set.
+     *
+     * $this->execute() will always fail until the required parameters have been
+     * set via $this->setParam().
+     *
+     * @return array
+     *   An array of parameter keys that must be set.
+     */
+    public function requiredParams()
+    {
+        return [];
+    }
+
+    /**
+     * Set multiple parameters from an array.
+     *
+     * @param array $array
+     *   An associative array of parameters to set.
+     *
+     * @return PrivateAPI
+     *   Returns the PrivateAPI object to facilitate method chaining.
+     */
+    public function setParams(array $array)
+    {
+        foreach ((array) $array as $key => $value) {
+            $this->setParam($key, $value);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Sets a parameter in simple key/value format.
+     *
+     * @see $this->validateParam()
+     *
+     * @param string $key
+     *   The parameter to set.
+     *
+     * @param mixed  $value
+     *   The value to set for this parameter.
+     *
+     * @return PrivateBitstampAPI
+     *   $this
+     */
+    public function setParam($key, $value)
+    {
+        $this->validateParam($key, $value);
+        $this->params[$key] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Throws exceptions for parameters that fail validation.
+     *
+     * @see $this->setParam().
+     *
+     * @param  string $key
+     *   The parameter to validate.
+     *
+     * @param  mixed $value
+     *   The value of the parameter being validated.
+     *
+     * @return null
+     *   Don't return anything, just throw exceptions for anything that fails.
+     */
+    protected function validateParam($key, $value)
+    {
+        // Throw exceptions for invalid parameters in child implementations.
+    }
+
+    /**
+     * Send a request to the endpoint and return the Guzzle HTTPClient Response.
+     */
+    protected function sendRequest()
+    {
+        // Return a Guzzle Response object from something like $client->post()
+        // or $client->get().
+    }
+
+    /**
+     * Returns previously set parameters.
+     *
+     * @return array
+     *   The previously set parameters.
+     */
+    public function getParams()
+    {
+        return $this->params;
+    }
+
+    protected function ensureRequiredParams()
+    {
+        foreach ($this->requiredParams() as $required) {
+            if (!isset($this->params[$required])) {
+                throw new \Exception('Required parameter ' . $required . ' must be sent for endpoint ' . $this->endpoint());
+            }
+        }
+    }
+
+    /**
+     * Validates, executes and logs the remote API call.
+     *
+     * @return array
+     *   A PHP array of data, as JSON decoded by Guzzle.
+     */
+    public function execute()
+    {
+        $this->ensureRequiredParams();
+
+        $response = $this->sendRequest();
+
+        $data = $response->json();
+
+        // @todo - add logging!
+        if (!empty($data['error'])) {
+            throw new \Exception('Bitstamp error: ' . $data['error']);
+        }
+
+        $this->datetime(new \DateTime());
+
+        return $data;
+    }
+
+    /**
+     * Thin wrapper around execute() to mirror public Bitstamp API class.
+     *
+     * Usage of this function does not make sense for all private API endpoints.
+     * Use execute() directly if attempting to achieve something with a side
+     * effect as data() ONLY calls execute() if it has NOT already been called
+     * by data().
+     *
+     * i.e. data() caches the result of the last call to data() and stops
+     * using execute().
+     *
+     * This is good for performance and avoiding spamming Bitstamp for private
+     * endpoints that are read-only.
+     *
+     * This is terrible for any endpoint that needs to write to Bitstamp.
+     *
+     * @return array
+     *   Data from execution cast to an array.
+     */
+    public function data()
+    {
+        if (!isset($this->data)) {
+            $this->data = $this->execute();
+        }
+
+        return (array) $this->data;
+    }
+
     /**
      * Returns the DateTime of the most recent execution.
      *

@@ -9,27 +9,11 @@ use AppBundle\API\Bitstamp\API;
  */
 abstract class PublicAPI extends API
 {
-
-    protected $data;
-
     /**
-     * Gets data from the public Bitstamp API endpoint.
-     *
-     * Bitstamp data is provided in JSON format, we decode it and statically
-     * cache it for the current request.
-     *
-     * @return mixed
-     *   The decoded data from Bitstamp.
+     * {@inheritdoc}
      */
-    public function data()
+    public function sendRequest()
     {
-        if (!isset($this->data)) {
-            $this->datetime(new \DateTime());
-            $this->data = $this->client->get($this->url())->json();
-        }
-
-        // @todo - add logging!
-        return $this->data;
+        return $this->client->get($this->url(), ['query' => $this->getParams()]);
     }
-
 }
