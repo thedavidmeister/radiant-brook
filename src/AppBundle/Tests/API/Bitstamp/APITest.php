@@ -355,8 +355,8 @@ abstract class APITest extends WebTestCase
         $this->assertSame($class->datetime(), null);
 
         // Trigger an API call that should update the internal DateTime.
-        $now = new \DateTime();
         $class->data();
+        $now = new \DateTime();
         $this->assertSame($class->datetime()->format('U'), $now->format('U'));
 
         // Even after a second, and a new data call, datetime should not change as
