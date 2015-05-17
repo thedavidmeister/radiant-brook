@@ -28,6 +28,12 @@ task :"heroku-trade-bitstamp" do
   puts `#{cmd}`
 end
 
+desc 'Take a snapshot of bitstamp data, from Heroku'
+task :"heroku-snapshot-bitstamp" do
+  cmd = "heroku run 'php app/console snapshot:bitstamp'"
+  puts `#{cmd}`
+end
+
 desc 'run all tests'
 task :tests => [:phpcs, :phpunit]
 
