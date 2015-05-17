@@ -12,7 +12,7 @@ end
 
 desc 'run phpunit tests'
 task :phpunit do
-  cmd = "bin/phpunit -c app/"
+  cmd = "bin/phpunit -c app/ --coverage-html coverage"
   puts `#{cmd}`
 end
 
