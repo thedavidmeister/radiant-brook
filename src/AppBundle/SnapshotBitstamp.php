@@ -29,9 +29,9 @@ class SnapshotBitstamp
 
         $this->keenio = $keenio->factory();
         // Initialise the secrets for Keen.
-        $this->keenio->setProjectID($this->secrets->get('keen/projectID'));
-        $this->keenio->setWriteKey($this->secrets->get('keen/writeKey'));
-        $this->keenio->setReadKey($this->secrets->get('keen/readKey'));
+        $this->keenio->setProjectID($this->secrets->get('KEEN_PROJECT_ID'));
+        $this->keenio->setWriteKey($this->secrets->get('KEEN_WRITE_KEY'));
+        $this->keenio->setReadKey($this->secrets->get('KEEN_READ_KEY'));
 
         $this->balance = $balance;
     }
