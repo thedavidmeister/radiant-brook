@@ -34,6 +34,19 @@ class DefaultController extends Controller
     }
 
     /**
+     * Just a blank index page.
+     *
+     * @Route("/", name="index")
+     *
+     * @return Response
+     */
+    public function indexAction()
+    {
+        // Just renders nothing.
+        return $this->render('base.html.twig');
+    }
+
+    /**
      * Calculates summary statistics for the current order book.
      *
      * @Route("trade/order_book", name="order_book")
