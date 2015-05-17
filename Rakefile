@@ -12,13 +12,13 @@ end
 
 desc 'run phpunit tests'
 task :phpunit do
-  cmd = "phpunit -c app/"
+  cmd = "bin/phpunit -c app/"
   puts `#{cmd}`
 end
 
 desc 'run phpunit tests excluding livedata tests'
 task :"phpunit-noslow" do
-  cmd = "phpunit -c app/ --exclude-group slow"
+  cmd = "bin/phpunit -c app/ --exclude-group slow"
   puts `#{cmd}`
 end
 

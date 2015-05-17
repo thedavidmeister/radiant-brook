@@ -21,7 +21,7 @@ abstract class PrivateAPITest extends APITest
      *
      * @return PrivateAPIAuthenticator
      */
-    public function getMockAuthenticator()
+    public function mockAuthenticator()
     {
         $authenticator = $this
         ->getMockBuilder('\AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator')
@@ -47,7 +47,7 @@ abstract class PrivateAPITest extends APITest
         // Trigger an execute to test what is being sent off.
         $class->execute();
 
-        $lastRequest = $this->history->getLastRequest();
+        $lastRequest = $class->client->history->getLastRequest();
 
         // All the authentication params should match our mock.
         $this->assertSame($lastRequest->getBody()->getField('key'), 'foo');
@@ -62,9 +62,9 @@ abstract class PrivateAPITest extends APITest
      *
      * @return mixed
      */
-    protected function getClass()
+    protected function getClass($mockType = self::DEFAULT_MOCK_TYPE)
     {
-        $class = new $this->className($this->client(), $this->getMockAuthenticator());
+        $class = new $this->className($this->client($mockType), $this->mockLogger(), $this->mockAuthenticator());
         if (isset($this->requiredParamsFixture)) {
             $class->setParams($this->requiredParamsFixture);
         }

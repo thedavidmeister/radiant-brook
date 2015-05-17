@@ -26,7 +26,8 @@
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
-        "leaphub/phpcs-symfony2-standard": "~2.0.0"
+        "leaphub/phpcs-symfony2-standard": "~2.0.0",
+        "phpunit/phpunit": "4.6.*"
     },
     "scripts": {
         "post-root-package-install": [

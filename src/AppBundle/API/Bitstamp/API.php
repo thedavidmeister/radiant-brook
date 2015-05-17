@@ -22,7 +22,9 @@ abstract class API implements APIInterface
      */
     const ENDPOINT = '***';
 
-    protected $client;
+    // The client is public for ease of Unit Testing ONLY.
+    // Bad Things will happen if you mess with it directly in production code.
+    public $client;
 
     // The DateTime of the last API call.
     protected $datetime;
@@ -165,9 +167,14 @@ abstract class API implements APIInterface
 
         $response = $this->sendRequest();
 
+        if ($response->getStatusCode() !== 200) {
+            $e = new \Exception('Bitstamp response was not a 200');
+            $this->logger->error('Bitstamp response was not a 200', ['response' => $response->getStatusCode()]);
+            throw $e;
+        }
+
         $data = $response->json();
 
-        // @todo - add logging!
         if (!empty($data['error'])) {
             $e = new \Exception('Bitstamp error: ' . $data['error']);
             $this->logger->error('Bitstamp error', ['data' => $data, 'exception' => $e]);
