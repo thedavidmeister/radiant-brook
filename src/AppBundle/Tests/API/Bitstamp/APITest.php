@@ -29,6 +29,22 @@ abstract class APITest extends WebTestCase
     }
 
     /**
+     * Test basic setters and getters for parameters.
+     */
+    public function testParams()
+    {
+        $class = $this->getClass();
+        $testParams = ['foo' => 'bar', 'one' => 'two'];
+        $class->setParams($testParams);
+        $this->assertSame($testParams, array_intersect($testParams, $class->getParams()));
+        $this->assertSame($class->getParam('foo'), 'bar');
+
+        $class->setParam('this', 'that');
+        $this->assertSame($class->getParam('this'), 'that');
+        $this->assertSame($class->getParams()['this'], 'that');
+    }
+
+    /**
      * Tests that we can pickup a Bitstamp "error".
      *
      * @expectedException Exception

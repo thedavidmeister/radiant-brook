@@ -150,6 +150,20 @@ class API implements APIInterface
         return $this->params;
     }
 
+    /**
+     * Returns a single previously set parameter.
+     *
+     * @param string $key
+     *   The name of the parameter to get.
+     *
+     * @return mixed
+     *   A previously set parameter.
+     */
+    public function getParam($key)
+    {
+        return $this->params[$key];
+    }
+
     protected function ensureRequiredParams()
     {
         foreach ($this->requiredParams() as $required) {
