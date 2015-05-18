@@ -40,6 +40,12 @@ abstract class APITest extends WebTestCase
                 ]);
                 break;
 
+            case 'error':
+              return new Mock([
+                new Response(200, [], Stream::factory('{"error":"Bitstamp likes to report errors as 200"}')),
+              ]);
+              break;
+
             // The default behaviour can just be setting the response status
             // code to whatever the "type" is.
             default:
@@ -95,6 +101,17 @@ abstract class APITest extends WebTestCase
         }
 
         return $new;
+    }
+
+    /**
+     * Tests that we can pickup a Bitstamp "error".
+     *
+     * @expectedException Exception
+     * @expectedExceptionMessage Bitstamp error: Bitstamp likes to report errors as 200
+     */
+    public function testBitstampError() {
+        $class = $this->getClass('error');
+        $class->execute();
     }
 
     /**
