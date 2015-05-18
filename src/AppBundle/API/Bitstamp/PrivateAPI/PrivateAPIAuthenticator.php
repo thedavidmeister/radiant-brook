@@ -82,7 +82,13 @@ class PrivateAPIAuthenticator
     /**
      * Ensures the HMAC signature is set as per Bitstamp API docs.
      *
+     * Signature is a HMAC-SHA256 encoded message containing: nonce, client ID
+     * and API key. The HMAC-SHA256 code must be generated using a secret key
+     * that was generated with your API key. This code must be converted to it's
+     * hexadecimal representation (64 uppercase characters).
+     *
      * @see $this->nonce()
+     * @see https://www.bitstamp.net/api/
      *
      * @return string
      *   An HMAC signature as per the Bitstamp API docs.

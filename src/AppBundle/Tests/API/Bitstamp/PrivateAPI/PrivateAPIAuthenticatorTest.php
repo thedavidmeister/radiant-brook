@@ -32,19 +32,13 @@ class PrivateAPIAuthenticatorTest extends WebTestCase
     }
 
     /**
-   * Signature is a HMAC-SHA256 encoded message containing: nonce, client ID and
-   * API key. The HMAC-SHA256 code must be generated using a secret key that was
-   * generated with your API key. This code must be converted to it's
-   * hexadecimal representation (64 uppercase characters).
-   *
-   * @see https://www.bitstamp.net/api/
-   *
-   * @param  int $nonce  [description]
-   * @param  [type] $id     [description]
-   * @param  [type] $key    [description]
-   * @param  [type] $secret [description]
-   * @return [type]         [description]
-   */
+     * Procedural version of the signature generation to check against.
+     * @param  int $nonce
+     * @param  string $id
+     * @param  string $key
+     * @param  string $secret
+     * @return string
+     */
     protected function signature($nonce, $id, $key, $secret)
     {
         $data = $nonce . $id . $key;
