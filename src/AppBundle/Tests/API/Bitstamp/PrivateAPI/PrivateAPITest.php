@@ -60,7 +60,8 @@ abstract class PrivateAPITest extends APITest
      *
      * @return array
      */
-    public function dataAuthenticationParamsExceptions() {
+    public function dataAuthenticationParamsExceptions()
+    {
         return [
           ['key', 'foo'],
           ['signature', 'foo'],
@@ -79,10 +80,11 @@ abstract class PrivateAPITest extends APITest
      * @param  string $key
      *   The name of the parameter to test.
      *
-     * @param  mixed $value
+     * @param  mixed  $value
      *   The value of the parameter to test.
      */
-    public function testAuthenticationParamsExceptions($key, $value) {
+    public function testAuthenticationParamsExceptions($key, $value)
+    {
         $class = $this->getClass();
 
         $class->setParam($key, $value);
@@ -95,7 +97,7 @@ abstract class PrivateAPITest extends APITest
      *
      * @return mixed
      */
-    protected function getClass($mockType = self::DEFAULT_MOCK_TYPE)
+    protected function getClass($mockType = null)
     {
         $class = new $this->className($this->client($mockType), $this->mockLogger(), $this->mockAuthenticator());
         if (isset($this->requiredParamsFixture)) {

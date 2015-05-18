@@ -8,7 +8,7 @@ use GuzzleHttp\Client;
 /**
  * Implements APIInterface for Bitstamp.
  */
-abstract class API implements APIInterface
+class API implements APIInterface
 {
     /**
      * The domain of the Bitstamp API.
@@ -124,6 +124,9 @@ abstract class API implements APIInterface
     protected function validateParam($key, $value)
     {
         // Throw exceptions for invalid parameters in child implementations.
+        if ($key === 'foobar' && $value === 'bazbing') {
+            throw new \Exception('Parmeter foobar cannot be set to bazbing.');
+        }
     }
 
     /**
@@ -132,7 +135,8 @@ abstract class API implements APIInterface
     protected function sendRequest()
     {
         // Return a Guzzle Response object from something like $client->post()
-        // or $client->get().
+        // or $client->get(). The default is just a simple GET with params.
+        return $this->client->get($this->url(), ['query' => $this->getParams()]);
     }
 
     /**

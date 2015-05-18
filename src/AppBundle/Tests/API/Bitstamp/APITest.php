@@ -2,12 +2,8 @@
 
 namespace AppBundle\Tests\API\Bitstamp;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Subscriber\Mock;
-use GuzzleHttp\Subscriber\History;
-use GuzzleHttp\Message\Response;
-use GuzzleHttp\Stream\Stream;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use AppBundle\Tests\GuzzleTestTrait;
 
 /**
  * Standard tests that can be run on all public API classes.
@@ -19,88 +15,17 @@ abstract class APITest extends WebTestCase
 
     // These properties must be set on child classes.
     protected $endpoint;
-    protected $sample;
-    protected $sample2;
-    protected $history;
 
-    const DEFAULT_MOCK_TYPE = 200;
-
-    /**
-     * Convert the samples into a Guzzle Mock.
-     *
-     * @return Mock
-     */
-    protected function mock($type)
-    {
-        switch ($type) {
-            case 200:
-                return new Mock([
-                    new Response(200, [], Stream::factory($this->sample)),
-                    new Response(200, [], Stream::factory($this->sample2)),
-                ]);
-                break;
-
-            case 'error':
-              return new Mock([
-                new Response(200, [], Stream::factory('{"error":"Bitstamp likes to report errors as 200"}')),
-              ]);
-              break;
-
-            // The default behaviour can just be setting the response status
-            // code to whatever the "type" is.
-            default:
-                return new Mock([new Response($type)]);
-                break;
-
-        }
-    }
+    use GuzzleTestTrait;
 
     /**
      * Returns an API object from $this->className with Mocks preconfigured.
      *
      * @return mixed
      */
-    protected function getClass($mockType = self::DEFAULT_MOCK_TYPE)
+    protected function getClass($mockType = null)
     {
           return new $this->className($this->client($mockType), $this->mockLogger());
-    }
-
-    protected function mockLogger()
-    {
-        $logger = $this
-            ->getMockBuilder('\Psr\Log\LoggerInterface')
-            ->getMock();
-
-        return $logger;
-    }
-
-    protected function client($mockType = self::DEFAULT_MOCK_TYPE)
-    {
-        $client = new Client();
-        $client->history = new History();
-
-        // Add the mock subscriber to the client.
-        $client->getEmitter()->attach($this->mock($mockType));
-        $client->getEmitter()->attach($client->history);
-
-        return $client;
-    }
-
-    protected function objectToArrayRecursive($obj)
-    {
-        if (is_object($obj)) {
-            $obj = (array) $obj;
-        }
-        if (is_array($obj)) {
-            $new = array();
-            foreach ($obj as $key => $val) {
-                $new[$key] = $this->objectToArrayRecursive($val);
-            }
-        } else {
-            $new = $obj;
-        }
-
-        return $new;
     }
 
     /**
@@ -109,7 +34,8 @@ abstract class APITest extends WebTestCase
      * @expectedException Exception
      * @expectedExceptionMessage Bitstamp error: Bitstamp likes to report errors as 200
      */
-    public function testBitstampError() {
+    public function testBitstampError()
+    {
         $class = $this->getClass('error');
         $class->execute();
     }

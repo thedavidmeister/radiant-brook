@@ -9,11 +9,5 @@ use AppBundle\API\Bitstamp\API;
  */
 abstract class PublicAPI extends API
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function sendRequest()
-    {
-        return $this->client->get($this->url(), ['query' => $this->getParams()]);
-    }
+
 }
