@@ -56,6 +56,39 @@ abstract class PrivateAPITest extends APITest
     }
 
     /**
+     * Data provider for testAuthenticationParamsExceptions().
+     *
+     * @return array
+     */
+    public function dataAuthenticationParamsExceptions() {
+        return [
+          ['key', 'foo'],
+          ['signature', 'foo'],
+          ['nonce', 'foo'],
+        ];
+    }
+
+    /**
+     * Test that parameters reserved for authentication throw exceptions.
+     *
+     * @dataProvider dataAuthenticationParamsExceptions
+     *
+     * @expectedException Exception
+     * @expectedExceptionMessage You cannot directly set authentication parameters
+     *
+     * @param  string $key
+     *   The name of the parameter to test.
+     *
+     * @param  mixed $value
+     *   The value of the parameter to test.
+     */
+    public function testAuthenticationParamsExceptions($key, $value) {
+        $class = $this->getClass();
+
+        $class->setParam($key, $value);
+    }
+
+    /**
      * Returns an API object from $this->className with Mocks preconfigured.
      *
      * PrivateAPI needs to mock an authenticator as well as a client.
