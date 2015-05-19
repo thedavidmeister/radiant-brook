@@ -2,12 +2,21 @@
 
 namespace AppBundle\API\Bitstamp;
 
+use AppBundle\MoneyFromString;
+use Money\Money;
+
 /**
  * Wraps a list of orders provided by Bitstamp to handle some basic statistics.
  */
 class OrderList
 {
     protected $data;
+
+    const USD_PRICE_DATUM_INDEX = 0;
+    const USD_PRICE_KEY = 'usd';
+
+    const BTC_AMOUNT_DATUM_INDEX = 1;
+    const BTC_AMOUNT_KEY = 'btc';
 
     /**
      * Constructor.
@@ -18,7 +27,14 @@ class OrderList
      */
     public function __construct($data)
     {
-        $this->data = $data;
+        $this->data = [];
+        foreach ($data as $datum) {
+
+            $this->data[] = [
+                self::USD_PRICE_KEY => MoneyFromString::USD($datum[self::USD_PRICE_DATUM_INDEX]),
+                self::BTC_AMOUNT_KEY => MoneyFromString::BTC($datum[self::BTC_AMOUNT_DATUM_INDEX]),
+            ];
+        }
     }
 
     /**
@@ -40,11 +56,11 @@ class OrderList
     protected function sortAsc()
     {
         usort($this->data, function($a, $b) {
-            if ($a[0] == $b[0]) {
+            if ($a[self::USD_PRICE_KEY] == $b[self::USD_PRICE_KEY]) {
                 return 0;
             }
 
-            return $a[0] < $b[0] ? -1 : 1;
+            return $a[self::USD_PRICE_KEY] < $b[self::USD_PRICE_KEY] ? -1 : 1;
         });
     }
 
@@ -54,11 +70,11 @@ class OrderList
     protected function sortDesc()
     {
         usort($this->data, function($a, $b) {
-            if ($a[0] == $b[0]) {
+            if ($a[self::USD_PRICE_KEY] == $b[self::USD_PRICE_KEY]) {
                 return 0;
             }
 
-            return $a[0] > $b[0] ? -1 : 1;
+            return $a[self::USD_PRICE_KEY] > $b[self::USD_PRICE_KEY] ? -1 : 1;
         });
     }
 
@@ -81,7 +97,7 @@ class OrderList
 
         $sum = 0;
         foreach ($this->data as $datum) {
-            $sum += $datum[1];
+            $sum += $datum[self::BTC_AMOUNT_DATUM_INDEX];
             if ($index <= $sum) {
                 return $datum;
             }
@@ -98,7 +114,7 @@ class OrderList
     {
         $this->sortAsc();
 
-        return $this->data[0];
+        return reset($this->data);
     }
 
     /**
@@ -111,7 +127,7 @@ class OrderList
     {
         $this->sortDesc();
 
-        return $this->data[0];
+        return reset($this->data);
     }
 
     /**
@@ -122,9 +138,9 @@ class OrderList
      */
     public function totalVolume()
     {
-        $sum = 0;
+        $sum = Money::BTC(0);
         foreach ($this->data as $datum) {
-            $sum += $datum[1];
+            $sum = $sum->add($datum[self::BTC_AMOUNT_KEY]);
         }
 
         return $sum;
