@@ -13,10 +13,10 @@ class OrderList
     protected $data;
 
     const USD_PRICE_DATUM_INDEX = 0;
-    const USD_PRICE_KEY = 'usd';
+    const USD_KEY = 'usd';
 
     const BTC_AMOUNT_DATUM_INDEX = 1;
-    const BTC_AMOUNT_KEY = 'btc';
+    const BTC_KEY = 'btc';
 
     /**
      * Constructor.
@@ -31,8 +31,8 @@ class OrderList
         foreach ($data as $datum) {
 
             $this->data[] = [
-                self::USD_PRICE_KEY => MoneyFromString::USD($datum[self::USD_PRICE_DATUM_INDEX]),
-                self::BTC_AMOUNT_KEY => MoneyFromString::BTC($datum[self::BTC_AMOUNT_DATUM_INDEX]),
+                self::USD_KEY => MoneyFromString::USD($datum[self::USD_PRICE_DATUM_INDEX]),
+                self::BTC_KEY => MoneyFromString::BTC($datum[self::BTC_AMOUNT_DATUM_INDEX]),
             ];
         }
     }
@@ -56,11 +56,11 @@ class OrderList
     protected function sortAsc()
     {
         usort($this->data, function($a, $b) {
-            if ($a[self::USD_PRICE_KEY] == $b[self::USD_PRICE_KEY]) {
+            if ($a[self::USD_KEY] == $b[self::USD_KEY]) {
                 return 0;
             }
 
-            return $a[self::USD_PRICE_KEY] < $b[self::USD_PRICE_KEY] ? -1 : 1;
+            return $a[self::USD_KEY] < $b[self::USD_KEY] ? -1 : 1;
         });
     }
 
@@ -70,11 +70,11 @@ class OrderList
     protected function sortDesc()
     {
         usort($this->data, function($a, $b) {
-            if ($a[self::USD_PRICE_KEY] == $b[self::USD_PRICE_KEY]) {
+            if ($a[self::USD_KEY] == $b[self::USD_KEY]) {
                 return 0;
             }
 
-            return $a[self::USD_PRICE_KEY] > $b[self::USD_PRICE_KEY] ? -1 : 1;
+            return $a[self::USD_KEY] > $b[self::USD_KEY] ? -1 : 1;
         });
     }
 
@@ -140,7 +140,7 @@ class OrderList
     {
         $sum = Money::BTC(0);
         foreach ($this->data as $datum) {
-            $sum = $sum->add($datum[self::BTC_AMOUNT_KEY]);
+            $sum = $sum->add($datum[self::BTC_KEY]);
         }
 
         return $sum;
@@ -156,7 +156,7 @@ class OrderList
     {
         $sum = 0;
         foreach ($this->data as $datum) {
-            $sum += $datum[0] * $datum[1];
+            $sum += $datum[self::USD_PRICE_DATUM_INDEX] * $datum[BTC_AMOUNT_DATUM_INDEX];
         }
 
         return $sum;
