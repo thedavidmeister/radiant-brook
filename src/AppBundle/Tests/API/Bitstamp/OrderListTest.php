@@ -52,4 +52,11 @@ class OrderListTest extends WebTestCase
       $this->assertEquals(Money::BTC(8499156061514), $this->bids()->totalVolume());
       $this->assertEquals(Money::BTC(1113579275675), $this->asks()->totalVolume());
     }
+
+    public function testTotalCap() {
+      // Calculated in JS.
+      // https://jsfiddle.net/6nj92xqs/
+      $this->assertEquals(Money::USD(22601007148461281), $this->bids()->totalCap());
+      $this->assertEquals(Money::USD(98288285804508848), $this->asks()->totalCap());
+    }
 }

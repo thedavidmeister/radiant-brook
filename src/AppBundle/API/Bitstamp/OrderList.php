@@ -154,9 +154,9 @@ class OrderList
      */
     public function totalCap()
     {
-        $sum = 0;
+        $sum = Money::USD(0);
         foreach ($this->data as $datum) {
-            $sum += $datum[self::USD_PRICE_DATUM_INDEX] * $datum[BTC_AMOUNT_DATUM_INDEX];
+          $sum = $sum->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
         }
 
         return $sum;
