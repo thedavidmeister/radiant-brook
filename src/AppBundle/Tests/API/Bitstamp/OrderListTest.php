@@ -49,6 +49,7 @@ class OrderListTest extends WebTestCase
 
     public function testTotalVolume() {
       // Calculated in GDrive.
-      $this->assertEquals($this->bids()->totalVolume(), Money::BTC(8499156061514));
+      $this->assertEquals(Money::BTC(8499156061514), $this->bids()->totalVolume());
+      $this->assertEquals(Money::BTC(1113579275675), $this->asks()->totalVolume());
     }
 }
