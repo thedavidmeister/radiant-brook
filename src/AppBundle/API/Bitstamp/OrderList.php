@@ -79,7 +79,26 @@ class OrderList
     }
 
     /**
-     * Calculate a percentile.
+     * Calculate a percentile of the BTC Volume using the "Nearest rank" method.
+     *
+     * To find Holly's grade, we need to do the following steps:
+     *
+     *   1. Multiply the total number of values in the data set by the
+     *      percentile, which will give you the index.
+     *   2. Order all of the values in the data set in ascending order (least to
+     *      greatest).
+     *   3. If the index is a whole number, count the values in the data set
+     *      from least to greatest until you reach the index, then take the
+     *      index and the next greatest number and find the average.
+     *   4. If the index is not a whole number, round the number up, then count
+     *      the values in the data set from least to greatest, until you reach
+     *      the index.
+     *
+     * In this analogy, each satoshi on the market is a "student" and the USD
+     * price is a "grade".
+     *
+     * @see http://study.com/academy/lesson/finding-percentiles-in-a-data-set-formula-examples-quiz.html
+     * @see http://en.wikipedia.org/wiki/Percentile
      *
      * @param float $pc
      *   Float between 0 - 1 represending the percentile.
@@ -87,21 +106,43 @@ class OrderList
      * @return float
      *   The price at the given percentile.
      */
-    public function percentile($pc)
+    public function percentileBTCVolume($pc)
     {
         if ($pc < 0 || $pc > 1) {
             throw new \Exception('Percentage must be between 0 - 1.');
         }
-        $index = $pc * $this->totalVolume();
+        // 1. Calculate the index, rounding up any decimals, which is not how
+        // Money would normally work if we called multiply().
+        $index = Money::BTC((int) ceil($this->totalVolume()->getAmount() * $pc));
+
+        // 2. Order all the values in the set in ascending order.
         $this->sortAsc();
 
-        $sum = 0;
+        // If index is less than the running total of the next datum, return the
+        // current datum.
+        $sum = Money::BTC(0);
         foreach ($this->data as $datum) {
-            $sum += $datum[self::BTC_AMOUNT_DATUM_INDEX];
+            $sum = $sum->add($datum[self::BTC_KEY]);
             if ($index <= $sum) {
-                return $datum;
+                return $datum[self::USD_KEY];
             }
         }
+    }
+
+    /**
+     * Calculates the total BTC Volume of the order list.
+     *
+     * @return Money::BTC
+     *   The total BTC Volume of the order list.
+     */
+    public function totalVolume()
+    {
+        $sum = Money::BTC(0);
+        foreach ($this->data as $datum) {
+            $sum = $sum->add($datum[self::BTC_KEY]);
+        }
+
+        return $sum;
     }
 
     /**
@@ -128,22 +169,6 @@ class OrderList
         $this->sortDesc();
 
         return reset($this->data);
-    }
-
-    /**
-     * Calculates the total BTC Volume of the order list.
-     *
-     * @return float
-     *   The total BTC Volume of the order list.
-     */
-    public function totalVolume()
-    {
-        $sum = Money::BTC(0);
-        foreach ($this->data as $datum) {
-            $sum = $sum->add($datum[self::BTC_KEY]);
-        }
-
-        return $sum;
     }
 
     /**

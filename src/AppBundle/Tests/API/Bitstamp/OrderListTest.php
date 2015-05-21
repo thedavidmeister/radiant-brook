@@ -59,4 +59,59 @@ class OrderListTest extends WebTestCase
       $this->assertEquals(Money::USD(22601007148461281), $this->bids()->totalCap());
       $this->assertEquals(Money::USD(98288285804508848), $this->asks()->totalCap());
     }
+
+    public function testPercentile() {
+      // This is all from a GDrive calculation.
+      $this->assertEquals(Money::USD(1), $this->bids()->percentileBTCVolume(0));
+      $this->assertEquals(Money::USD(1), $this->bids()->percentileBTCVolume(0.001));
+      $this->assertEquals(Money::USD(1), $this->bids()->percentileBTCVolume(0.01));
+      $this->assertEquals(Money::USD(1), $this->bids()->percentileBTCVolume(0.1));
+      $this->assertEquals(Money::USD(1), $this->bids()->percentileBTCVolume(0.2));
+      $this->assertEquals(Money::USD(1), $this->bids()->percentileBTCVolume(0.3));
+      $this->assertEquals(Money::USD(1), $this->bids()->percentileBTCVolume(0.4));
+      $this->assertEquals(Money::USD(1), $this->bids()->percentileBTCVolume(0.5));
+      $this->assertEquals(Money::USD(1), $this->bids()->percentileBTCVolume(0.6));
+      $this->assertEquals(Money::USD(1), $this->bids()->percentileBTCVolume(0.7));
+      $this->assertEquals(Money::USD(2), $this->bids()->percentileBTCVolume(0.75));
+      $this->assertEquals(Money::USD(100), $this->bids()->percentileBTCVolume(0.8));
+      $this->assertEquals(Money::USD(15000), $this->bids()->percentileBTCVolume(0.9));
+      $this->assertEquals(Money::USD(23211), $this->bids()->percentileBTCVolume(0.99));
+      $this->assertEquals(Money::USD(23553), $this->bids()->percentileBTCVolume(0.999));
+      $this->assertEquals(Money::USD(23642), $this->bids()->percentileBTCVolume(1));
+
+      $this->assertEquals(Money::USD(23650), $this->asks()->percentileBTCVolume(0));
+      $this->assertEquals(Money::USD(23677), $this->asks()->percentileBTCVolume(0.001));
+      $this->assertEquals(Money::USD(23687), $this->asks()->percentileBTCVolume(0.01));
+      $this->assertEquals(Money::USD(23949), $this->asks()->percentileBTCVolume(0.1));
+      $this->assertEquals(Money::USD(24500), $this->asks()->percentileBTCVolume(0.2));
+      $this->assertEquals(Money::USD(25000), $this->asks()->percentileBTCVolume(0.3));
+      $this->assertEquals(Money::USD(26212), $this->asks()->percentileBTCVolume(0.4));
+      $this->assertEquals(Money::USD(27400), $this->asks()->percentileBTCVolume(0.5));
+      $this->assertEquals(Money::USD(29440), $this->asks()->percentileBTCVolume(0.6));
+      $this->assertEquals(Money::USD(31000), $this->asks()->percentileBTCVolume(0.7));
+      $this->assertEquals(Money::USD(33000), $this->asks()->percentileBTCVolume(0.75));
+      $this->assertEquals(Money::USD(35519), $this->asks()->percentileBTCVolume(0.8));
+      $this->assertEquals(Money::USD(60000), $this->asks()->percentileBTCVolume(0.9));
+      $this->assertEquals(Money::USD(495000), $this->asks()->percentileBTCVolume(0.99));
+      $this->assertEquals(Money::USD(9999900), $this->asks()->percentileBTCVolume(0.999));
+      $this->assertEquals(Money::USD(9999900), $this->asks()->percentileBTCVolume(1));
+    }
+
+    public function dataPercentileException() {
+      return [
+        ['bids', 1.1],
+        ['bids', -99],
+        ['asks', PHP_INT_MAX],
+        ['asks', -0.001],
+      ];
+    }
+
+    /**
+     * @dataProvider dataPercentileException
+     * @expectedException Exception
+     * @expectedExceptionMessage Percentage must be between 0 - 1.
+     */
+    public function testPercentileException($method, $value) {
+      $this->$method()->percentileBTCVolume($value);
+    }
 }
