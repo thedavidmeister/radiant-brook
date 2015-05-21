@@ -29,7 +29,6 @@ class OrderList
     {
         $this->data = [];
         foreach ($data as $datum) {
-
             $this->data[] = [
                 self::USD_KEY => MoneyFromString::USD($datum[self::USD_PRICE_DATUM_INDEX]),
                 self::BTC_KEY => MoneyFromString::BTC($datum[self::BTC_AMOUNT_DATUM_INDEX]),
@@ -181,7 +180,7 @@ class OrderList
     {
         $sum = Money::USD(0);
         foreach ($this->data as $datum) {
-          $sum = $sum->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
+            $sum = $sum->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
         }
 
         return $sum;
