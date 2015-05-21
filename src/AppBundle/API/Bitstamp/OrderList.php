@@ -188,7 +188,9 @@ class OrderList
     }
 
     /**
-     * Calculates a given percentile of order list capitalisation.
+     * Calculates a given percentile based off order list capitalisation.
+     *
+     * @see percentileBTCVolume()
      *
      * @param float $pc
      *   Percentile to calculate. Must be between 0 - 1.
@@ -196,20 +198,20 @@ class OrderList
      * @return array
      *   The order representing the requested percentile.
      */
-    public function percentCap($pc)
+    public function percentileCap($pc)
     {
         if ($pc < 0 || $pc > 1) {
             throw new \Exception('Percentage must be between 0 - 1.');
         }
 
-        $index = $pc * $this->totalCap();
+        $index = Money::USD((int) ceil($this->totalCap()->getAmount() * $pc));
         $this->sortAsc();
 
-        $sum = 0;
+        $sum = Money::USD(0);
         foreach ($this->data as $datum) {
-            $sum += $datum[0] * $datum[1];
+            $sum = $sum->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
             if ($index <= $sum) {
-                return $datum;
+                return $datum[self::USD_KEY];
             }
         }
     }

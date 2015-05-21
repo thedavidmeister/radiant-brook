@@ -114,4 +114,62 @@ class OrderListTest extends WebTestCase
     public function testPercentileException($method, $value) {
       $this->$method()->percentileBTCVolume($value);
     }
+
+    public function testPercentileCap() {
+      // This is all from a GDrive calculation.
+      $this->assertEquals(Money::USD(1), $this->bids()->percentileCap(0));
+      $this->assertEquals(Money::USD(108), $this->bids()->percentileCap(0.001));
+      $this->assertEquals(Money::USD(4449), $this->bids()->percentileCap(0.01));
+      $this->assertEquals(Money::USD(9000), $this->bids()->percentileCap(0.1));
+      $this->assertEquals(Money::USD(12820), $this->bids()->percentileCap(0.2));
+      $this->assertEquals(Money::USD(16000), $this->bids()->percentileCap(0.3));
+      $this->assertEquals(Money::USD(16892), $this->bids()->percentileCap(0.4));
+      $this->assertEquals(Money::USD(19952), $this->bids()->percentileCap(0.5));
+      $this->assertEquals(Money::USD(20294), $this->bids()->percentileCap(0.6));
+      $this->assertEquals(Money::USD(21514), $this->bids()->percentileCap(0.7));
+      $this->assertEquals(Money::USD(22100), $this->bids()->percentileCap(0.75));
+      $this->assertEquals(Money::USD(22600), $this->bids()->percentileCap(0.8));
+      $this->assertEquals(Money::USD(23173), $this->bids()->percentileCap(0.9));
+      $this->assertEquals(Money::USD(23552), $this->bids()->percentileCap(0.99));
+      $this->assertEquals(Money::USD(23642), $this->bids()->percentileCap(0.999));
+      $this->assertEquals(Money::USD(23642), $this->bids()->percentileCap(1));
+
+      $this->assertEquals(Money::USD(23650), $this->asks()->percentileCap(0));
+      $this->assertEquals(Money::USD(23686), $this->asks()->percentileCap(0.001));
+      $this->assertEquals(Money::USD(23760), $this->asks()->percentileCap(0.01));
+      $this->assertEquals(Money::USD(25569), $this->asks()->percentileCap(0.1));
+      $this->assertEquals(Money::USD(30000), $this->asks()->percentileCap(0.2));
+      $this->assertEquals(Money::USD(60000), $this->asks()->percentileCap(0.3));
+      $this->assertEquals(Money::USD(480000), $this->asks()->percentileCap(0.4));
+      $this->assertEquals(Money::USD(8000000), $this->asks()->percentileCap(0.5));
+      $this->assertEquals(Money::USD(8000000), $this->asks()->percentileCap(0.6));
+      $this->assertEquals(Money::USD(9999800), $this->asks()->percentileCap(0.7));
+      $this->assertEquals(Money::USD(9999800), $this->asks()->percentileCap(0.75));
+      $this->assertEquals(Money::USD(9999900), $this->asks()->percentileCap(0.8));
+      $this->assertEquals(Money::USD(9999900), $this->asks()->percentileCap(0.9));
+      $this->assertEquals(Money::USD(9999900), $this->asks()->percentileCap(0.99));
+      $this->assertEquals(Money::USD(9999900), $this->asks()->percentileCap(0.999));
+      $this->assertEquals(Money::USD(9999900), $this->asks()->percentileCap(1));
+    }
+
+    public function dataPercentileCapException() {
+      // We could re-use dataPercentileException() but they're not testing the
+      // same method and so there might be some crazy bug in the future if we
+      // reuse the data.
+      return [
+        ['bids', 1.2],
+        ['bids', -1],
+        ['asks', 5],
+        ['asks', -1234],
+      ];
+    }
+
+    /**
+     * @dataProvider dataPercentileCapException
+     * @expectedException Exception
+     * @expectedExceptionMessage Percentage must be between 0 - 1.
+     */
+    public function testPercentileCapException($method, $value) {
+      $this->$method()->percentileCap($value);
+    }
 }
