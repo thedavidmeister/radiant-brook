@@ -26,5 +26,7 @@ class Secrets
         if (file_exists(__DIR__ . '/Resources/keys/' . $name)) {
             return trim(file_get_contents(__DIR__ . '/Resources/keys/' . $name));
         }
+
+        throw new \Exception('Secret not found: ' . $name);
     }
 }
