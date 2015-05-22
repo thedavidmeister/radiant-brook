@@ -15,6 +15,8 @@ class OrderBookTest extends PublicAPITest
 
     /**
      * Test bids() and asks() methods for OrderBook.
+     *
+     * @group stable
      */
     public function testBidsAsks()
     {

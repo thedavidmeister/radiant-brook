@@ -30,6 +30,8 @@ abstract class APITest extends WebTestCase
 
     /**
      * Test basic setters and getters for parameters.
+     *
+     * @group stable
      */
     public function testParams()
     {
@@ -49,6 +51,7 @@ abstract class APITest extends WebTestCase
      *
      * @expectedException Exception
      * @expectedExceptionMessage Bitstamp error: Bitstamp likes to report errors as 200
+     * @group stable
      */
     public function testBitstampError()
     {
@@ -226,6 +229,7 @@ abstract class APITest extends WebTestCase
      * Tests that we can spot obvious errors in the API responses.
      *
      * @dataProvider badResponseCodes
+     * @group stable
      *
      * @param int $responseCode
      *   The response code to test.
@@ -242,6 +246,8 @@ abstract class APITest extends WebTestCase
 
     /**
      * Tests that the class can be built as a service.
+     *
+     * @group stable
      */
     public function testService()
     {
@@ -253,6 +259,8 @@ abstract class APITest extends WebTestCase
 
     /**
      * Test mocks of the execute() method.
+     *
+     * @group stable
      */
     public function testExecute()
     {
@@ -272,6 +280,8 @@ abstract class APITest extends WebTestCase
 
     /**
      * Test mocks of the data() method.
+     *
+     * @group stable
      */
     public function testData()
     {
@@ -290,6 +300,8 @@ abstract class APITest extends WebTestCase
 
     /**
      * Test that the endpoint URLs are correct.
+     *
+     * @group stable
      */
     public function testEndpoints()
     {
@@ -304,6 +316,7 @@ abstract class APITest extends WebTestCase
      * Test that timestamp dates are recorded properly.
      *
      * @group slow
+     * @group stable
      */
     public function testDatesData()
     {

@@ -39,6 +39,8 @@ abstract class PrivateAPITest extends APITest
 
     /**
      * Tests that Bitstamp private API executions include auth parameters.
+     *
+     * @group stable
      */
     public function testAuthenticationParams()
     {
@@ -76,6 +78,7 @@ abstract class PrivateAPITest extends APITest
      *
      * @expectedException Exception
      * @expectedExceptionMessage You cannot directly set authentication parameters
+     * @group stable
      *
      * @param  string $key
      *   The name of the parameter to test.

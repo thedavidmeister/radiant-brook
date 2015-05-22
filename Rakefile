@@ -22,6 +22,12 @@ task :"phpunit-coverage" do
   puts `#{cmd}`
 end
 
+desc 'run phpunit tests excluding stable tests'
+task :"phpunit-nostable" do
+  cmd = "bin/phpunit -c app/ --exclude-group stable"
+  puts `#{cmd}`
+end
+
 desc 'run phpunit tests excluding livedata tests'
 task :"phpunit-noslow" do
   cmd = "bin/phpunit -c app/ --exclude-group slow"

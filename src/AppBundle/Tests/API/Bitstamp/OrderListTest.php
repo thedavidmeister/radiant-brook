@@ -37,6 +37,8 @@ class OrderListTest extends WebTestCase
 
     /**
      * Tests data() method.
+     *
+     * @group stable
      */
     public function testData()
     {
@@ -46,6 +48,8 @@ class OrderListTest extends WebTestCase
 
     /**
      * Tests max() method.
+     *
+     * @group stable
      */
     public function testMax()
     {
@@ -55,6 +59,8 @@ class OrderListTest extends WebTestCase
 
     /**
      * Tests min() method.
+     *
+     * @group stable
      */
     public function testMin()
     {
@@ -64,6 +70,8 @@ class OrderListTest extends WebTestCase
 
     /**
      * Tests totalVolume() method.
+     *
+     * @group stable
      */
     public function testTotalVolume()
     {
@@ -74,6 +82,8 @@ class OrderListTest extends WebTestCase
 
     /**
      * Tests totalCap() method.
+     *
+     * @group stable
      */
     public function testTotalCap()
     {
@@ -85,6 +95,8 @@ class OrderListTest extends WebTestCase
 
     /**
      * Test percentile() calculations.
+     *
+     * @group stable
      */
     public function testPercentile()
     {
@@ -145,6 +157,7 @@ class OrderListTest extends WebTestCase
      * @dataProvider dataPercentileException
      * @expectedException Exception
      * @expectedExceptionMessage Percentage must be between 0 - 1.
+     * @group stable
      *
      * @param string $method
      *   The method to test. Can be 'bids' or 'asks'.
@@ -159,6 +172,8 @@ class OrderListTest extends WebTestCase
 
     /**
      * Tests percentileCap() calculations.
+     *
+     * @group stable
      */
     public function testPercentileCap()
     {
@@ -222,6 +237,7 @@ class OrderListTest extends WebTestCase
      * @dataProvider dataPercentileCapException
      * @expectedException Exception
      * @expectedExceptionMessage Percentage must be between 0 - 1.
+     * @group stable
      *
      * @param string $method
      *   The name of the method to test.

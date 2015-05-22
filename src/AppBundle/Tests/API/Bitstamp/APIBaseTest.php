@@ -23,6 +23,7 @@ class APIBaseTest extends WebTestCase
      *
      * @expectedException Exception
      * @expectedExceptionMessage Parmeter foobar cannot be set to bazbing.
+     * @group stable
      */
     public function testDefaultParamValidation()
     {
@@ -36,6 +37,7 @@ class APIBaseTest extends WebTestCase
      *
      * @expectedException Exception
      * @expectedExceptionMessage The Bitstamp API endpoint has not been set for this class.
+     * @group stable
      */
     public function testEndpointException()
     {

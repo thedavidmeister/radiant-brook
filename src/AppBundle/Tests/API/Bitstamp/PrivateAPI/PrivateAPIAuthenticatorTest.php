@@ -48,6 +48,8 @@ class PrivateAPIAuthenticatorTest extends WebTestCase
 
     /**
      * Tests the parameters used for authentication with Bitstamp.
+     *
+     * @group stable
      */
     public function testAuthParameters()
     {

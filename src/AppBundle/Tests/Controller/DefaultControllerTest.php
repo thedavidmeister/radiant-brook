@@ -77,6 +77,7 @@ class DefaultControllerTest extends WebTestCase
      *
      * @group slow
      * @group functional
+     * @group stable
      */
     public function testTrade()
     {
@@ -120,6 +121,7 @@ class DefaultControllerTest extends WebTestCase
      *
      * @group slow
      * @group functional
+     * @group stable
      */
     public function testOrderBook()
     {
