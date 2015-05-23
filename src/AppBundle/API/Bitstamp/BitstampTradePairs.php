@@ -39,8 +39,8 @@ class BitstampTradePairs
     // The percentile of cap/volume we'd like to trade to.
     const PERCENTILE = 0.05;
 
-    // The minimum amount of USD profit we need to commit to a pair.
-    const MIN_PROFIT_USD = 0.01;
+    // The minimum amount of USD cents profit we need to commit to a pair.
+    const MIN_PROFIT_USD = 1;
 
     // Multiplier on a bid/ask price to consider it a dupe with existing orders.
     const DUPE_RANGE_MULTIPLIER = 0.01;
@@ -172,12 +172,26 @@ class BitstampTradePairs
     /**
      * Returns the USD volume required to cover the bid USD + fees.
      *
+     * The volume USD that we get to keep K is:
+     *   - X = USD value of BTC sold
+     *   - F = Fee multiplier
+     *   - K = X - (X * F)
+     *
+     * If we want to keep enough to cover our total bid cost B + profit P then:
+     *   - K = B + P
+     *
+     * Therefore:
+     *   - B + P = X - (X * F)
+     *   - B + P = X(1 - F)
+     *   - X = (B + P) / (1 - F)
+     *
      * @return float
      */
     public function volumeUSDAsk()
     {
-        // @todo - Is (1 + $this->fee() * 2) correct?
-        return $this->volumeUSDBidPostFees()->getAmount() * (1 + $this->fees->multiplier() * 2) + $this::MIN_PROFIT_USD;
+        $X = ($this->volumeUSDBidPostFees()->getAmount() + self::MIN_PROFIT_USD) / (1 - $this->fees->multiplier());
+        // We have to ceil() $X or risk losing our USD profit to fees.
+        return Money::USD((int) ceil($X));
     }
 
     /**
@@ -197,9 +211,9 @@ class BitstampTradePairs
      */
     public function askBTCVolume()
     {
-        $rounded = round($this->volumeUSDAsk() / $this->askPrice()->getAmount(), self::BTC_PRECISION);
+        $rounded = round($this->volumeUSDAsk()->getAmount() / $this->askPrice()->getAmount(), self::BTC_PRECISION);
         // @see bidBTCVolume()
-        if (($rounded * $this->askPrice()->getAmount()) < $this->volumeUSDAsk()) {
+        if (($rounded * $this->askPrice()->getAmount()) < $this->volumeUSDAsk()->getAmount()) {
             $rounded += 10 ** -($this::BTC_PRECISION - 1);
         }
 
