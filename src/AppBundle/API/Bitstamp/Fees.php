@@ -27,14 +27,31 @@ class Fees
     }
 
     /**
-     * Fees as a number that can be used as a multiplier.
+     * Fees as a number that can be used as a multiplier on bids USD.
      *
      * @return float
      *   Fees as a multiplier. E.g. 1% = 0.01
      */
-    public function multiplier()
+    public function bidsMultiplier()
     {
         return $this->percent() / 100;
+    }
+
+    /**
+     * Fees as a number that can be used as a multiplier on asks USD.
+     *
+     * The volume USD that we get to keep K is:
+     *   - X = USD value of BTC sold
+     *   - F = Fee multiplier
+     *   - K = X - (X * F)
+     *   - K = X(1 - F)
+     *
+     * We see that (1 - F) can be used as an asks multiplier Fa to give us:
+     *   - K = X * Fa
+     */
+    public function asksMultiplier()
+    {
+      return 1 - $this->bidsMultiplier();
     }
 
     /**
@@ -50,11 +67,14 @@ class Fees
      */
     protected function absoluteFeeUSDNoRounding(Money $USD)
     {
-      return $USD->getAmount() * $this->multiplier();
+      return $USD->getAmount() * $this->bidsMultiplier();
     }
 
     /**
      * USD fees as an absolute value in USD cents, for a given USD volume.
+     *
+     * This amount is the same for bids and asks, it is simply added to bids and
+     * subtracted from asks.
      *
      * @param Money $USD
      *   Some USD money to calculate a fee for.

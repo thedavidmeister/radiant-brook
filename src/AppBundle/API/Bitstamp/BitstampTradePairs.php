@@ -174,34 +174,34 @@ class BitstampTradePairs
      *
      * The volume USD that we get to keep K is:
      *   - X = USD value of BTC sold
-     *   - F = Fee multiplier
-     *   - K = X - (X * F)
+     *   - Fa = Fee asks multiplier
+     *   - K = X * Fa
      *
      * If we want to keep enough to cover our total bid cost B + profit P then:
      *   - K = B + P
      *
      * Therefore:
-     *   - B + P = X - (X * F)
-     *   - B + P = X(1 - F)
-     *   - X = (B + P) / (1 - F)
+     *   - B + P = X * Fa
+     *   - X = (B + P) / Fa
      *
-     * @return float
+     * @return Money::USD
      */
     public function volumeUSDAsk()
     {
-        $X = ($this->volumeUSDBidPostFees()->getAmount() + self::MIN_PROFIT_USD) / (1 - $this->fees->multiplier());
+        $X = ($this->volumeUSDBidPostFees()->getAmount() + self::MIN_PROFIT_USD) / $this->fees->asksMultiplier();
+
         // We have to ceil() $X or risk losing our USD profit to fees.
         return Money::USD((int) ceil($X));
     }
 
     /**
-     * The asking USD Volume required to cover fees.
+     * How much USD can we keep from our sale, post fees?
      *
-     * @return float
+     * @return Money::USD
      */
     public function volumeUSDAskPostFees()
     {
-        return floor($this->askBTCVolume() * $this->askPrice()->getAmount() * (1 - $this->fees->multiplier()) * 100) / 100;
+        return Money::USD((int) floor($this->volumeUSDAsk()->getAmount() * $this->fees->asksMultiplier()));
     }
 
     /**
@@ -239,7 +239,7 @@ class BitstampTradePairs
      */
     public function profitBTC()
     {
-        return $this->bidBTCVolume()->getAmount() * (1 - $this->fees->multiplier()) - $this->askBTCVolume() * (1 + $this->fees->multiplier());
+        return $this->bidBTCVolume()->getAmount() * (1 - $this->fees->bidsMultiplier()) - $this->askBTCVolume() * (1 + $this->fees->bidsMultiplier());
     }
 
     /**
@@ -249,7 +249,7 @@ class BitstampTradePairs
      */
     public function profitUSD()
     {
-        return floor(($this->volumeUSDAskPostFees() - $this->volumeUSDBidPostFees()->getAmount()) * 100) / 100;
+        return $this->volumeUSDAskPostFees()->getAmount() - $this->volumeUSDBidPostFees()->getAmount();
     }
 
     /**
