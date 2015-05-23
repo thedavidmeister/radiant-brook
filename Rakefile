@@ -24,7 +24,7 @@ end
 
 desc 'run phpunit tests excluding stable tests'
 task :"phpunit-nostable" do
-  cmd = "bin/phpunit -c app/ --exclude-group stable"
+  cmd = "bin/phpunit -c app/ --exclude-group stable --debug"
   puts `#{cmd}`
 end
 

@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\Tests\GuzzleTestTrait;
 use AppBundle\API\Bitstamp\PrivateAPI\Balance;
 use AppBundle\API\Bitstamp\Fees;
+use Money\Money;
 
 class FeesTest extends WebTestCase
 {
@@ -29,14 +30,73 @@ class FeesTest extends WebTestCase
     return new Fees($balance);
   }
 
+
+  /**
+   * Tests percent().
+   *
+   * @group stable
+   */
   public function testPercent() {
     $this->assertSame(0.25, $this->fees()->percent());
     $this->assertSame(0.24, $this->fees2()->percent());
   }
 
+  /**
+   * Tests multiplier().
+   *
+   * @group stable
+   */
   public function testMultiplier() {
     $this->assertSame(0.0025, $this->fees()->multiplier());
     $this->assertSame(0.0024, $this->fees2()->multiplier());
+  }
+
+  /**
+   * Tests absoluteFeeUDS().
+   *
+   * @group stable
+   */
+  public function testAbsoluteFeeUSD() {
+    $tests = [
+      [200, 1, 1],
+      [250, 1, 1],
+      [300, 1, 1],
+      [350, 1, 1],
+      [400, 1, 1],
+      [450, 2, 2],
+      [500, 2, 2],
+      [550, 2, 2],
+      [600, 2, 2],
+      [650, 2, 2],
+      [700, 2, 2],
+      [750, 2, 2],
+      [800, 2, 2],
+      [850, 3, 3],
+      [900, 3, 3],
+      [950, 3, 3],
+      [1000, 3, 3],
+      [1050, 3, 3],
+      [1100, 3, 3],
+      [1150, 3, 3],
+      [1200, 3, 3],
+      // This is the first point the difference in fees kicks in.
+      [1250, 4, 3],
+    ];
+    foreach ($tests as $test) {
+      $this->assertEquals(Money::USD($test[1]), $this->fees()->absoluteFeeUSD(Money::USD($test[0])));
+      $this->assertEquals(Money::USD($test[2]), $this->fees2()->absoluteFeeUSD(Money::USD($test[0])));
+    }
+  }
+
+  /**
+   * Tests absoluteFeeUSD exceptions.
+   *
+   * @expectedException Exception
+   * @expectedExceptionMessage Cannot calculate fees for negative amounts
+   * @group stable
+   */
+  public function testAbsoluteFeeUSDExceptions() {
+    $this->fees()->absoluteFeeUSD(Money::USD(-1));
   }
 
 }

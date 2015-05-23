@@ -106,23 +106,6 @@ class OrderList
     }
 
     /**
-     * Lists of Money pairs.
-     */
-
-    /**
-     * Expose the data without allowing modification.
-     *
-     * It is not a good idea to call this outside unit tests.
-     *
-     * @return array
-     *   A list of Money pairs.
-     */
-    // public function data()
-    // {
-    //     return $this->data;
-    // }
-
-    /**
      * Aggregate functions.
      */
 

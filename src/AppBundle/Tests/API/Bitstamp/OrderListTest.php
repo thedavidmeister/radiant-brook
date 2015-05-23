@@ -35,10 +35,31 @@ class OrderListTest extends WebTestCase
         return new OrderList($this->asksSample());
     }
 
+    /**
+     * Test that pair methods return arrays and aggregates return scalars.
+     *
+     * @group stable
+     */
     public function testReturnFormats() {
-      // $expected = [
-      //   'data' => 'list',
-      //   '']
+      $expected = [
+        'min' => ['pair'],
+        'max' => ['pair'],
+        'totalVolume' => ['aggregate'],
+        'totalCap' => ['aggregate'],
+        'percentileBTCVolume' => ['aggregate', 0.2],
+        'percentileCap' => ['aggregate', 0.2],
+      ];
+      $methods = ['bids', 'asks'];
+      foreach ($methods as $method) {
+        foreach ($expected as $key => $value) {
+          if ($value[0] === 'pair') {
+            $this->assertTrue(is_array($this->$method()->$key()));
+          }
+          if ($value[0] === 'aggregate') {
+            $this->assertTrue(!is_array($this->$method()->$key(isset($value[1]) ? $value[1] : null)));
+          }
+        }
+      }
     }
 
     /**
