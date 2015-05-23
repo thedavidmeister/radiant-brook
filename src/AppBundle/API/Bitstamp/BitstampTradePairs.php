@@ -33,8 +33,11 @@ class BitstampTradePairs
     // As of May 15, 2014 the minimum allowable trade will be USD $5.
     const MIN_VOLUME_USD = 500;
 
-    // Bitstamp limits the fidelity of BTC trades.
+    // Bitcoin has precision of 8.
     const BTC_PRECISION = 8;
+
+    // USD has precision of 2.
+    const USD_PRECISION = 2;
 
     // The percentile of cap/volume we'd like to trade to.
     const PERCENTILE = 0.05;
@@ -253,11 +256,12 @@ class BitstampTradePairs
     /**
      * Returns the average of the bid and ask price.
      *
-     * @return float
+     * @return Money::USD
      */
     public function midprice()
     {
-        return ($this->bidPrice()->getAmount() + $this->askPrice()->getAmount()) / 2;
+        $midpoint = (int) round(($this->bidPrice()->getAmount() + $this->askPrice()->getAmount()) / 2, 2);
+        return Money::USD($midpoint);
     }
 
     /**
@@ -293,6 +297,33 @@ class BitstampTradePairs
     }
 
     /**
+     * Format USD Money in a Bitstamp API safe format.
+     *
+     * @param Money::USD $USD
+     *   The USD Money to format.
+     *
+     * @return string
+     *   The USD amount in the format the Bitstamp API expects.
+     *
+     */
+    public function APIFormatUSD($USD) {
+        return (string) round($USD->getAmount() / 10 ** self::USD_PRECISION, self::USD_PRECISION);
+    }
+
+    /**
+     * Format BTC Money in a Bitstamp API safe format.
+     *
+     * @param Money::BTC $BTC
+     *   The BTC Money to format.
+     *
+     * @return string
+     *   The BTC amount in the format the Bitstamp API expects.
+     */
+    public function APIFormatBTC($BTC) {
+        return (string) round($BTC->getAmount() / 10 ** self::BTC_PRECISION, self::BTC_PRECISION);
+    }
+
+    /**
      * Execute the suggested trade pairs with Bitstamp.
      *
      * If $this fails validation, the trade pairs will not be executed and an
@@ -302,13 +333,13 @@ class BitstampTradePairs
     {
         if ($this->isValid()) {
             $this->sell
-            ->setParam('price', $this->askPrice())
-            ->setParam('amount', $this->askBTCVolume())
+            ->setParam('price', $this->APIFormatUSD($this->askPrice()))
+            ->setParam('amount', $this->APIFormatBTC($this->askBTCVolume()))
             ->execute();
 
             $this->buy
-            ->setParam('price', $this->bidPrice())
-            ->setParam('amount', $this->bidBTCVolume())
+            ->setParam('price', $this->APIFormatUSD($this->bidPrice()))
+            ->setParam('amount', $this->APIFormatBTC($this->bidBTCVolume()))
             ->execute();
 
             $this->logger->info('Trade pairs executed');
@@ -345,7 +376,7 @@ class BitstampTradePairs
     /**
      * Asserts there are no duplicate open orders with the suggested pairs.
      *
-     * @assert\False(message="There are currently dupes")
+     * @Assert\False(message="There are currently dupes")
      *
      * @return bool
      */
