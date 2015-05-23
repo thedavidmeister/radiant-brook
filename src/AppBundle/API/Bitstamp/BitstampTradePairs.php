@@ -153,6 +153,23 @@ class BitstampTradePairs
     }
 
     /**
+     * ASKS
+     */
+
+    /**
+     * The asking USD price in the suggested pair.
+     *
+     * For asks, we use the BTC volume percentile as it's harder for other users
+     * to manipulate. Asks are sorted ascending so we can use $pc directly.
+     *
+     * @return Money::USD
+     */
+    public function askPrice()
+    {
+        return Money::USD($this->orderBook->asks()->percentileCap($this::PERCENTILE));
+    }
+
+    /**
      * Returns the USD volume required to cover the bid USD + fees.
      *
      * @return float
@@ -164,29 +181,13 @@ class BitstampTradePairs
     }
 
     /**
-   * ASKS
-   */
-
-    /**
      * The asking USD Volume required to cover fees.
      *
      * @return float
      */
     public function volumeUSDAskPostFees()
     {
-        return floor($this->askBTCVolume() * $this->askPrice() * (1 - $this->fees->multiplier()) * 100) / 100;
-    }
-
-    /**
-     * The asking USD price in the suggested pair.
-     *
-     * @return float
-     */
-    public function askPrice()
-    {
-        // For asks, we use the BTC volume percentile as it's harder for other users
-        // to manipulate. Asks are sorted ascending so we can use $pc directly.
-        return $this->orderBook->asks()->percentileCap($this::PERCENTILE);
+        return floor($this->askBTCVolume() * $this->askPrice()->getAmount() * (1 - $this->fees->multiplier()) * 100) / 100;
     }
 
     /**
@@ -196,9 +197,9 @@ class BitstampTradePairs
      */
     public function askBTCVolume()
     {
-        $rounded = round($this->volumeUSDAsk() / $this->askPrice(), self::BTC_PRECISION);
+        $rounded = round($this->volumeUSDAsk() / $this->askPrice()->getAmount(), self::BTC_PRECISION);
         // @see bidBTCVolume()
-        if (($rounded * $this->askPrice()) < $this->volumeUSDAsk()) {
+        if (($rounded * $this->askPrice()->getAmount()) < $this->volumeUSDAsk()) {
             $rounded += 10 ** -($this::BTC_PRECISION - 1);
         }
 
@@ -244,7 +245,7 @@ class BitstampTradePairs
      */
     public function midprice()
     {
-        return ($this->bidPrice()->getAmount() + $this->askPrice()) / 2;
+        return ($this->bidPrice()->getAmount() + $this->askPrice()->getAmount()) / 2;
     }
 
     /**
@@ -268,8 +269,8 @@ class BitstampTradePairs
         ] + $baseSearchParams);
 
         $askDupes = $this->openOrders->search([
-            'range' => $this->askPrice() * $this::DUPE_RANGE_MULTIPLIER,
-            'value' => $this->askPrice(),
+            'range' => $this->askPrice()->getAmount() * $this::DUPE_RANGE_MULTIPLIER,
+            'value' => $this->askPrice()->getAmount(),
             'type' => $this->openOrders->typeSell(),
         ] + $baseSearchParams);
 
