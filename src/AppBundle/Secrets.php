@@ -5,11 +5,12 @@ namespace AppBundle;
 use Dotenv;
 
 /**
- * Handles things that need to be secret.
+ * Handles things that need to be secret by reading things from env.
  */
 class Secrets
 {
     public function __construct() {
+        // Ensure that any secrets in .env are loaded.
         Dotenv::load(__DIR__);
     }
 
@@ -28,6 +29,8 @@ class Secrets
             return trim($value);
         }
 
+        // If some class needs a secret, we cannot accept it not being available
+        // as functionality will surely rely on it.
         throw new \Exception('Secret not found: ' . $name);
     }
 }
