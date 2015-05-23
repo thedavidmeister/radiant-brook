@@ -68,7 +68,7 @@ class OpenOrders extends PrivateAPI
         $requireds = ['key', 'value', 'operator'];
         foreach ($requireds as $required) {
             if (!isset($params[$required])) {
-                throw new \Exception($required . 'must be set');
+                throw new \Exception('Search parameter "' . $required . '" must be set');
             }
         }
 
