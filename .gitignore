@@ -12,3 +12,6 @@
 
 # phpunit
 coverage
+
+# phpdotenv
+.env

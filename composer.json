@@ -24,7 +24,8 @@
         "guzzlehttp/guzzle": "~5.0",
         "raulfraile/ladybug-bundle": "~1.0",
         "keen-io/keen-io": "~2.5",
-        "mathiasverraes/money": "dev-master"
+        "mathiasverraes/money": "dev-master",
+        "vlucas/phpdotenv": "^1.1"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
