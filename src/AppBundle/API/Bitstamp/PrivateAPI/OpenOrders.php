@@ -21,6 +21,12 @@ class OpenOrders extends PrivateAPI
     // The precision to use in float comparison for search().
     const SEARCH_PRECISION = 2;
 
+    // The key for price of an open order.
+    const KEY_PRICE = 'price';
+
+    // The key for amount of an open order.
+    const KEY_AMOUNT = 'amount';
+
     /**
      * Returns the Bitstamp representation of a "sell" order type.
      *
@@ -70,6 +76,12 @@ class OpenOrders extends PrivateAPI
             if (!isset($params[$required])) {
                 throw new \Exception('Search parameter "' . $required . '" must be set');
             }
+        }
+
+        $allowed_keys = [self::KEY_PRICE, self::KEY_AMOUNT];
+        if (!in_array($params['key'], $allowed_keys))
+        {
+            throw new \Exception('Unknown search key: ' . $params['key']);
         }
 
         $found = [];

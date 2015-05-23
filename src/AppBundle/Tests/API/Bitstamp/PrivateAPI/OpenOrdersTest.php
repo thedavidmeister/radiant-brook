@@ -13,6 +13,17 @@ class OpenOrdersTest extends PrivateAPITest
     protected $className = 'AppBundle\API\Bitstamp\PrivateAPI\OpenOrders';
 
     /**
+     * Test that sending an unknown key to search() throws an exception.
+     *
+     * @expectedException Exception
+     * @expectedExceptionMessage Unknown search key: foo
+     * @group stable
+     */
+    public function testSearchKeyException() {
+      $this->getClass()->search(['key' => 'foo', 'value' => rand(), 'operator' => rand()]);
+    }
+
+    /**
      * Test that constants set by Bitstamp are represented correctly.
      *
      * @group stable
@@ -48,6 +59,7 @@ class OpenOrdersTest extends PrivateAPITest
      * Tests exceptions thrown by search().
      *
      * @dataProvider dataSearchExceptions
+     * @group stable
      */
     public function testSearchExceptions($params, $message) {
       $class = $this->getClass();
