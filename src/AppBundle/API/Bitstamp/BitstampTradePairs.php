@@ -11,8 +11,17 @@ use Money\Money;
  * The algorithm used for suggesting is:
  *
  * - Get the 5% percentile of bids as a USD price for BTC
- * - Get the minimum USD amount, scaled up by fees
- * - Get the volume of BTC
+ * - Get the minimum USD amount, scaled up to maximum on isofee
+ * - Get the volume of BTC purchaseable for chosen USD price & volume
+ * - Get the total USD amount, including fees
+ *
+ * - Get the 5% percentile of asks as a USD price for BTC
+ * - Get the USD amount to cover, including bid/ask fees and min USD profit
+ * - Get the minimum total BTC volume to sell to cover USD amount, scaled to
+ *   minimum isofee
+ *
+ * - If the USD amount spent in bid can be covered with min USD profit, and the
+ *   BTC sold is less than the BTC bought, and there are no dupes, place a pair.
  */
 class BitstampTradePairs
 {
@@ -25,7 +34,7 @@ class BitstampTradePairs
     const MIN_VOLUME_USD = 500;
 
     // Bitstamp limits the fidelity of BTC trades.
-    const BTC_FIDELITY = 8;
+    const BTC_PRECISION = 8;
 
     // The percentile of cap/volume we'd like to trade to.
     const PERCENTILE = 0.05;
@@ -78,6 +87,10 @@ class BitstampTradePairs
     }
 
     /**
+     * BIDS
+     */
+
+    /**
      * The USD bid volume pre-fees.
      *
      * We can simply scale the minimum USD volume allowable using the fee
@@ -116,6 +129,30 @@ class BitstampTradePairs
     }
 
     /**
+     * The bid BTC volume of the suggested pair.
+     *
+     * The volume of BTC is simply the amount of USD we have to spend divided by
+     * the amount we're willing to spend per Satoshi.
+     *
+     * @return Money::BTC
+     */
+    public function bidBTCVolume()
+    {
+        // Its very important that when we lodge our bid with Bitstamp, the
+        // BTC volume times the USD price does not exceed the maximum USD volume
+        // on the isofee. For this reason, we floor any fractions of satoshis
+        // that come out of this equation to avoid any risk of being one satoshi
+        // over the limit from Bitstamp's perspective.
+        $satoshis = (int) floor(($this->volumeUSDBid()->getAmount() / $this->bidPrice()->getAmount()) * (10 ** self::BTC_PRECISION));
+
+        // This must never happen.
+        if ($satoshis * $this->bidPrice()->getAmount() / (10 ** self::BTC_PRECISION) > $this->volumeUSDBid()->getAmount()) {
+            throw new \Exception($satoshis . ' satoshis were attempted to be purchased at ' . $this->bidPrice()->getAmount() . ' per BTC which exceeds allowed volume USD ' . $this->volumeUSDBid()->getAmount());
+        }
+        return Money::BTC($satoshis);
+    }
+
+    /**
      * Returns the USD volume required to cover the bid USD + fees.
      *
      * @return float
@@ -124,54 +161,6 @@ class BitstampTradePairs
     {
         // @todo - Is (1 + $this->fee() * 2) correct?
         return $this->volumeUSDBidPostFees()->getAmount() * (1 + $this->fees->multiplier() * 2) + $this::MIN_PROFIT_USD;
-    }
-
-    /**
-     * The absolute USD value of fees in cents.
-     *
-     * Handles the weird Bitstamp rounding policy.
-     *
-     * We can't use this inside volumeUSDBid because we'd have circular deps.
-     *
-     * @return int
-     */
-    protected function feeAbsolute()
-    {
-        return ceil($this->volumeUSDBid() * $this->fee() * 100) / 100;
-    }
-
-    /**
-     * BIDS
-     */
-
-    /**
-     * The bid BTC volume of the suggested pair.
-     *
-     * @todo test this lots.
-     *
-     * @return float
-     */
-    public function bidBTCVolume()
-    {
-        $rounded = round($this->volumeUSDBid()->getAmount() / $this->bidPrice()->getAmount(), self::BTC_FIDELITY);
-        // Its very important that when we lodge our bid with Bitstamp, the volume
-        // times the price does not exceed the USD volume cap for the current fee,
-        // or we pay the fee for the next bracket for no price advantage.
-        if (($rounded * $this->bidPrice()->getAmount()) > $this->volumeUSDBid()->getAmount()) {
-            $rounded -= 10 ** -(self::BTC_FIDELITY - 1);
-        }
-
-        return $rounded;
-    }
-
-    /**
-     * The effective USD bid price includes fees.
-     *
-     * @return float
-     */
-    protected function bidPriceEffective()
-    {
-        return ($this->bidPrice() * $this->bidBTCVolume() + $this->feeAbsolute()) / $this->bidBTCVolume();
     }
 
     /**
@@ -207,10 +196,10 @@ class BitstampTradePairs
      */
     public function askBTCVolume()
     {
-        $rounded = round($this->volumeUSDAsk() / $this->askPrice(), $this::BTC_FIDELITY);
+        $rounded = round($this->volumeUSDAsk() / $this->askPrice(), self::BTC_PRECISION);
         // @see bidBTCVolume()
         if (($rounded * $this->askPrice()) < $this->volumeUSDAsk()) {
-            $rounded += 10 ** -($this::BTC_FIDELITY - 1);
+            $rounded += 10 ** -($this::BTC_PRECISION - 1);
         }
 
         return $rounded;
@@ -235,7 +224,7 @@ class BitstampTradePairs
      */
     public function profitBTC()
     {
-        return $this->bidBTCVolume() * (1 - $this->fees->multiplier()) - $this->askBTCVolume() * (1 + $this->fees->multiplier());
+        return $this->bidBTCVolume()->getAmount() * (1 - $this->fees->multiplier()) - $this->askBTCVolume() * (1 + $this->fees->multiplier());
     }
 
     /**

@@ -109,9 +109,11 @@ class DefaultController extends Controller
         $stats = [
         '-Bids-' => '',
         'bid/buy USD Base Volume' => $tp->volumeUSDBid()->getAmount(),
-        'bid/buy BTC Volume' => $tp->bidBTCVolume(),
+        'bid/buy BTC Volume' => $tp->bidBTCVolume()->getAmount(),
         'bid/buy USD Price' => $tp->bidPrice()->getAmount(),
         'bid/buy USD Volume post fees' => $tp->volumeUSDBidPostFees()->getAmount(),
+        'bid/buy BTC Volume * USD Price' => $tp->bidBTCVolume()->getAmount() * $tp->bidPrice()->getAmount(),
+        'bid/buy BTC Volume * USD Price as USD' => $tp->bidBTCVolume()->getAmount() * $tp->bidPrice()->getAmount() / (10 ** $tp::BTC_PRECISION),
         '-Asks-' => '',
         'ask/sell USD Base Volume' => $tp->volumeUSDAsk(),
         'ask/sell BTC Volume' => $tp->askBTCVolume(),
