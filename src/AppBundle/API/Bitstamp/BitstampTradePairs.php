@@ -207,25 +207,23 @@ class BitstampTradePairs
     /**
      * The asking volume of BTC in the suggested pair.
      *
-     * @return float
+     * BTC volume is simply the amount of USD we need to sell divided by the
+     * USD price per BTC.
+     *
+     * @return Money::BTC
      */
     public function askBTCVolume()
     {
-        $rounded = round($this->volumeUSDAsk()->getAmount() / $this->askPrice()->getAmount(), self::BTC_PRECISION);
-        // @see bidBTCVolume()
-        if (($rounded * $this->askPrice()->getAmount()) < $this->volumeUSDAsk()->getAmount()) {
-            $rounded += 10 ** -($this::BTC_PRECISION - 1);
+        // We have to ceiling our satoshis to guarantee that we meet our minimum
+        // ask USD volume, or we risk fees killing our profits.
+        $satoshis = (int) ceil($this->volumeUSDAsk()->getAmount() / $this->askPrice()->getAmount() * 10 ** self::BTC_PRECISION);
+
+        // This must never happen.
+        if ($satoshis * $this->askPrice()->getAmount() / (10 ** self::BTC_PRECISION) < $this->volumeUSDAsk()->getAmount()) {
+            throw new \Exception($satoshis . ' satoshis were attempted to be purchased at ' . $this->askPrice()->getAmount() . ' per BTC which does not meet required volume USD ' . $this->volumeUSDAsk()->getAmount());
         }
 
-        return $rounded;
-    }
-
-    /**
-     * The effective ask price is post-fees.
-     */
-    protected function askPriceEffective()
-    {
-        return ($this->askPrice() * $this->askBTCVolume() - $this->feeAbsolute()) / $this->askBTCVolume();
+        return Money::BTC($satoshis);
     }
 
     /**
@@ -239,7 +237,7 @@ class BitstampTradePairs
      */
     public function profitBTC()
     {
-        return $this->bidBTCVolume()->getAmount() * (1 - $this->fees->bidsMultiplier()) - $this->askBTCVolume() * (1 + $this->fees->bidsMultiplier());
+        return $this->bidBTCVolume()->getAmount() * (1 - $this->fees->bidsMultiplier()) - $this->askBTCVolume()->getAmount() * (1 + $this->fees->bidsMultiplier());
     }
 
     /**
