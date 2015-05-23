@@ -7,6 +7,12 @@ use Money\Money;
 
 /**
  * Suggests and executes profitable trade pairs.
+ *
+ * The algorithm used for suggesting is:
+ *
+ * - Get the 5% percentile of bids as a USD price for BTC
+ * - Get the minimum USD amount, scaled up by fees
+ * - Get the volume of BTC
  */
 class BitstampTradePairs
 {
@@ -72,45 +78,41 @@ class BitstampTradePairs
     }
 
     /**
-     * Returns the DateTime object for the requested service.
-     *
-     * Will be based on execute() or data() as appropriate.
-     *
-     * @param string $service
-     *   The name of the service to get the DateTime for.
-     *
-     * @return DateTime
-     */
-    public function datetime($service)
-    {
-        return $this->{$service}->datetime();
-    }
-
-    /**
      * The USD bid volume pre-fees.
      *
-     * @return float
+     * We can simply scale the minimum USD volume allowable using the fee
+     * structure as a limit.
+     *
+     * @return Money::USD
      */
     public function volumeUSDBid()
     {
-        if (!isset($this->_volume)) {
-            // Start with the minimum volume allowable.
-            $minUSD = Money::USD(self::MIN_VOLUME_USD);
-
-            $this->_volume = $this->fees->isofeeMaxUSD($minUSD);
-        }
-
-        return $this->_volume;
+        return $this->fees->isofeeMaxUSD(Money::USD(self::MIN_VOLUME_USD));
     }
 
     /**
-     * The USD bid volume required to cover fees.
+     * The bid USD price of the suggested pair.
      *
-     * @return float
+     * For bids, we use the cap percentile as it's harder for other users to
+     * manipulate and we want 1 - PERCENTILE as bids are decending.
+     *
+     * @return Money::USD
+     */
+    public function bidPrice()
+    {
+        return Money::USD($this->orderBook->bids()->percentileCap(1 - self::PERCENTILE));
+    }
+
+    /**
+     * The USD bid volume including fees.
+     *
+     * We can simply add the fees for this USD volume to the USD volume.
+     *
+     * @return Money::USD
      */
     public function volumeUSDBidPostFees()
     {
-        return ceil($this->bidBTCVolume() * $this->bidPrice() * (1 + $this->fees->multiplier()) * 100) / 100;
+        return $this->volumeUSDBid()->add($this->fees->absoluteFeeUSD($this->volumeUSDBid()));
     }
 
     /**
@@ -121,7 +123,7 @@ class BitstampTradePairs
     public function volumeUSDAsk()
     {
         // @todo - Is (1 + $this->fee() * 2) correct?
-        return $this->volumeUSDBidPostFees() * (1 + $this->fees->multiplier() * 2) + $this::MIN_PROFIT_USD;
+        return $this->volumeUSDBidPostFees()->getAmount() * (1 + $this->fees->multiplier() * 2) + $this::MIN_PROFIT_USD;
     }
 
     /**
@@ -143,18 +145,6 @@ class BitstampTradePairs
      */
 
     /**
-     * The bid USD price of the suggested pair.
-     *
-     * @return float
-     */
-    public function bidPrice()
-    {
-        // For bids, we use the cap percentile as it's harder for other users to
-        // manipulate and we want 1 - PERCENTILE as bids are decending.
-        return $this->orderBook->bids()->percentileCap(1 - self::PERCENTILE);
-    }
-
-    /**
      * The bid BTC volume of the suggested pair.
      *
      * @todo test this lots.
@@ -163,11 +153,11 @@ class BitstampTradePairs
      */
     public function bidBTCVolume()
     {
-        $rounded = round($this->volumeUSDBid()->getAmount() / $this->bidPrice(), self::BTC_FIDELITY);
+        $rounded = round($this->volumeUSDBid()->getAmount() / $this->bidPrice()->getAmount(), self::BTC_FIDELITY);
         // Its very important that when we lodge our bid with Bitstamp, the volume
         // times the price does not exceed the USD volume cap for the current fee,
         // or we pay the fee for the next bracket for no price advantage.
-        if (($rounded * $this->bidPrice()) > $this->volumeUSDBid()->getAmount()) {
+        if (($rounded * $this->bidPrice()->getAmount()) > $this->volumeUSDBid()->getAmount()) {
             $rounded -= 10 ** -(self::BTC_FIDELITY - 1);
         }
 
@@ -255,7 +245,7 @@ class BitstampTradePairs
      */
     public function profitUSD()
     {
-        return floor(($this->volumeUSDAskPostFees() - $this->volumeUSDBidPostFees()) * 100) / 100;
+        return floor(($this->volumeUSDAskPostFees() - $this->volumeUSDBidPostFees()->getAmount()) * 100) / 100;
     }
 
     /**
@@ -265,7 +255,7 @@ class BitstampTradePairs
      */
     public function midprice()
     {
-        return ($this->bidPrice() + $this->askPrice()) / 2;
+        return ($this->bidPrice()->getAmount() + $this->askPrice()) / 2;
     }
 
     /**
@@ -283,8 +273,8 @@ class BitstampTradePairs
         ];
 
         $bidDupes = $this->openOrders->search([
-            'range' => $this->bidPrice() * $this::DUPE_RANGE_MULTIPLIER,
-            'value' => $this->bidPrice(),
+            'range' => $this->bidPrice()->getAmount() * $this::DUPE_RANGE_MULTIPLIER,
+            'value' => $this->bidPrice()->getAmount(),
             'type' => $this->openOrders->typeBuy(),
         ] + $baseSearchParams);
 
