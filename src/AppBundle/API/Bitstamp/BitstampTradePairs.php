@@ -233,21 +233,21 @@ class BitstampTradePairs
     /**
      * Returns the BTC profit of the suggested pair.
      *
-     * @return float
+     * @return Money::BTC
      */
     public function profitBTC()
     {
-        return $this->bidBTCVolume()->getAmount() * (1 - $this->fees->bidsMultiplier()) - $this->askBTCVolume()->getAmount() * (1 + $this->fees->bidsMultiplier());
+        return Money::BTC((int) floor($this->bidBTCVolume()->getAmount() - $this->askBTCVolume()->getAmount()));
     }
 
     /**
      * Returns the USD profit of the suggested pair.
      *
-     * @return float
+     * @return Money::USD
      */
     public function profitUSD()
     {
-        return $this->volumeUSDAskPostFees()->getAmount() - $this->volumeUSDBidPostFees()->getAmount();
+        return Money::USD((int) floor($this->volumeUSDAskPostFees()->getAmount() - $this->volumeUSDBidPostFees()->getAmount()));
     }
 
     /**
@@ -339,7 +339,7 @@ class BitstampTradePairs
      */
     public function isProfitable()
     {
-        return $this->profitUSD() >= round($this::MIN_PROFIT_USD, 2) && $this->profitBTC() > 0;
+        return $this->profitUSD() >= Money::USD(self::MIN_PROFIT_USD) && $this->profitBTC() > Money::BTC(0);
     }
 
     /**
