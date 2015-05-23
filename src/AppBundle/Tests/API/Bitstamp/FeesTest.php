@@ -52,7 +52,7 @@ class FeesTest extends WebTestCase
   }
 
   /**
-   * Tests absoluteFeeUDS().
+   * Tests absoluteFeeUSD().
    *
    * @group stable
    */
@@ -97,6 +97,37 @@ class FeesTest extends WebTestCase
    */
   public function testAbsoluteFeeUSDExceptions() {
     $this->fees()->absoluteFeeUSD(Money::USD(-1));
+  }
+
+  public function testIsofeeMaxUSD() {
+    $tests = [
+      [200, 400, 416],
+      [250, 400, 416],
+      [300, 400, 416],
+      [350, 400, 416],
+      [400, 400, 416],
+      [450, 800, 833],
+      [500, 800, 833],
+      [550, 800, 833],
+      [600, 800, 833],
+      [650, 800, 833],
+      [700, 800, 833],
+      [750, 800, 833],
+      [800, 800, 833],
+      [850, 1200, 1250],
+      [900, 1200 ,1250],
+      [950, 1200, 1250],
+      [1000, 1200, 1250],
+      [1050, 1200, 1250],
+      [1100, 1200, 1250],
+      [1150, 1200, 1250],
+      [1200, 1200, 1250],
+      [1250, 1600, 1250],
+    ];
+    foreach ($tests as $test) {
+      $this->assertEquals(Money::USD($test[1]), $this->fees()->isofeeMaxUSD(Money::USD($test[0])));
+      $this->assertEquals(Money::USD($test[2]), $this->fees2()->isofeeMaxUSD(Money::USD($test[0])));
+    }
   }
 
 }

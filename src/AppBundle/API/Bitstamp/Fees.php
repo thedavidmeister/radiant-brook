@@ -63,6 +63,10 @@ class Fees
      *   The fee, as Money.
      */
     public function absoluteFeeUSD(Money $USD) {
+        if ($USD->getAmount() < 0) {
+          throw new \Exception('Cannot calculate fees for negative amounts');
+        }
+
         // We kindly ask our users to take note on Bitstamp's policy regarding fee
         // calculation. As our fees are calculated to two decimal places, all fees
         // which might exceed this limitation are rounded up. The rounding up is
