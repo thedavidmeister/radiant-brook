@@ -13,13 +13,6 @@ class SecretsTest extends WebTestCase
   }
 
   /**
-   * Tests that secrets can find variables in the file system.
-   */
-  public function testSecretsFS() {
-
-  }
-
-  /**
    * Tests that secrets can find variables in the environment.
    *
    * @group stable
