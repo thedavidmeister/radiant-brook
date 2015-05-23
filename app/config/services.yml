@@ -28,9 +28,13 @@ services:
     class: AppBundle\API\Bitstamp\BitstampAPI
     arguments: [@guzzle.http_client, @logger]
 
+  bitstamp.fees:
+    class: AppBundle\API\Bitstamp\Fees
+    arguments: [@bitstamp.balance]
+
   bitstamp.trade_pairs:
     class: AppBundle\API\Bitstamp\BitstampTradePairs
-    arguments: [@bitstamp.balance, @bitstamp.order_book, @bitstamp.open_orders, @bitstamp.sell, @bitstamp.buy, @validator, @logger]
+    arguments: [@bitstamp.fees, @bitstamp.order_book, @bitstamp.open_orders, @bitstamp.sell, @bitstamp.buy, @validator, @logger]
 
   # Private API
   bitstamp.private_api_authenticator:

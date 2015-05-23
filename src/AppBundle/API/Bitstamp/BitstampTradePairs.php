@@ -15,7 +15,7 @@ class BitstampTradePairs
     protected $_volume;
 
     // As of May 15, 2014 the minimum allowable trade will be USD $5.
-    const MIN_VOLUME_USD = 5;
+    const MIN_VOLUME_USD = 500;
 
     // Bitstamp limits the fidelity of BTC trades.
     const BTC_FIDELITY = 8;
@@ -53,7 +53,7 @@ class BitstampTradePairs
      *   Symfony logger service.
      */
     public function __construct(
-    PrivateAPI\Balance $balance,
+    Fees $fees,
     PublicAPI\OrderBook $orderbook,
     PrivateAPI\OpenOrders $openorders,
     PrivateAPI\Sell $sell,
@@ -61,7 +61,7 @@ class BitstampTradePairs
     \Symfony\Component\Validator\ValidatorInterface $validator,
     \Psr\Log\LoggerInterface $logger)
     {
-        $this->balance = $balance;
+        $this->fees = $fees;
         $this->orderBook = $orderbook;
         $this->openOrders = $openorders;
         $this->sell = $sell;
@@ -86,23 +86,6 @@ class BitstampTradePairs
     }
 
     /**
-     * The percentage fee charged by Bitstamp for our user account.
-     *
-     * @return float
-     */
-    public function fee()
-    {
-        if (!isset($this->_fee)) {
-            // Bitstamp sends us the fee as a percentage represented as a decimal,
-            // e.g. 0.25% is handed to us as 0.25 rather than 0.0025, which will make
-            // all subsequent math difficult, so it's worth massaging the value here.
-            $this->_fee = $this->balance->execute()['fee'] / 100;
-        }
-
-        return $this->_fee;
-    }
-
-    /**
      * The USD bid volume pre-fees.
      *
      * @return float
@@ -111,7 +94,8 @@ class BitstampTradePairs
     {
         if (!isset($this->_volume)) {
             // Start with the minimum volume allowable.
-            $volume = $this::MIN_VOLUME_USD;
+            $minUSD = Money::USD(self::MIN_VOLUME_USD);
+            $feeOnMinUSD = $this->fees->absoluteUSD($minUSD);
 
             // Get the fee percentage.
             $fee = $this->fee();
@@ -186,7 +170,7 @@ class BitstampTradePairs
     {
         // For bids, we use the cap percentile as it's harder for other users to
         // manipulate and we want 1 - PERCENTILE as bids are decending.
-        return $this->orderBook->bids()->percentCap(1 - $this::PERCENTILE)[0];
+        return $this->orderBook->bids()->percentileCap(1 - self::PERCENTILE);
     }
 
     /**
@@ -242,7 +226,7 @@ class BitstampTradePairs
     {
         // For asks, we use the BTC volume percentile as it's harder for other users
         // to manipulate. Asks are sorted ascending so we can use $pc directly.
-        return $this->orderBook->asks()->percentile($this::PERCENTILE)[0];
+        return $this->orderBook->asks()->percentileCap($this::PERCENTILE);
     }
 
     /**
