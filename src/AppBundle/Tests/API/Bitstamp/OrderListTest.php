@@ -35,15 +35,10 @@ class OrderListTest extends WebTestCase
         return new OrderList($this->asksSample());
     }
 
-    /**
-     * Tests data() method.
-     *
-     * @group stable
-     */
-    public function testData()
-    {
-        $this->assertEquals(['usd' => Money::USD(23637), 'btc' => Money::BTC(21153277)], $this->bids()->data()[0]);
-        $this->assertEquals(['usd' => Money::USD(23653), 'btc' => Money::BTC(2200000)], $this->asks()->data()[0]);
+    public function testReturnFormats() {
+      // $expected = [
+      //   'data' => 'list',
+      //   '']
     }
 
     /**
@@ -76,8 +71,8 @@ class OrderListTest extends WebTestCase
     public function testTotalVolume()
     {
         // Calculated in GDrive.
-        $this->assertEquals(Money::BTC(8499156061514), $this->bids()->totalVolume());
-        $this->assertEquals(Money::BTC(1113579275675), $this->asks()->totalVolume());
+        $this->assertEquals(8499156061514, $this->bids()->totalVolume());
+        $this->assertEquals(1113579275675, $this->asks()->totalVolume());
     }
 
     /**
@@ -89,8 +84,8 @@ class OrderListTest extends WebTestCase
     {
         // Calculated in JS.
         // @see https://jsfiddle.net/6nj92xqs/
-        $this->assertEquals(Money::USD(22601007148461281), $this->bids()->totalCap());
-        $this->assertEquals(Money::USD(98288285804508848), $this->asks()->totalCap());
+        $this->assertEquals(22601007148461281, $this->bids()->totalCap());
+        $this->assertEquals(98288285804508848, $this->asks()->totalCap());
     }
 
     /**
@@ -101,39 +96,39 @@ class OrderListTest extends WebTestCase
     public function testPercentile()
     {
         // This is all from a GDrive calculation.
-        $this->assertEquals(Money::USD(1), $this->bids()->percentileBTCVolume(0));
-        $this->assertEquals(Money::USD(1), $this->bids()->percentileBTCVolume(0.001));
-        $this->assertEquals(Money::USD(1), $this->bids()->percentileBTCVolume(0.01));
-        $this->assertEquals(Money::USD(1), $this->bids()->percentileBTCVolume(0.1));
-        $this->assertEquals(Money::USD(1), $this->bids()->percentileBTCVolume(0.2));
-        $this->assertEquals(Money::USD(1), $this->bids()->percentileBTCVolume(0.3));
-        $this->assertEquals(Money::USD(1), $this->bids()->percentileBTCVolume(0.4));
-        $this->assertEquals(Money::USD(1), $this->bids()->percentileBTCVolume(0.5));
-        $this->assertEquals(Money::USD(1), $this->bids()->percentileBTCVolume(0.6));
-        $this->assertEquals(Money::USD(1), $this->bids()->percentileBTCVolume(0.7));
-        $this->assertEquals(Money::USD(2), $this->bids()->percentileBTCVolume(0.75));
-        $this->assertEquals(Money::USD(100), $this->bids()->percentileBTCVolume(0.8));
-        $this->assertEquals(Money::USD(15000), $this->bids()->percentileBTCVolume(0.9));
-        $this->assertEquals(Money::USD(23211), $this->bids()->percentileBTCVolume(0.99));
-        $this->assertEquals(Money::USD(23553), $this->bids()->percentileBTCVolume(0.999));
-        $this->assertEquals(Money::USD(23642), $this->bids()->percentileBTCVolume(1));
+        $this->assertEquals(1, $this->bids()->percentileBTCVolume(0));
+        $this->assertEquals(1, $this->bids()->percentileBTCVolume(0.001));
+        $this->assertEquals(1, $this->bids()->percentileBTCVolume(0.01));
+        $this->assertEquals(1, $this->bids()->percentileBTCVolume(0.1));
+        $this->assertEquals(1, $this->bids()->percentileBTCVolume(0.2));
+        $this->assertEquals(1, $this->bids()->percentileBTCVolume(0.3));
+        $this->assertEquals(1, $this->bids()->percentileBTCVolume(0.4));
+        $this->assertEquals(1, $this->bids()->percentileBTCVolume(0.5));
+        $this->assertEquals(1, $this->bids()->percentileBTCVolume(0.6));
+        $this->assertEquals(1, $this->bids()->percentileBTCVolume(0.7));
+        $this->assertEquals(2, $this->bids()->percentileBTCVolume(0.75));
+        $this->assertEquals(100, $this->bids()->percentileBTCVolume(0.8));
+        $this->assertEquals(15000, $this->bids()->percentileBTCVolume(0.9));
+        $this->assertEquals(23211, $this->bids()->percentileBTCVolume(0.99));
+        $this->assertEquals(23553, $this->bids()->percentileBTCVolume(0.999));
+        $this->assertEquals(23642, $this->bids()->percentileBTCVolume(1));
 
-        $this->assertEquals(Money::USD(23650), $this->asks()->percentileBTCVolume(0));
-        $this->assertEquals(Money::USD(23677), $this->asks()->percentileBTCVolume(0.001));
-        $this->assertEquals(Money::USD(23687), $this->asks()->percentileBTCVolume(0.01));
-        $this->assertEquals(Money::USD(23949), $this->asks()->percentileBTCVolume(0.1));
-        $this->assertEquals(Money::USD(24500), $this->asks()->percentileBTCVolume(0.2));
-        $this->assertEquals(Money::USD(25000), $this->asks()->percentileBTCVolume(0.3));
-        $this->assertEquals(Money::USD(26212), $this->asks()->percentileBTCVolume(0.4));
-        $this->assertEquals(Money::USD(27400), $this->asks()->percentileBTCVolume(0.5));
-        $this->assertEquals(Money::USD(29440), $this->asks()->percentileBTCVolume(0.6));
-        $this->assertEquals(Money::USD(31000), $this->asks()->percentileBTCVolume(0.7));
-        $this->assertEquals(Money::USD(33000), $this->asks()->percentileBTCVolume(0.75));
-        $this->assertEquals(Money::USD(35519), $this->asks()->percentileBTCVolume(0.8));
-        $this->assertEquals(Money::USD(60000), $this->asks()->percentileBTCVolume(0.9));
-        $this->assertEquals(Money::USD(495000), $this->asks()->percentileBTCVolume(0.99));
-        $this->assertEquals(Money::USD(9999900), $this->asks()->percentileBTCVolume(0.999));
-        $this->assertEquals(Money::USD(9999900), $this->asks()->percentileBTCVolume(1));
+        $this->assertEquals(23650, $this->asks()->percentileBTCVolume(0));
+        $this->assertEquals(23677, $this->asks()->percentileBTCVolume(0.001));
+        $this->assertEquals(23687, $this->asks()->percentileBTCVolume(0.01));
+        $this->assertEquals(23949, $this->asks()->percentileBTCVolume(0.1));
+        $this->assertEquals(24500, $this->asks()->percentileBTCVolume(0.2));
+        $this->assertEquals(25000, $this->asks()->percentileBTCVolume(0.3));
+        $this->assertEquals(26212, $this->asks()->percentileBTCVolume(0.4));
+        $this->assertEquals(27400, $this->asks()->percentileBTCVolume(0.5));
+        $this->assertEquals(29440, $this->asks()->percentileBTCVolume(0.6));
+        $this->assertEquals(31000, $this->asks()->percentileBTCVolume(0.7));
+        $this->assertEquals(33000, $this->asks()->percentileBTCVolume(0.75));
+        $this->assertEquals(35519, $this->asks()->percentileBTCVolume(0.8));
+        $this->assertEquals(60000, $this->asks()->percentileBTCVolume(0.9));
+        $this->assertEquals(495000, $this->asks()->percentileBTCVolume(0.99));
+        $this->assertEquals(9999900, $this->asks()->percentileBTCVolume(0.999));
+        $this->assertEquals(9999900, $this->asks()->percentileBTCVolume(1));
     }
 
     /**
@@ -178,39 +173,39 @@ class OrderListTest extends WebTestCase
     public function testPercentileCap()
     {
         // This is all from a GDrive calculation.
-        $this->assertEquals(Money::USD(1), $this->bids()->percentileCap(0));
-        $this->assertEquals(Money::USD(108), $this->bids()->percentileCap(0.001));
-        $this->assertEquals(Money::USD(4449), $this->bids()->percentileCap(0.01));
-        $this->assertEquals(Money::USD(9000), $this->bids()->percentileCap(0.1));
-        $this->assertEquals(Money::USD(12820), $this->bids()->percentileCap(0.2));
-        $this->assertEquals(Money::USD(16000), $this->bids()->percentileCap(0.3));
-        $this->assertEquals(Money::USD(16892), $this->bids()->percentileCap(0.4));
-        $this->assertEquals(Money::USD(19952), $this->bids()->percentileCap(0.5));
-        $this->assertEquals(Money::USD(20294), $this->bids()->percentileCap(0.6));
-        $this->assertEquals(Money::USD(21514), $this->bids()->percentileCap(0.7));
-        $this->assertEquals(Money::USD(22100), $this->bids()->percentileCap(0.75));
-        $this->assertEquals(Money::USD(22600), $this->bids()->percentileCap(0.8));
-        $this->assertEquals(Money::USD(23173), $this->bids()->percentileCap(0.9));
-        $this->assertEquals(Money::USD(23552), $this->bids()->percentileCap(0.99));
-        $this->assertEquals(Money::USD(23642), $this->bids()->percentileCap(0.999));
-        $this->assertEquals(Money::USD(23642), $this->bids()->percentileCap(1));
+        $this->assertEquals(1, $this->bids()->percentileCap(0));
+        $this->assertEquals(108, $this->bids()->percentileCap(0.001));
+        $this->assertEquals(4449, $this->bids()->percentileCap(0.01));
+        $this->assertEquals(9000, $this->bids()->percentileCap(0.1));
+        $this->assertEquals(12820, $this->bids()->percentileCap(0.2));
+        $this->assertEquals(16000, $this->bids()->percentileCap(0.3));
+        $this->assertEquals(16892, $this->bids()->percentileCap(0.4));
+        $this->assertEquals(19952, $this->bids()->percentileCap(0.5));
+        $this->assertEquals(20294, $this->bids()->percentileCap(0.6));
+        $this->assertEquals(21514, $this->bids()->percentileCap(0.7));
+        $this->assertEquals(22100, $this->bids()->percentileCap(0.75));
+        $this->assertEquals(22600, $this->bids()->percentileCap(0.8));
+        $this->assertEquals(23173, $this->bids()->percentileCap(0.9));
+        $this->assertEquals(23552, $this->bids()->percentileCap(0.99));
+        $this->assertEquals(23642, $this->bids()->percentileCap(0.999));
+        $this->assertEquals(23642, $this->bids()->percentileCap(1));
 
-        $this->assertEquals(Money::USD(23650), $this->asks()->percentileCap(0));
-        $this->assertEquals(Money::USD(23686), $this->asks()->percentileCap(0.001));
-        $this->assertEquals(Money::USD(23760), $this->asks()->percentileCap(0.01));
-        $this->assertEquals(Money::USD(25569), $this->asks()->percentileCap(0.1));
-        $this->assertEquals(Money::USD(30000), $this->asks()->percentileCap(0.2));
-        $this->assertEquals(Money::USD(60000), $this->asks()->percentileCap(0.3));
-        $this->assertEquals(Money::USD(480000), $this->asks()->percentileCap(0.4));
-        $this->assertEquals(Money::USD(8000000), $this->asks()->percentileCap(0.5));
-        $this->assertEquals(Money::USD(8000000), $this->asks()->percentileCap(0.6));
-        $this->assertEquals(Money::USD(9999800), $this->asks()->percentileCap(0.7));
-        $this->assertEquals(Money::USD(9999800), $this->asks()->percentileCap(0.75));
-        $this->assertEquals(Money::USD(9999900), $this->asks()->percentileCap(0.8));
-        $this->assertEquals(Money::USD(9999900), $this->asks()->percentileCap(0.9));
-        $this->assertEquals(Money::USD(9999900), $this->asks()->percentileCap(0.99));
-        $this->assertEquals(Money::USD(9999900), $this->asks()->percentileCap(0.999));
-        $this->assertEquals(Money::USD(9999900), $this->asks()->percentileCap(1));
+        $this->assertEquals(23650, $this->asks()->percentileCap(0));
+        $this->assertEquals(23686, $this->asks()->percentileCap(0.001));
+        $this->assertEquals(23760, $this->asks()->percentileCap(0.01));
+        $this->assertEquals(25569, $this->asks()->percentileCap(0.1));
+        $this->assertEquals(30000, $this->asks()->percentileCap(0.2));
+        $this->assertEquals(60000, $this->asks()->percentileCap(0.3));
+        $this->assertEquals(480000, $this->asks()->percentileCap(0.4));
+        $this->assertEquals(8000000, $this->asks()->percentileCap(0.5));
+        $this->assertEquals(8000000, $this->asks()->percentileCap(0.6));
+        $this->assertEquals(9999800, $this->asks()->percentileCap(0.7));
+        $this->assertEquals(9999800, $this->asks()->percentileCap(0.75));
+        $this->assertEquals(9999900, $this->asks()->percentileCap(0.8));
+        $this->assertEquals(9999900, $this->asks()->percentileCap(0.9));
+        $this->assertEquals(9999900, $this->asks()->percentileCap(0.99));
+        $this->assertEquals(9999900, $this->asks()->percentileCap(0.999));
+        $this->assertEquals(9999900, $this->asks()->percentileCap(1));
     }
 
     /**

@@ -35,10 +35,10 @@ class OrderBookTest extends PublicAPITest
 
         // Test that the created OrderList represents the correct data.
         $class = $this->getClass();
-        $this->assertEquals(['usd' => Money::USD(23953), 'btc' => Money::BTC(20874212)], $class->bids()->data()[0]);
-        $this->assertEquals(['usd' => Money::USD(23892), 'btc' => Money::BTC(92129583)], $class->bids()->data()[1]);
-        $this->assertEquals(['usd' => Money::USD(23978), 'btc' => Money::BTC(8472315)], $class->asks()->data()[0]);
-        $this->assertEquals(['usd' => Money::USD(23979), 'btc' => Money::BTC(1350000000)], $class->asks()->data()[1]);
+        $this->assertEquals(['usd' => Money::USD(1), 'btc' => Money::BTC(6050000000000)], $class->bids()->min());
+        $this->assertEquals(['usd' => Money::USD(23953), 'btc' => Money::BTC(20874212)], $class->bids()->max());
+        $this->assertEquals(['usd' => Money::USD(23978), 'btc' => Money::BTC(8472315)], $class->asks()->min());
+        $this->assertEquals(['usd' => Money::USD(9999900), 'btc' => Money::BTC(2413989060)], $class->asks()->max());
     }
 
     // Real order books are far larger than this.

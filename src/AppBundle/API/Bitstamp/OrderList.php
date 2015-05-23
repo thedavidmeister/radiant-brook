@@ -7,6 +7,9 @@ use Money\Money;
 
 /**
  * Wraps a list of orders provided by Bitstamp to handle some basic statistics.
+ *
+ * All methods must either return a single pair, a list of pairs or an aggregate
+ * value.
  */
 class OrderList
 {
@@ -37,22 +40,13 @@ class OrderList
     }
 
     /**
-     * Expose the data without allowing modification.
-     *
-     * @return array
-     *   The internal data array.
+     * Utility.
      */
-    public function data()
-    {
-        return $this->data;
-    }
 
     /**
-     * Utility function for sorting ascending.
-     *
-     * @todo Test me.
+     * Sorts set by USD asc.
      */
-    protected function sortAsc()
+    protected function sortUSDAsc()
     {
         usort($this->data, function($a, $b) {
             if ($a[self::USD_KEY] == $b[self::USD_KEY]) {
@@ -64,9 +58,9 @@ class OrderList
     }
 
     /**
-     * Utility function for sorting descending.
+     * Sorts set by USD desc.
      */
-    protected function sortDesc()
+    protected function sortUSDDesc()
     {
         usort($this->data, function($a, $b) {
             if ($a[self::USD_KEY] == $b[self::USD_KEY]) {
@@ -75,6 +69,94 @@ class OrderList
 
             return $a[self::USD_KEY] > $b[self::USD_KEY] ? -1 : 1;
         });
+    }
+
+    /**
+     * API.
+     */
+
+    /**
+     * Individual Money pairs as ['usd' => Money::USD, 'btc' => Money::BTC].
+     */
+
+    /**
+     * Returns the minimum USD value of the order list.
+     *
+     * @return array
+     *   A Money pair array representing the minimum USD order.
+     */
+    public function min()
+    {
+        $this->sortUSDAsc();
+
+        return reset($this->data);
+    }
+
+    /**
+     * Returns the maximum USD value of the order list.
+     *
+     * @return array
+     *   A Money pair array representing the maximum USD order.
+     */
+    public function max()
+    {
+        $this->sortUSDDesc();
+
+        return reset($this->data);
+    }
+
+    /**
+     * Lists of Money pairs.
+     */
+
+    /**
+     * Expose the data without allowing modification.
+     *
+     * It is not a good idea to call this outside unit tests.
+     *
+     * @return array
+     *   A list of Money pairs.
+     */
+    // public function data()
+    // {
+    //     return $this->data;
+    // }
+
+    /**
+     * Aggregate functions.
+     */
+
+    /**
+     * Calculates the total BTC Volume of the order list.
+     *
+     * @return int
+     *   An aggregate value representing the BTC total volume of the order list
+     *   in Satoshis.
+     */
+    public function totalVolume()
+    {
+        $sum = Money::BTC(0);
+        foreach ($this->data as $datum) {
+            $sum = $sum->add($datum[self::BTC_KEY]);
+        }
+
+        return $sum->getAmount();
+    }
+
+    /**
+     * Calculates total capitalisation of the order list.
+     *
+     * @return int
+     *   An aggregate value representing the market cap in USDcentsSatoshis.
+     */
+    public function totalCap()
+    {
+        $sum = Money::USD(0);
+        foreach ($this->data as $datum) {
+            $sum = $sum->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
+        }
+
+        return $sum->getAmount();
     }
 
     /**
@@ -102,8 +184,9 @@ class OrderList
      * @param float $pc
      *   Float between 0 - 1 represending the percentile.
      *
-     * @return float
-     *   The price at the given percentile.
+     * @return int
+     *   An aggregate value representing the USD price of the percentile
+     *   calculated against BTC Volume, in USD cents.
      */
     public function percentileBTCVolume($pc)
     {
@@ -112,10 +195,10 @@ class OrderList
         }
         // 1. Calculate the index, rounding up any decimals, which is not how
         // Money would normally work if we called multiply().
-        $index = Money::BTC((int) ceil($this->totalVolume()->getAmount() * $pc));
+        $index = Money::BTC((int) ceil($this->totalVolume() * $pc));
 
         // 2. Order all the values in the set in ascending order.
-        $this->sortAsc();
+        $this->sortUSDAsc();
 
         // If index is less than the running total of the next datum, return the
         // current datum.
@@ -123,67 +206,9 @@ class OrderList
         foreach ($this->data as $datum) {
             $sum = $sum->add($datum[self::BTC_KEY]);
             if ($index <= $sum) {
-                return $datum[self::USD_KEY];
+                return $datum[self::USD_KEY]->getAmount();
             }
         }
-    }
-
-    /**
-     * Calculates the total BTC Volume of the order list.
-     *
-     * @return Money::BTC
-     *   The total BTC Volume of the order list.
-     */
-    public function totalVolume()
-    {
-        $sum = Money::BTC(0);
-        foreach ($this->data as $datum) {
-            $sum = $sum->add($datum[self::BTC_KEY]);
-        }
-
-        return $sum;
-    }
-
-    /**
-     * Returns the minimum value of the order list.
-     *
-     * @return array
-     *   The minimum order.
-     */
-    public function min()
-    {
-        $this->sortAsc();
-
-        return reset($this->data);
-    }
-
-    /**
-     * Returns the maximum value of the order list.
-     *
-     * @return array
-     *   The maximum order.
-     */
-    public function max()
-    {
-        $this->sortDesc();
-
-        return reset($this->data);
-    }
-
-    /**
-     * Calculates total capitalisation of the order list.
-     *
-     * @return float
-     *   The total capitalisation of the order list.
-     */
-    public function totalCap()
-    {
-        $sum = Money::USD(0);
-        foreach ($this->data as $datum) {
-            $sum = $sum->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
-        }
-
-        return $sum;
     }
 
     /**
@@ -194,8 +219,9 @@ class OrderList
      * @param float $pc
      *   Percentile to calculate. Must be between 0 - 1.
      *
-     * @return array
-     *   The order representing the requested percentile.
+     * @return int
+     *   An aggregate value representing the USD price of the percentile
+     *   calculated against market cap, in USD cents.
      */
     public function percentileCap($pc)
     {
@@ -203,14 +229,14 @@ class OrderList
             throw new \Exception('Percentage must be between 0 - 1.');
         }
 
-        $index = Money::USD((int) ceil($this->totalCap()->getAmount() * $pc));
-        $this->sortAsc();
+        $index = Money::USD((int) ceil($this->totalCap() * $pc));
+        $this->sortUSDAsc();
 
         $sum = Money::USD(0);
         foreach ($this->data as $datum) {
             $sum = $sum->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
             if ($index <= $sum) {
-                return $datum[self::USD_KEY];
+                return $datum[self::USD_KEY]->getAmount();
             }
         }
     }
