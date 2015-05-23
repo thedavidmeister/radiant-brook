@@ -7,14 +7,33 @@ use GuzzleHttp\Subscriber\Mock;
 use GuzzleHttp\Subscriber\History;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Stream\Stream;
+use AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator;
 
 trait GuzzleTestTrait
 {
     // Traits cannot have constants.
     protected static $defaultMockType = 200;
 
-    protected $sample = 'foo';
-    protected $sample2 = 'bar';
+    /**
+     * Creates a mock authenticator for private API tests.
+     *
+     * @return PrivateAPIAuthenticator
+     */
+    public function mockAuthenticator()
+    {
+        $authenticator = $this
+        ->getMockBuilder('\AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator')
+        ->disableOriginalConstructor()
+        ->getMock();
+
+        $authenticator->method('getAuthParams')->willReturn([
+            'key' => 'foo',
+            'nonce' => 'bar',
+            'signature' => 'baz',
+        ]);
+
+        return $authenticator;
+    }
 
     /**
      * Convert the samples into a Guzzle Mock.

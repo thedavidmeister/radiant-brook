@@ -12,7 +12,7 @@ class Fees
     }
 
     protected function raw() {
-      return $this->balance->data()['fee'];
+      return (float) $this->balance->data()['fee'];
     }
 
     /**
