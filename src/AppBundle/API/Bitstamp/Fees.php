@@ -70,7 +70,7 @@ class Fees
         // digit value higher than it was before the rounding up. For example; a
         // fee of 0.111 will be charged as 0.12.
         // @see https://www.bitstamp.net/fee_schedule/
-        return Money::USD(ceil($this->absoluteFeeUSDNoRounding($USD)));
+        return Money::USD((int) ceil($this->absoluteFeeUSDNoRounding($USD)));
     }
 
     /**
@@ -103,7 +103,8 @@ class Fees
      */
     public function isofeeMaxUSD(Money $USD) {
       $Y = $USD->getAmount() * ($this->absoluteFeeUSD($USD)->getAmount() / $this->absoluteFeeUSDNoRounding($USD));
-      $Y = floor($Y);
+      // Yes, int casting floors things anyway, but this behaviour is clearer.
+      $Y = (int) floor($Y);
       return Money::USD($Y);
     }
 }

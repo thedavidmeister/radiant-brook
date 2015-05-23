@@ -108,7 +108,7 @@ class DefaultController extends Controller
 
         $stats = [
         '-Bids-' => '',
-        'bid/buy USD Base Volume' => $tp->volumeUSDBid(),
+        'bid/buy USD Base Volume' => $tp->volumeUSDBid()->getAmount(),
         'bid/buy BTC Volume' => $tp->bidBTCVolume(),
         'bid/buy USD Price' => $tp->bidPrice(),
         'bid/buy USD Volume post fees' => $tp->volumeUSDBidPostFees(),
@@ -130,12 +130,12 @@ class DefaultController extends Controller
         'Dupe ask range' => $tp->askPrice() * $tp::DUPE_RANGE_MULTIPLIER,
         'Dupe asks' => var_export($tp->dupes()['asks'], true),
         '-Facts-' => '',
-        'Fees' => $tp->fee(),
+        'Fees' => $tp->fees->multiplier(),
         // Sticking times at the bottom is a hack to ensure that we've hit
         // the endpoints.
-        'Book time' => $tp->datetime('orderBook')->format($timeFormat),
-        'Balance time' => $tp->datetime('balance')->format($timeFormat),
-        'Open orders time' => $tp->datetime('openOrders')->format($timeFormat),
+        // 'Book time' => $tp->datetime('orderBook')->format($timeFormat),
+        // 'Balance time' => $tp->datetime('balance')->format($timeFormat),
+        // 'Open orders time' => $tp->datetime('openOrders')->format($timeFormat),
         ];
 
         return $this->render('AppBundle::index.html.twig', [

@@ -3,6 +3,7 @@
 namespace AppBundle\API\Bitstamp;
 
 use Symfony\Component\Validator\Constraints as Assert;
+use Money\Money;
 
 /**
  * Suggests and executes profitable trade pairs.
@@ -95,28 +96,8 @@ class BitstampTradePairs
         if (!isset($this->_volume)) {
             // Start with the minimum volume allowable.
             $minUSD = Money::USD(self::MIN_VOLUME_USD);
-            $feeOnMinUSD = $this->fees->absoluteUSD($minUSD);
 
-            // Get the fee percentage.
-            $fee = $this->fee();
-
-            // Calculate the absolute fee at the min USD volume.
-            $feeAbsolute = $volume * $fee;
-
-            // We kindly ask our users to take note on Bitstamp's policy regarding fee
-            // calculation. As our fees are calculated to two decimal places, all fees
-            // which might exceed this limitation are rounded up. The rounding up is
-            // executed in such a way, that the second decimal digit is always one
-            // digit value higher than it was before the rounding up. For example; a
-            // fee of 0.111 will be charged as 0.12.
-            // @see https://www.bitstamp.net/fee_schedule/
-            $feeAbsoluteRounded = ceil($feeAbsolute * 100) / 100;
-
-            // We can bump our volume up to the next integer fee value without
-            // incurring extra cost to achieve improved effective prices.
-            $volumeAdjusted = ($feeAbsoluteRounded / $feeAbsolute) * $volume;
-
-            $this->_volume = $volumeAdjusted;
+            $this->_volume = $this->fees->isofeeMaxUSD($minUSD);
         }
 
         return $this->_volume;
@@ -129,7 +110,7 @@ class BitstampTradePairs
      */
     public function volumeUSDBidPostFees()
     {
-        return ceil($this->bidBTCVolume() * $this->bidPrice() * (1 + $this->fee()) * 100) / 100;
+        return ceil($this->bidBTCVolume() * $this->bidPrice() * (1 + $this->fees->multiplier()) * 100) / 100;
     }
 
     /**
@@ -140,7 +121,7 @@ class BitstampTradePairs
     public function volumeUSDAsk()
     {
         // @todo - Is (1 + $this->fee() * 2) correct?
-        return $this->volumeUSDBidPostFees() * (1 + $this->fee() * 2) + $this::MIN_PROFIT_USD;
+        return $this->volumeUSDBidPostFees() * (1 + $this->fees->multiplier() * 2) + $this::MIN_PROFIT_USD;
     }
 
     /**
@@ -182,12 +163,12 @@ class BitstampTradePairs
      */
     public function bidBTCVolume()
     {
-        $rounded = round($this->volumeUSDBid() / $this->bidPrice(), $this::BTC_FIDELITY);
+        $rounded = round($this->volumeUSDBid()->getAmount() / $this->bidPrice(), self::BTC_FIDELITY);
         // Its very important that when we lodge our bid with Bitstamp, the volume
         // times the price does not exceed the USD volume cap for the current fee,
         // or we pay the fee for the next bracket for no price advantage.
-        if (($rounded * $this->bidPrice()) > $this->volumeUSDBid()) {
-            $rounded -= 10 ** -($this::BTC_FIDELITY - 1);
+        if (($rounded * $this->bidPrice()) > $this->volumeUSDBid()->getAmount()) {
+            $rounded -= 10 ** -(self::BTC_FIDELITY - 1);
         }
 
         return $rounded;
@@ -214,7 +195,7 @@ class BitstampTradePairs
      */
     public function volumeUSDAskPostFees()
     {
-        return floor($this->askBTCVolume() * $this->askPrice() * (1 - $this->fee()) * 100) / 100;
+        return floor($this->askBTCVolume() * $this->askPrice() * (1 - $this->fees->multiplier()) * 100) / 100;
     }
 
     /**
@@ -264,7 +245,7 @@ class BitstampTradePairs
      */
     public function profitBTC()
     {
-        return $this->bidBTCVolume() * (1 - $this->fee()) - $this->askBTCVolume() * (1 + $this->fee());
+        return $this->bidBTCVolume() * (1 - $this->fees->multiplier()) - $this->askBTCVolume() * (1 + $this->fees->multiplier());
     }
 
     /**
