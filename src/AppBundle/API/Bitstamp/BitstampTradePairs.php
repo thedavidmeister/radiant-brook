@@ -30,9 +30,6 @@ class BitstampTradePairs
     // Bitcoin has precision of 8.
     const BTC_PRECISION = 8;
 
-    // USD has precision of 2.
-    const USD_PRECISION = 2;
-
     // The percentile of cap/volume we'd like to trade to.
     const PERCENTILE = 0.05;
 
@@ -124,6 +121,8 @@ class BitstampTradePairs
         // on the isofee. For this reason, we floor any fractions of satoshis
         // that come out of this equation to avoid any risk of being one satoshi
         // over the limit from Bitstamp's perspective.
+        //
+        // For this reason we do NOT use something like MoneyStrings.
         $satoshis = (int) floor(($this->volumeUSDBid()->getAmount() / $this->bidPrice()->getAmount()) * (10 ** self::BTC_PRECISION));
 
         // This must never happen.
