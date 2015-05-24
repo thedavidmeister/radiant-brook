@@ -84,6 +84,7 @@ class DefaultControllerTest extends WebTestCase
     /**
      * Tests that / produces a 200.
      *
+     * @covers AppBundle\Controller\DefaultController::indexAction
      * @group stable
      */
     public function testIndex() {
