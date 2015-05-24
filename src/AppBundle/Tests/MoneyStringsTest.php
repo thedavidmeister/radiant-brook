@@ -16,7 +16,8 @@ class MoneyStringsTest extends WebTestCase
      *
      * @return array
      */
-    public function dataStringToXTypeExceptions() {
+    public function dataStringToXTypeExceptions()
+    {
         return [
             [1],
             [0],
@@ -41,7 +42,8 @@ class MoneyStringsTest extends WebTestCase
      *
      * @param mixed $notString
      */
-    public function testStringToBTCTypeExceptions($notString) {
+    public function testStringToBTCTypeExceptions($notString)
+    {
         MoneyStrings::stringToBTC($notString);
     }
 
@@ -52,7 +54,8 @@ class MoneyStringsTest extends WebTestCase
      * @expectedExceptionMessage The parameter passed to stringToBTC must be a string
      * @group stable
      */
-    public function testStringToBTCNullException() {
+    public function testStringToBTCNullException()
+    {
         MoneyStrings::stringToBTC(null);
     }
 
@@ -67,7 +70,8 @@ class MoneyStringsTest extends WebTestCase
      * @param mixed $notString
      *   Thing that is not a string.
      */
-    public function testStringToUSDTypeExceptions($notString) {
+    public function testStringToUSDTypeExceptions($notString)
+    {
         MoneyStrings::stringToUSD($notString);
     }
 
@@ -78,7 +82,8 @@ class MoneyStringsTest extends WebTestCase
      * @expectedExceptionMessage The parameter passed to stringToUSD must be a string
      * @group stable
      */
-    public function testStringToUSDNullException() {
+    public function testStringToUSDNullException()
+    {
         MoneyStrings::stringToUSD(null);
     }
 

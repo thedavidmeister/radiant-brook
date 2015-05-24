@@ -33,13 +33,14 @@ class MoneyStrings
         if (!is_numeric($string)) {
             throw new \Exception('Could not parse Money::USD from string: ' . $string);
         }
+
         return Money::USD((int) round($string * (10 ** self::USD_PRECISION)));
     }
 
     /**
      * Converts a string in BTC (NOT satoshis) XXXX.YYYYYYYY to Money::BTC
      *
-     * @param  string $string
+     * @param string $string
      *   The string to convert.
      *
      * @return Money::BTC
@@ -61,6 +62,9 @@ class MoneyStrings
      * Converts Money::USD to a string in XXXX.YY format.
      *
      * @param Money::USD $USD
+     *
+     * @return string
+     *   USD string in XXXX.YY format.
      */
     public static function USDToString(Money $USD)
     {
@@ -71,6 +75,9 @@ class MoneyStrings
      * Converts Money::BTC to a string in XXXX.YYYYYYYY format.
      *
      * @param Money::BTC $BTC
+     *
+     * @return string
+     *   BTC string in XXXX.YYYYYYYY format.
      */
     public static function BTCToString(Money $BTC)
     {
