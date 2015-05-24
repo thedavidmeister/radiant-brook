@@ -25,6 +25,15 @@ class DefaultControllerTest extends WebTestCase
     }
 
     /**
+     * Provides an anonymous client.
+     *
+     * @return client
+     */
+    protected function createAnonClient() {
+        return static::createClient();
+    }
+
+    /**
      * Asserts no access for unauthenticated users.
      *
      * @param string $uri
@@ -32,7 +41,7 @@ class DefaultControllerTest extends WebTestCase
      */
     public function assertNoAnonymousAccess($uri)
     {
-        $client = static::createClient();
+        $client = $this->createAnonClient();
 
         $client->request('GET', $uri);
 
@@ -70,6 +79,23 @@ class DefaultControllerTest extends WebTestCase
         foreach ($expecteds as $expected) {
             $this->assertTrue($crawler->filter('html:contains("' . $expected . '")')->count() > 0);
         }
+    }
+
+    /**
+     * Tests that / produces a 200.
+     *
+     * @group stable
+     */
+    public function testIndex() {
+        $uri = '/';
+
+        $anon = $this->createAnonClient();
+        $anon->request('GET', $uri);
+        $this->assertEquals(200, $anon->getResponse()->getStatusCode());
+
+        $auth = $this->createAuthClient();
+        $auth->request('GET', $uri);
+        $this->assertEquals(200, $auth->getResponse()->getStatusCode());
     }
 
     /**
