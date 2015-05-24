@@ -10,9 +10,6 @@ use AppBundle\MoneyStrings;
  */
 class Dupes
 {
-    // Multiplier on a bid/ask price to consider it a dupe with existing orders.
-    const DUPE_RANGE_MULTIPLIER = 0.01;
-
     // Bitstamp representation of a "buy" order type.
     const TYPE_BUY = 0;
 
@@ -25,22 +22,18 @@ class Dupes
     // The key for type of an open order.
     const KEY_TYPE = 'type';
 
+    // The secret name for the range multiplier
+    const DUPES_RANGE_MULTIPLIER_SECRET = 'DUPES_RANGE_MULTIPLIER';
+
     /**
      * DI constructor.
      *
      * @param PrivateAPI\OpenOrders $openOrders
      */
-    public function __construct(PrivateAPI\OpenOrders $openOrders)
+    public function __construct(PrivateAPI\OpenOrders $openOrders, \AppBundle\Secrets $secrets)
     {
         $this->openOrders = $openOrders;
-    }
-
-    protected function validateType($type)
-    {
-        $types = [self::TYPE_BUY, self::TYPE_SELL];
-        if (!in_array($type, $types)) {
-            throw new \Exception('Unknown order type: ' . $type);
-        }
+        $this->secrets = $secrets;
     }
 
     /**
@@ -59,14 +52,9 @@ class Dupes
      * @return array
      *   The dupes found array.
      */
-    protected function findOpenOrdersWithinPriceRange(Money $price, Money $range, $type)
+    protected function findDupes(Money $price, $type)
     {
-        $this->validateType($type);
-
-        // Define upper and lower bounds.
-        $upperPriceBound = $price->add($range);
-        $lowerPriceBound = $price->subtract($range);
-
+        // fwrite(STDERR, print_r($range, TRUE));
         $matches = [];
         foreach ($this->openOrders->data() as $order) {
             // Ignore any orders of the wrong type.
@@ -76,7 +64,7 @@ class Dupes
 
             // Check upper and lower bounds.
             $orderPrice = MoneyStrings::stringToUSD($order[self::KEY_PRICE]);
-            if ($orderPrice->greaterThan($lowerPriceBound) && $orderPrice->lessThan($upperPriceBound)) {
+            if ($orderPrice->greaterThan($this->bounds($price)['lower']) && $orderPrice->lessThan($this->bounds($price)['upper'])) {
                 $matches[] = $orderPrice;
             }
         }
@@ -85,24 +73,21 @@ class Dupes
     }
 
     /**
-     * Hands off bids() or asks() to the dupe finding backend.
+     * Calculates the dupes range, upper and lower bounds for a given price.
      *
-     * @param Money $price
-     *   The price to check.
-     *
-     * @param int $type
-     *   Bids or Asks type, as per Bitstamp API in open_orders.
+     * @param  Money  $price
+     *   Price to calculate the bounds for.
      *
      * @return array
-     *   The dupes found array.
+     *   Array with keys 'range', 'upper', 'lower', values are Money::USD.
      */
-    protected function findDupes(Money $price, $type)
-    {
-        $this->validateType($type);
+    public function bounds(Money $price) {
+        $range = $price->multiply($this->rangeMultiplier());
+        // Define upper and lower bounds.
+        $upperPriceBound = $price->add($range);
+        $lowerPriceBound = $price->subtract($range);
 
-        $dupeRange = $price->multiply($this->rangeMultiplier());
-
-        return $this->findOpenOrdersWithinPriceRange($price, $dupeRange, $type);
+        return ['range' => $range, 'upper' => $upperPriceBound, 'lower' => $lowerPriceBound];
     }
 
     /**
@@ -141,6 +126,6 @@ class Dupes
      */
     public function rangeMultiplier()
     {
-        return self::DUPE_RANGE_MULTIPLIER;
+        return (float) $this->secrets->get(self::DUPES_RANGE_MULTIPLIER_SECRET);
     }
 }

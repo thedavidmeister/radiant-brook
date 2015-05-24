@@ -34,7 +34,7 @@ services:
 
   bitstamp.dupes:
     class: AppBundle\API\Bitstamp\Dupes
-    arguments: [@bitstamp.open_orders]
+    arguments: [@bitstamp.open_orders, @app.secrets]
 
   bitstamp.buysell:
     class: AppBundle\API\Bitstamp\BuySell
