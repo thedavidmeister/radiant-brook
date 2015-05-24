@@ -98,8 +98,8 @@ class OrderListTest extends WebTestCase
     public function testTotalVolume()
     {
         // Calculated in GDrive.
-        $this->assertEquals(8499156061514, $this->bids()->totalVolume());
-        $this->assertEquals(1113579275675, $this->asks()->totalVolume());
+        $this->assertEquals(8499177214791, $this->bids()->totalVolume());
+        $this->assertEquals(1113581475675, $this->asks()->totalVolume());
     }
 
     /**
@@ -111,8 +111,8 @@ class OrderListTest extends WebTestCase
     {
         // Calculated in JS.
         // @see https://jsfiddle.net/6nj92xqs/
-        $this->assertEquals(22601007148461281, $this->bids()->totalCap());
-        $this->assertEquals(98288285804508848, $this->asks()->totalCap());
+        $this->assertEquals(22601507148469730, $this->bids()->totalCap());
+        $this->assertEquals(98288337841108848, $this->asks()->totalCap());
     }
 
     /**
