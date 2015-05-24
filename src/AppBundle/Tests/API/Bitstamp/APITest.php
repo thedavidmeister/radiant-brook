@@ -29,7 +29,45 @@ abstract class APITest extends WebTestCase
     }
 
     /**
+     * Data provider for testDatetimeException.
+     *
+     * @return array
+     */
+    public function dataDatetimeException()
+    {
+        return [
+            [true],
+            [false],
+            [[]],
+            ['string'],
+            [123],
+            [0],
+            [1.23],
+        ];
+    }
+
+    /**
+     * Test that datetime provides exceptions when not provided with a DateTime.
+     *
+     * @dataProvider dataDatetimeException
+     * @expectedException Exception
+     * @expectedExceptionMessage New datetime must be a DateTime object.
+     * @group stable
+     *
+     * @param mixed $notTimes
+     *   Things that aren't DateTime objects.
+     */
+    public function testDatetimeException($notTimes)
+    {
+        $class = $this->getClass();
+
+        $class->datetime($notTimes);
+    }
+
+    /**
      * Tests that we can clear the parameters previously set.
+     *
+     * @group stable
      */
     public function testClearParameters()
     {
