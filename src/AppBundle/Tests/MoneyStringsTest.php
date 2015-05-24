@@ -6,6 +6,9 @@ use AppBundle\MoneyStrings;
 use Money\Money;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+/**
+ * Tests for AppBundle\MoneyStrings
+ */
 class MoneyStringsTest extends WebTestCase
 {
     /**
@@ -15,23 +18,23 @@ class MoneyStringsTest extends WebTestCase
      */
     public function testBTCToString()
     {
-      $tests = [
-          ['0.00000001', Money::BTC(1)],
-          ['0.00000010', Money::BTC(10)],
-          ['0.00000100', Money::BTC(100)],
-          ['0.00001000', Money::BTC(1000)],
-          ['0.00010000', Money::BTC(10000)],
-          ['0.00100000', Money::BTC(100000)],
-          ['0.01000000', Money::BTC(1000000)],
-          ['0.10000000', Money::BTC(10000000)],
-          ['1.00000000', Money::BTC(100000000)],
-          ['1.23456789', Money::BTC(123456789)],
-          ['12.34567891', Money::BTC(1234567891)],
-      ];
+        $tests = [
+            ['0.00000001', Money::BTC(1)],
+            ['0.00000010', Money::BTC(10)],
+            ['0.00000100', Money::BTC(100)],
+            ['0.00001000', Money::BTC(1000)],
+            ['0.00010000', Money::BTC(10000)],
+            ['0.00100000', Money::BTC(100000)],
+            ['0.01000000', Money::BTC(1000000)],
+            ['0.10000000', Money::BTC(10000000)],
+            ['1.00000000', Money::BTC(100000000)],
+            ['1.23456789', Money::BTC(123456789)],
+            ['12.34567891', Money::BTC(1234567891)],
+        ];
 
-      foreach ($tests as $test) {
-        $this->assertSame($test[0], MoneyStrings::BTCToString($test[1]));
-      }
+        foreach ($tests as $test) {
+            $this->assertSame($test[0], MoneyStrings::BTCToString($test[1]));
+        }
     }
 
     /**
@@ -41,17 +44,17 @@ class MoneyStringsTest extends WebTestCase
      */
     public function testUSDToString()
     {
-      $tests = [
-          ['0.01', Money::USD(1)],
-          ['0.1', Money::USD(10)],
-          ['1', Money::USD(100)],
-          ['1.23', Money::USD(123)],
-          ['12.34', Money::USD(1234)],
-      ];
+        $tests = [
+            ['0.01', Money::USD(1)],
+            ['0.1', Money::USD(10)],
+            ['1', Money::USD(100)],
+            ['1.23', Money::USD(123)],
+            ['12.34', Money::USD(1234)],
+        ];
 
-      foreach ($tests as $test) {
-        $this->assertSame($test[0], MoneyStrings::USDToString($test[1]));
-      }
+        foreach ($tests as $test) {
+            $this->assertSame($test[0], MoneyStrings::USDToString($test[1]));
+        }
     }
 
     /**
@@ -59,7 +62,8 @@ class MoneyStringsTest extends WebTestCase
      *
      * @group stable
      */
-    public function testStringToUSD() {
+    public function testStringToUSD()
+    {
         $tests =[
             [Money::USD(10000), '$100'],
             [Money::USD(10000), '$$100'],
@@ -79,7 +83,13 @@ class MoneyStringsTest extends WebTestCase
         }
     }
 
-    public function dataStringToUSDExceptions() {
+    /**
+     * Data provider for testStringToUSD().
+     *
+     * @return array
+     */
+    public function dataStringToUSDExceptions()
+    {
         return [
             ['a1'],
             ['1a'],
@@ -93,8 +103,12 @@ class MoneyStringsTest extends WebTestCase
      * @expectedException Exception
      * @expectedExceptionMessage Could not parse Money::USD from string:
      * @group stable
+     *
+     * @param string $string
+     *   The string to test.
      */
-    public function testStringToUSDExceptions($string) {
+    public function testStringToUSDExceptions($string)
+    {
         MoneyStrings::stringToUSD($string);
     }
 
@@ -103,7 +117,8 @@ class MoneyStringsTest extends WebTestCase
      *
      * @group stable
      */
-    public function testStringToBTC() {
+    public function testStringToBTC()
+    {
         $tests = [
             [Money::BTC(1), '.00000001'],
             [Money::BTC(1), '0.00000001'],
@@ -127,7 +142,13 @@ class MoneyStringsTest extends WebTestCase
         }
     }
 
-    public function dataStringToBTCExceptions() {
+    /**
+     * Data provider for testStringToBTC().
+     *
+     * @return array
+     */
+    public function dataStringToBTCExceptions()
+    {
         return [
             ['a1'],
             ['1a'],
@@ -138,12 +159,18 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
+     * Tests exceptions thrown by stringToBTC().
+     *
      * @dataProvider dataStringToBTCExceptions
      * @expectedException Exception
      * @expectedExceptionMessage Could not parse Money::BTC from string:
      * @group stable
+     *
+     * @param string $string
+     *   The string to test.
      */
-    public function testStringToBTCExceptions($string) {
-      MoneyStrings::stringToBTC($string);
+    public function testStringToBTCExceptions($string)
+    {
+        MoneyStrings::stringToBTC($string);
     }
 }
