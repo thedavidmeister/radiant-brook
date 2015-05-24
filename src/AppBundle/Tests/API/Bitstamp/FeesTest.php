@@ -114,6 +114,8 @@ class FeesTest extends WebTestCase
 
     /**
      * Tests the calculation of the Max USD on the isofee.
+     *
+     * @group stable
      */
     public function testIsofeeMaxUSD()
     {
