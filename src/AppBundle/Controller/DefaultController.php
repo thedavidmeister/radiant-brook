@@ -14,26 +14,6 @@ use Symfony\Component\HttpFoundation\Request;
 class DefaultController extends Controller
 {
     /**
-     * Prints raw responses from Bitstamp endpoints.
-     *
-     * @Route("raw/{endpoint}", name="raw")
-     *
-     * @param string $endpoint
-     *   The name of the Bitstamp API endpoint to hit.
-     *
-     * @return Response
-     */
-    public function rawAction($endpoint)
-    {
-        $endpoints = ['ticker', 'order_book', 'transactions', 'eur_usd', 'balance'];
-        if (!in_array($endpoint, $endpoints)) {
-            throw new \Exception('Invalid endpoint ' . $endpoint);
-        }
-        $raw = $this->get('bitstamp.' . $endpoint);
-        ldd($raw->data());
-    }
-
-    /**
      * Just a blank index page.
      *
      * @Route("/", name="index")
