@@ -4,15 +4,17 @@ namespace AppBundle\Tests\API\Bitstamp;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+/**
+ * Tests for AppBundle\API\Bitstamp\BitstampTradePairs.
+ */
 class BitstampTradePairsTest extends WebTestCase
 {
-
-  /**
-   * @group stable
-   * @return [type] [description]
-   */
-  public function testDummy() {
-
-  }
-
+    /**
+     * Fill me out.
+     *
+     * @group stable
+     */
+    public function testDummy()
+    {
+    }
 }

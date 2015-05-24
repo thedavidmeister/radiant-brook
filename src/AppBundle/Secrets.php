@@ -9,7 +9,11 @@ use Dotenv;
  */
 class Secrets
 {
-    public function __construct() {
+    /**
+     * DI constructor.
+     */
+    public function __construct()
+    {
         // Ensure that any secrets in .env are loaded.
         Dotenv::load(__DIR__);
     }

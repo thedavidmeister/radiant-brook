@@ -12,6 +12,77 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class MoneyStringsTest extends WebTestCase
 {
     /**
+     * Data provider for testStringToUSDTypeExceptions().
+     *
+     * @return array
+     */
+    public function dataStringToXTypeExceptions() {
+        return [
+            [1],
+            [0],
+            [true],
+            [false],
+            [[]],
+            [1.00],
+            [123],
+            [100],
+            [0.1],
+            [05.00],
+        ];
+    }
+
+    /**
+     * Tests that exceptions are thrown when stringToBTC does not get a string.
+     *
+     * @dataProvider dataStringToXTypeExceptions
+     * @expectedException Exception
+     * @expectedExceptionMessage The parameter passed to stringToBTC must be a string
+     * @group stable
+     *
+     * @param mixed $notString
+     */
+    public function testStringToBTCTypeExceptions($notString) {
+        MoneyStrings::stringToBTC($notString);
+    }
+
+    /**
+     * Tests that exceptions are thrown when stringToBTC gets null.
+     *
+     * @expectedException Exception
+     * @expectedExceptionMessage The parameter passed to stringToBTC must be a string
+     * @group stable
+     */
+    public function testStringToBTCNullException() {
+        MoneyStrings::stringToBTC(null);
+    }
+
+    /**
+     * Tests that exceptions are thrown when stringToUSD does not get a string.
+     *
+     * @dataProvider dataStringToXTypeExceptions
+     * @expectedException Exception
+     * @expectedExceptionMessage The parameter passed to stringToUSD must be a string
+     * @group stable
+     *
+     * @param mixed $notString
+     *   Thing that is not a string.
+     */
+    public function testStringToUSDTypeExceptions($notString) {
+        MoneyStrings::stringToUSD($notString);
+    }
+
+    /**
+     * Tests that exceptions are thrown when stringToUSD gets null.
+     *
+     * @expectedException Exception
+     * @expectedExceptionMessage The parameter passed to stringToUSD must be a string
+     * @group stable
+     */
+    public function testStringToUSDNullException() {
+        MoneyStrings::stringToUSD(null);
+    }
+
+    /**
      * Tests MoneyString::BTCToString().
      *
      * @group stable
@@ -46,8 +117,8 @@ class MoneyStringsTest extends WebTestCase
     {
         $tests = [
             ['0.01', Money::USD(1)],
-            ['0.1', Money::USD(10)],
-            ['1', Money::USD(100)],
+            ['0.10', Money::USD(10)],
+            ['1.00', Money::USD(100)],
             ['1.23', Money::USD(123)],
             ['12.34', Money::USD(1234)],
         ];
@@ -99,6 +170,8 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
+     * Tests stringToUSD exceptions.
+     *
      * @dataProvider dataStringToUSDExceptions
      * @expectedException Exception
      * @expectedExceptionMessage Could not parse Money::USD from string:
