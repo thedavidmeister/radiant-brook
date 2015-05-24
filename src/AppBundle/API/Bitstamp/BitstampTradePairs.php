@@ -30,6 +30,9 @@ class BitstampTradePairs
     // Bitcoin has precision of 8.
     const BTC_PRECISION = 8;
 
+    // USD has precision of 2.
+    const USD_PRECISION = 2;
+
     // The percentile of cap/volume we'd like to trade to.
     const PERCENTILE = 0.05;
 
@@ -238,7 +241,7 @@ class BitstampTradePairs
      */
     public function midprice()
     {
-        $midpoint = (int) round(($this->bidPrice()->getAmount() + $this->askPrice()->getAmount()) / 2, 2);
+        $midpoint = (int) round(($this->bidPrice()->getAmount() + $this->askPrice()->getAmount()) / 2, self::USD_PRECISION);
 
         return Money::USD($midpoint);
     }
