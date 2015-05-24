@@ -2,7 +2,7 @@
 
 namespace AppBundle\API\Bitstamp;
 
-use AppBundle\MoneyFromString;
+use AppBundle\MoneyStrings;
 use Money\Money;
 
 /**
@@ -33,8 +33,8 @@ class OrderList
         $this->data = [];
         foreach ($data as $datum) {
             $this->data[] = [
-                self::USD_KEY => MoneyFromString::USD($datum[self::USD_PRICE_DATUM_INDEX]),
-                self::BTC_KEY => MoneyFromString::BTC($datum[self::BTC_AMOUNT_DATUM_INDEX]),
+                self::USD_KEY => MoneyStrings::stringToUSD($datum[self::USD_PRICE_DATUM_INDEX]),
+                self::BTC_KEY => MoneyStrings::stringToBTC($datum[self::BTC_AMOUNT_DATUM_INDEX]),
             ];
         }
     }

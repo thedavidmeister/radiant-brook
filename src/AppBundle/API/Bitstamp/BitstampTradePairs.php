@@ -45,19 +45,16 @@ class BitstampTradePairs
     // The minimum amount of USD cents profit we need to commit to a pair.
     const MIN_PROFIT_USD = 1;
 
-    // Multiplier on a bid/ask price to consider it a dupe with existing orders.
-    const DUPE_RANGE_MULTIPLIER = 0.01;
-
     /**
      * Constructor to store services passed by Symfony.
-     * @param Balance                                         $balance
-     *   Bitstamp balance service.
+     * @param Fees                                            $fees
+     *   Bitstamp Fees service.
+     *
+     * @param Dupes                                           $dupes
+     *   Bitstamp Dupes service.
      *
      * @param OrderBook                                       $orderbook
      *   Bitstamp order book service.
-     *
-     * @param OpenOrders                                      $openorders
-     *   Bitstamp open orders service.
      *
      * @param Sell                                            $sell
      *   Bitstamp sell service.
@@ -73,16 +70,16 @@ class BitstampTradePairs
      */
     public function __construct(
     Fees $fees,
+    Dupes $dupes,
     PublicAPI\OrderBook $orderbook,
-    PrivateAPI\OpenOrders $openorders,
     PrivateAPI\Sell $sell,
     PrivateAPI\Buy $buy,
     \Symfony\Component\Validator\ValidatorInterface $validator,
     \Psr\Log\LoggerInterface $logger)
     {
         $this->fees = $fees;
+        $this->dupes = $dupes;
         $this->orderBook = $orderbook;
-        $this->openOrders = $openorders;
         $this->sell = $sell;
         $this->buy = $buy;
         $this->validator = $validator;
@@ -265,65 +262,6 @@ class BitstampTradePairs
     }
 
     /**
-     * Returns open orders that duplicate either leg of the suggested pair.
-     *
-     * @return array
-     *   A list of open duplicate bids and asks.
-     */
-    public function dupes()
-    {
-        $baseSearchParams = [
-        'key' => 'price',
-        'unit' => '=',
-        'operator' => '~',
-        ];
-
-        $bidDupes = $this->openOrders->search([
-            'range' => $this->bidPrice()->getAmount() * $this::DUPE_RANGE_MULTIPLIER,
-            'value' => $this->bidPrice()->getAmount(),
-            'type' => $this->openOrders->typeBuy(),
-        ] + $baseSearchParams);
-
-        $askDupes = $this->openOrders->search([
-            'range' => $this->askPrice()->getAmount() * $this::DUPE_RANGE_MULTIPLIER,
-            'value' => $this->askPrice()->getAmount(),
-            'type' => $this->openOrders->typeSell(),
-        ] + $baseSearchParams);
-
-        return [
-        'bids' => $bidDupes,
-        'asks' => $askDupes,
-        ];
-    }
-
-    /**
-     * Format USD Money in a Bitstamp API safe format.
-     *
-     * @param Money::USD $USD
-     *   The USD Money to format.
-     *
-     * @return string
-     *   The USD amount in the format the Bitstamp API expects.
-     *
-     */
-    public function APIFormatUSD($USD) {
-        return (string) round($USD->getAmount() / 10 ** self::USD_PRECISION, self::USD_PRECISION);
-    }
-
-    /**
-     * Format BTC Money in a Bitstamp API safe format.
-     *
-     * @param Money::BTC $BTC
-     *   The BTC Money to format.
-     *
-     * @return string
-     *   The BTC amount in the format the Bitstamp API expects.
-     */
-    public function APIFormatBTC($BTC) {
-        return (string) round($BTC->getAmount() / 10 ** self::BTC_PRECISION, self::BTC_PRECISION);
-    }
-
-    /**
      * Execute the suggested trade pairs with Bitstamp.
      *
      * If $this fails validation, the trade pairs will not be executed and an
@@ -333,13 +271,13 @@ class BitstampTradePairs
     {
         if ($this->isValid()) {
             $this->sell
-            ->setParam('price', $this->APIFormatUSD($this->askPrice()))
-            ->setParam('amount', $this->APIFormatBTC($this->askBTCVolume()))
+            ->setParam('price', MoneyStrings::USDToString($this->askPrice()))
+            ->setParam('amount', MoneyStrings::BTCToString($this->askBTCVolume()))
             ->execute();
 
             $this->buy
-            ->setParam('price', $this->APIFormatUSD($this->bidPrice()))
-            ->setParam('amount', $this->APIFormatBTC($this->bidBTCVolume()))
+            ->setParam('price', MoneyStrings::USDToString($this->bidPrice()))
+            ->setParam('amount', MoneyStrings::BTCToString($this->bidBTCVolume()))
             ->execute();
 
             $this->logger->info('Trade pairs executed');
@@ -382,6 +320,6 @@ class BitstampTradePairs
      */
     public function hasDupes()
     {
-        return !empty($this->dupes()['bids']) || !empty($this->dupes()['asks']);
+        return !empty($this->dupes->bids($this->bidPrice())) || !empty($this->dupes->asks($this->askPrice()));
     }
 }
