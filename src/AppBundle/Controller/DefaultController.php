@@ -39,7 +39,7 @@ class DefaultController extends Controller
 
         $stats = array();
         foreach (['bids', 'asks'] as $list) {
-            $stats += [
+            $merge = [
                 $list . ' min' => [$ob->$list()->min()['usd']->getAmount(), $ob->$list()->min()['btc']->getAmount(), ''],
                 $list . ' max' => [$ob->$list()->max()['usd']->getAmount(), $ob->$list()->max()['btc']->getAmount(), ''],
                 $list . ' volume' => ['', $ob->$list()->totalVolume(), ''],
@@ -62,8 +62,9 @@ class DefaultController extends Controller
                 $list . ' 99% cap' => [$ob->$list()->percentileCap(0.99), '', ''],
                 $list . ' 99.9% cap' => [$ob->$list()->percentileCap(0.999), '', ''],
                 $list . ' 99.99% cap' => [$ob->$list()->percentileCap(0.9999), '', ''],
-                '-' => ['-', '-', '-'],
+                $list . ' -end-' => ['-', '-', '-'],
             ];
+            $stats += $merge;
         }
 
         return $this->render('AppBundle::order-book.html.twig', [

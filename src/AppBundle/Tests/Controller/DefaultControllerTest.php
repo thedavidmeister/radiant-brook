@@ -29,7 +29,8 @@ class DefaultControllerTest extends WebTestCase
      *
      * @return client
      */
-    protected function createAnonClient() {
+    protected function createAnonClient()
+    {
         return static::createClient();
     }
 
@@ -87,7 +88,8 @@ class DefaultControllerTest extends WebTestCase
      * @covers AppBundle\Controller\DefaultController::indexAction
      * @group stable
      */
-    public function testIndex() {
+    public function testIndex()
+    {
         $uri = '/';
 
         $anon = $this->createAnonClient();

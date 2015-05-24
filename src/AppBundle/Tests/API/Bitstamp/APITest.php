@@ -29,6 +29,75 @@ abstract class APITest extends WebTestCase
     }
 
     /**
+     * Tests that we can clear the parameters previously set.
+     */
+    public function testClearParameters()
+    {
+        $class = $this->getClass();
+
+        $class->setParam('foo', 'bar');
+        $class->clearParams();
+        $this->assertNull($class->getParam('foo'));
+    }
+
+    /**
+     * Data provider for testRequiredParameters.
+     *
+     * @return array
+     */
+    public function dataRequiredParameters()
+    {
+        $class = $this->getClass();
+
+        $testMaster = [];
+        foreach ($class->requiredParams() as $required) {
+            $testMaster[$required] = $required;
+        }
+
+        $tests = [];
+        foreach ($class->requiredParams() as $required) {
+            $test = $testMaster;
+            unset($test[$required]);
+            $tests[] = [$test, $required];
+        }
+
+        // Placeholder sillyness for anything with no required parameters.
+        if (empty($class->requiredParams())) {
+            $tests[] = [['foo'], 'bar'];
+        }
+
+        return $tests;
+    }
+
+    /**
+     * Test require parameters.
+     *
+     * @dataProvider dataRequiredParameters
+     * @group stable
+     *
+     * @param array  $params
+     *   Parameters array missing required parameters.
+     *
+     * @param string $required
+     *   The required parameter that is missing.
+     */
+    public function testRequiredParameters($params, $required)
+    {
+        $class = $this->getClass();
+        if ($class->requiredParams() === []) {
+            // Nothing to test here.
+            $this->assertTrue(true);
+
+            return;
+        }
+
+        $this->setExpectedException('Exception', 'Required parameter ' . $required . ' must be set for endpoint');
+        $class->clearParams();
+        $class->setParams($params);
+        $class->execute();
+    }
+
+    /**
      * Test basic setters and getters for parameters.
      *
      * @group stable
