@@ -18,9 +18,9 @@ class PrivateAPIAuthenticatorTest extends WebTestCase
 
         $secrets->method('get')
         ->will($this->returnValueMap([
-            ['client_id', 'foo'],
-            ['key', 'bar'],
-            ['secret', 'bing'],
+            ['BITSTAMP_CLIENT_ID', 'foo'],
+            ['BITSTAMP_KEY', 'bar'],
+            ['BITSTAMP_SECRET', 'bing'],
         ]));
 
         return $secrets;
@@ -65,7 +65,7 @@ class PrivateAPIAuthenticatorTest extends WebTestCase
         $this->assertTrue(is_int($authParams['nonce']));
         $this->assertTrue($authParams['nonce'] > 0);
 
-        $this->assertSame($authParams['key'], $secrets->get('key'));
-        $this->assertSame($authParams['signature'], $this->signature($authParams['nonce'], $secrets->get('client_id'), $secrets->get('key'), $secrets->get('secret')));
+        $this->assertSame($authParams['key'], $secrets->get('BITSTAMP_KEY'));
+        $this->assertSame($authParams['signature'], $this->signature($authParams['nonce'], $secrets->get('BITSTAMP_CLIENT_ID'), $secrets->get('BITSTAMP_KEY'), $secrets->get('BITSTAMP_SECRET')));
     }
 }

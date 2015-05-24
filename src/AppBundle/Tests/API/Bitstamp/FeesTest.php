@@ -48,8 +48,10 @@ class FeesTest extends WebTestCase
    * @group stable
    */
   public function testMultiplier() {
-    $this->assertSame(0.0025, $this->fees()->multiplier());
-    $this->assertSame(0.0024, $this->fees2()->multiplier());
+    $this->assertSame(0.0025, $this->fees()->bidsMultiplier());
+    $this->assertSame(0.9975, $this->fees()->asksMultiplier());
+    $this->assertSame(0.0024, $this->fees2()->bidsMultiplier());
+    $this->assertSame(0.9976, $this->fees2()->asksMultiplier());
   }
 
   /**
