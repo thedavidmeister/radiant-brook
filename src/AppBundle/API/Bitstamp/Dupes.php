@@ -29,6 +29,7 @@ class Dupes
      * DI constructor.
      *
      * @param PrivateAPI\OpenOrders $openOrders
+     * @param \AppBundle\Secrets    $secrets
      */
     public function __construct(PrivateAPI\OpenOrders $openOrders, \AppBundle\Secrets $secrets)
     {
@@ -75,13 +76,14 @@ class Dupes
     /**
      * Calculates the dupes range, upper and lower bounds for a given price.
      *
-     * @param  Money  $price
+     * @param Money $price
      *   Price to calculate the bounds for.
      *
      * @return array
      *   Array with keys 'range', 'upper', 'lower', values are Money::USD.
      */
-    public function bounds(Money $price) {
+    public function bounds(Money $price)
+    {
         $range = $price->multiply($this->rangeMultiplier());
         // Define upper and lower bounds.
         $upperPriceBound = $price->add($range);
