@@ -2,7 +2,6 @@
 
 namespace AppBundle\API\Bitstamp;
 
-use Symfony\Component\Validator\Constraints as Assert;
 use Money\Money;
 
 /**
@@ -56,34 +55,20 @@ class BitstampTradePairs
      * @param OrderBook                                       $orderbook
      *   Bitstamp order book service.
      *
-     * @param Sell                                            $sell
-     *   Bitstamp sell service.
-     *
-     * @param Buy                                             $buy
-     *   Bitstamp buy service.
-     *
-     * @param \Symfony\Component\Validator\ValidatorInterface $validator
-     *   Symfony validator service.
-     *
-     * @param \Psr\Log\LoggerInterface                        $logger
-     *   Symfony logger service.
+     * @param BuySell                                         $buySell
+     *   Combined Bitstamp buy/sell service.
      */
     public function __construct(
     Fees $fees,
     Dupes $dupes,
-    PublicAPI\OrderBook $orderbook,
-    PrivateAPI\Sell $sell,
-    PrivateAPI\Buy $buy,
-    \Symfony\Component\Validator\ValidatorInterface $validator,
-    \Psr\Log\LoggerInterface $logger)
+    BuySell $buySell,
+    PublicAPI\OrderBook $orderbook
+    )
     {
         $this->fees = $fees;
         $this->dupes = $dupes;
         $this->orderBook = $orderbook;
-        $this->sell = $sell;
-        $this->buy = $buy;
-        $this->validator = $validator;
-        $this->logger = $logger;
+        $this->buySell = $buySell;
     }
 
     /**
@@ -270,39 +255,24 @@ class BitstampTradePairs
     public function execute()
     {
         if ($this->isValid()) {
-            $this->sell
-            ->setParam('price', MoneyStrings::USDToString($this->askPrice()))
-            ->setParam('amount', MoneyStrings::BTCToString($this->askBTCVolume()))
-            ->execute();
-
-            $this->buy
-            ->setParam('price', MoneyStrings::USDToString($this->bidPrice()))
-            ->setParam('amount', MoneyStrings::BTCToString($this->bidBTCVolume()))
-            ->execute();
-
-            $this->logger->info('Trade pairs executed');
+            $this->buySell->execute($this->bidPrice(), $this->bidBTCVolume(), $this->askPrice(), $this->askBTCVolume());
         } else {
-            // @todo - log the reasons?
-            $e = new \Exception('It is not safe to execute a trade pair at this time.');
-            $this->logger->error('It is not safe to execute a trade pair at this time.', ['exception' => $e]);
-            throw $e;
+            throw new \Exception('It is not safe to execute a trade pair at this time.');
         }
     }
 
     /**
-     * Validates the proposed trade pairs.
+     * Does the pair meet all requirements for execution?
      *
-     * @return boolean true if valid.
+     * @return bool
      */
     public function isValid()
     {
-        return !count($this->validator->validate($this));
+        return $this->isProfitable() && !$this->hasDupes();
     }
 
     /**
-     * Asserts the suggested pairs are profitable.
-     *
-     * @Assert\True(message="This trade is not profitable")
+     * Is the suggested pair profitable?
      *
      * @return bool
      */
@@ -312,9 +282,7 @@ class BitstampTradePairs
     }
 
     /**
-     * Asserts there are no duplicate open orders with the suggested pairs.
-     *
-     * @Assert\False(message="There are currently dupes")
+     * Does the pair duplicate open orders on either leg?
      *
      * @return bool
      */

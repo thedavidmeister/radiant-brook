@@ -36,9 +36,13 @@ services:
     class: AppBundle\API\Bitstamp\Dupes
     arguments: [@bitstamp.open_orders]
 
+  bitstamp.buysell:
+    class: AppBundle\API\Bitstamp\BuySell
+    arguments: [@bitstamp.buy, @bitstamp.sell, @logger]
+
   bitstamp.trade_pairs:
     class: AppBundle\API\Bitstamp\BitstampTradePairs
-    arguments: [@bitstamp.fees, @bitstamp.dupes, @bitstamp.order_book, @bitstamp.sell, @bitstamp.buy, @validator, @logger]
+    arguments: [@bitstamp.fees, @bitstamp.dupes, @bitstamp.buysell, @bitstamp.order_book]
 
   # Private API
   bitstamp.private_api_authenticator:
