@@ -110,6 +110,36 @@ class DupesTest extends WebTestCase
         // - We do not come within range of OO at 241.45, with upper bound 23987
         ['0.005', 'asks', Money::USD(23868), [Money::USD(23750)]],
         ['0.005', 'asks', Money::USD(23869), []],
+        // Exact match.
+        ['0.01', 'bids', Money::USD(23295), [Money::USD(23295)]],
+        // Very close.
+        ['0.01', 'bids', Money::USD(23296), [Money::USD(23295)]],
+        ['0.01', 'bids', Money::USD(23294), [Money::USD(23295)]],
+        // Maximum below = 23,064.356436 as X / Ra
+        // - rounded = 23064
+        // - must be gt not gte = 23065
+        ['0.01', 'bids', Money::USD(23065), [Money::USD(23295)]],
+        ['0.01', 'bids', Money::USD(23064), []],
+        // Maximum above = 23,530.30303 as X / Rb
+        // - Rounded = 23530
+        // - must be lt not lte = 23529
+        ['0.01', 'bids', Money::USD(23529), [Money::USD(23295)]],
+        ['0.01', 'bids', Money::USD(23530), []],
+        // Exact match.
+        ['0.005', 'bids', Money::USD(23295), [Money::USD(23295)]],
+        // Very close.
+        ['0.005', 'bids', Money::USD(23296), [Money::USD(23295)]],
+        ['0.005', 'bids', Money::USD(23294), [Money::USD(23295)]],
+        // Maximum below = 23,179.104478 as X / Ra
+        // - rounded = 23179
+        // - must be gt not gte = 23180
+        ['0.005', 'bids', Money::USD(23180), [Money::USD(23295)]],
+        ['0.005', 'bids', Money::USD(23179), []],
+        // Maximum above = 23,412.060302 as X / Rb
+        // - Rounded = 23412
+        // - must be lt not lte = 23411
+        ['0.005', 'bids', Money::USD(23411), [Money::USD(23295)]],
+        ['0.005', 'bids', Money::USD(23412), []],
       ];
 
       foreach ($askTests as $test) {
