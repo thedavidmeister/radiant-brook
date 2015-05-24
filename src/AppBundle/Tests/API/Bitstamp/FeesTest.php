@@ -27,6 +27,7 @@ class FeesTest extends WebTestCase
   protected function fees2() {
     $balance = $this->balance();
     $balance->execute();
+
     return new Fees($balance);
   }
 

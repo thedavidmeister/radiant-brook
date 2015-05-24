@@ -50,7 +50,7 @@ class Dupes
           // Check upper and lower bounds.
           $orderPrice = MoneyStrings::stringToUSD($order[self::KEY_PRICE]);
           if ($orderPrice->greaterThan($lowerPriceBound) && $orderPrice->lessThan($upperPriceBound)) {
-            $dupes[] = $orderPrice;
+            $matches[] = $orderPrice;
           }
         }
 
