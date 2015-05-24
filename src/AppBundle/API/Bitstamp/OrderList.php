@@ -188,10 +188,15 @@ class OrderList
         $sum = Money::BTC(0);
         foreach ($this->data as $datum) {
             $sum = $sum->add($datum[self::BTC_KEY]);
+
+            // We've found the percentile, save it and break loop execution.
             if ($index <= $sum) {
-                return $datum[self::USD_KEY]->getAmount();
+                $return = $datum[self::USD_KEY]->getAmount();
+                break;
             }
         }
+
+        return $return;
     }
 
     /**
@@ -218,10 +223,16 @@ class OrderList
         $sum = Money::USD(0);
         foreach ($this->data as $datum) {
             $sum = $sum->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
+
             if ($index <= $sum) {
-                return $datum[self::USD_KEY]->getAmount();
+                // We've found the cap percentile, save it and break loop
+                // execution.
+                $return = $datum[self::USD_KEY]->getAmount();
+                break;
             }
         }
+
+        return $return;
     }
 
 }
