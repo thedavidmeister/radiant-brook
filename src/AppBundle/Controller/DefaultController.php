@@ -100,7 +100,7 @@ class DefaultController extends Controller
      *
      * @return Response
      */
-    public function tradeIndex(Request $request)
+    public function tradeAction(Request $request)
     {
         $tp = $this->get('bitstamp.trade_pairs');
 
