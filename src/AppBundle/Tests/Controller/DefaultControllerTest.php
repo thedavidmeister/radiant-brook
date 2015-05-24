@@ -75,7 +75,7 @@ class DefaultControllerTest extends WebTestCase
     /**
      * Tests that /trade/trade is producing trade pair suggestions.
      *
-     * @covers DefaultController::tradeAction
+     * @covers AppBundle\Controller\DefaultController::tradeAction
      * @group slow
      * @group functional
      * @group stable
@@ -123,7 +123,7 @@ class DefaultControllerTest extends WebTestCase
     /**
      * Tests that /trade/orderbook is producing stats.
      *
-     * @covers DefaultController::orderBookAction
+     * @covers AppBundle\Controller\DefaultController::orderBookAction
      * @group slow
      * @group functional
      * @group stable

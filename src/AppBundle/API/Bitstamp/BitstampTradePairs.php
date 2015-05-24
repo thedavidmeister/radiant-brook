@@ -24,11 +24,6 @@ use Money\Money;
  */
 class BitstampTradePairs
 {
-
-    protected $_fee;
-
-    protected $_volume;
-
     // As of May 15, 2014 the minimum allowable trade will be USD $5.
     const MIN_VOLUME_USD = 500;
 
@@ -46,23 +41,24 @@ class BitstampTradePairs
 
     /**
      * Constructor to store services passed by Symfony.
-     * @param Fees                                            $fees
+     *
+     * @param Fees      $fees
      *   Bitstamp Fees service.
      *
-     * @param Dupes                                           $dupes
+     * @param Dupes     $dupes
      *   Bitstamp Dupes service.
      *
-     * @param OrderBook                                       $orderbook
-     *   Bitstamp order book service.
-     *
-     * @param BuySell                                         $buySell
+     * @param BuySell   $buySell
      *   Combined Bitstamp buy/sell service.
+     *
+     * @param OrderBook $orderbook
+     *   Bitstamp order book service.
      */
     public function __construct(
-    Fees $fees,
-    Dupes $dupes,
-    BuySell $buySell,
-    PublicAPI\OrderBook $orderbook
+        Fees $fees,
+        Dupes $dupes,
+        BuySell $buySell,
+        PublicAPI\OrderBook $orderbook
     )
     {
         $this->fees = $fees;
@@ -134,6 +130,7 @@ class BitstampTradePairs
         if ($satoshis * $this->bidPrice()->getAmount() / (10 ** self::BTC_PRECISION) > $this->volumeUSDBid()->getAmount()) {
             throw new \Exception($satoshis . ' satoshis were attempted to be purchased at ' . $this->bidPrice()->getAmount() . ' per BTC which exceeds allowed volume USD ' . $this->volumeUSDBid()->getAmount());
         }
+
         return Money::BTC($satoshis);
     }
 
@@ -173,10 +170,10 @@ class BitstampTradePairs
      */
     public function volumeUSDAsk()
     {
-        $X = ($this->volumeUSDBidPostFees()->getAmount() + self::MIN_PROFIT_USD) / $this->fees->asksMultiplier();
+        $x = ($this->volumeUSDBidPostFees()->getAmount() + self::MIN_PROFIT_USD) / $this->fees->asksMultiplier();
 
-        // We have to ceil() $X or risk losing our USD profit to fees.
-        return Money::USD((int) ceil($X));
+        // We have to ceil() $x or risk losing our USD profit to fees.
+        return Money::USD((int) ceil($x));
     }
 
     /**
@@ -243,6 +240,7 @@ class BitstampTradePairs
     public function midprice()
     {
         $midpoint = (int) round(($this->bidPrice()->getAmount() + $this->askPrice()->getAmount()) / 2, 2);
+
         return Money::USD($midpoint);
     }
 
