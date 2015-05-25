@@ -3,6 +3,7 @@
 namespace AppBundle\API\Bitstamp;
 
 use AppBundle\MoneyStrings;
+use Money\Money;
 
 /**
  * Convenience class to lodge a buy and sell pair simultaneously.
