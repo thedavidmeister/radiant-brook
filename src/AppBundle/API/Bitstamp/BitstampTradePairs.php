@@ -27,14 +27,13 @@ class BitstampTradePairs
 {
     const MIN_USD_VOLUME_SECRET = 'BITSTAMP_MIN_USD_VOLUME';
 
+    const PERCENTILE_SECRET = 'BITSTAMP_PERCENTILE';
+
     // Bitcoin has precision of 8.
     const BTC_PRECISION = 8;
 
     // USD has precision of 2.
     const USD_PRECISION = 2;
-
-    // The percentile of cap/volume we'd like to trade to.
-    const PERCENTILE = 0.05;
 
     // The minimum amount of USD cents profit we need to commit to a pair.
     const MIN_PROFIT_USD = 1;
@@ -104,7 +103,8 @@ class BitstampTradePairs
      */
     public function bidPrice()
     {
-        return Money::USD($this->orderBook->bids()->percentileCap(1 - self::PERCENTILE));
+        $secrets = new Secrets();
+        return Money::USD($this->orderBook->bids()->percentileCap(1 - $secrets->get(self::PERCENTILE_SECRET)));
     }
 
     /**
