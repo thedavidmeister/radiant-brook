@@ -15,35 +15,42 @@ use Money\Money;
  */
 class BitstampTradePairsTest extends WebTestCase
 {
-    protected function mock($class) {
-      return $this
-        ->getMockBuilder($class)
-        ->disableOriginalConstructor()
-        ->getMock();
+    protected function mock($class)
+    {
+        return $this
+            ->getMockBuilder($class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
-    protected function fees() {
-      return $this->mock('\AppBundle\API\Bitstamp\Fees');
+    protected function fees()
+    {
+        return $this->mock('\AppBundle\API\Bitstamp\Fees');
     }
 
-    protected function dupes() {
-      return $this->mock('\AppBundle\API\Bitstamp\Dupes');
+    protected function dupes()
+    {
+        return $this->mock('\AppBundle\API\Bitstamp\Dupes');
     }
 
-    protected function orderbook() {
-      return $this->mock('\AppBundle\API\Bitstamp\PublicAPI\OrderBook');
+    protected function orderbook()
+    {
+        return $this->mock('\AppBundle\API\Bitstamp\PublicAPI\OrderBook');
     }
 
-    protected function buysell() {
-      return $this->mock('\AppBundle\API\Bitstamp\BuySell');
+    protected function buysell()
+    {
+        return $this->mock('\AppBundle\API\Bitstamp\BuySell');
     }
 
-    protected function setMinUSDVolume($volume) {
-      putenv('BITSTAMP_MIN_USD_VOLUME=' . $volume);
+    protected function setMinUSDVolume($volume)
+    {
+        putenv('BITSTAMP_MIN_USD_VOLUME=' . $volume);
     }
 
-    protected function setPercentile($percentile) {
-      putenv('BITSTAMP_PERCENTILE=' . $percentile);
+    protected function setPercentile($percentile)
+    {
+        putenv('BITSTAMP_PERCENTILE=' . $percentile);
     }
 
     /**
@@ -53,47 +60,50 @@ class BitstampTradePairsTest extends WebTestCase
      */
     public function testVolumeUSDBid()
     {
-      $fees = $this->fees();
+        $fees = $this->fees();
         // Set a value for isofeeMaxUSD to return because we need to check it
         // when testing volumeUSDBid().
-      $fees->method('isofeeMaxUSD')->willReturn(Money::USD(1230));
+        $fees->method('isofeeMaxUSD')->willReturn(Money::USD(1230));
 
-      // Check that the min USD volume can be read from config.
-      $tp = new BitstampTradePairs($fees, $this->dupes(), $this->buysell(), $this->orderbook());
-      foreach([123, 234] as $test) {
-        $this->setMinUSDVolume($test);
-        $this->assertEquals(Money::USD($test), $tp->baseVolumeUSDBid());
-      }
+        // Check that the min USD volume can be read from config.
+        $tp = new BitstampTradePairs($fees, $this->dupes(), $this->buysell(), $this->orderbook());
+        foreach ([123, 234] as $test) {
+            $this->setMinUSDVolume($test);
+            $this->assertEquals(Money::USD($test), $tp->baseVolumeUSDBid());
+        }
 
-      // Check that volumeUSDBid() is interacting with isofee correctly.
-      $this->assertEquals(Money::USD(1230), $tp->volumeUSDBid());
+        // Check that volumeUSDBid() is interacting with isofee correctly.
+        $this->assertEquals(Money::USD(1230), $tp->volumeUSDBid());
     }
 
     /**
      * Test bidPrice().
      *
      * @group stable
+     *
+     * @return null
      */
     public function testBidPrice()
     {
-      // This mocking gets deep...
-      $orderbook = $this->orderbook();
-      $orderbook->method('bids')->will($this->returnCallback(function() {
-        $bids = $this
-          ->getMockBuilder('AppBundle\API\Bitstamp\OrderList')
-          ->disableOriginalConstructor()
-          ->getMock();
+        // This mocking gets deep...
+        $orderbook = $this->orderbook();
+        $orderbook->method('bids')->will($this->returnCallback(function() {
+            $bids = $this
+                ->getMockBuilder('AppBundle\API\Bitstamp\OrderList')
+                ->disableOriginalConstructor()
+                ->getMock();
 
-        $bids->method('percentileCap')->will($this->returnCallback(function($percentile) {
-          return (int) $percentile * 1000000;
+            $bids->method('percentileCap')->will($this->returnCallback(function($percentile) {
+                return (int) $percentile * 1000000;
+            }));
+
+            return $bids;
         }));
-        return $bids;
-      }));
 
-      $tp = new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $orderbook);
+        $tp = new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $orderbook);
 
-      foreach ([0.05, 0.01, 0.5] as $percentile) {
-        $this->assertEquals(Money::USD((int) $percentile * 1000000), $tp->bidPrice());
-      }
+        foreach ([0.05, 0.01, 0.5] as $percentile) {
+            $this->assertEquals(Money::USD((int) $percentile * 1000000), $tp->bidPrice());
+        }
     }
 }

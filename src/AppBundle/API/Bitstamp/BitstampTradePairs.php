@@ -75,8 +75,10 @@ class BitstampTradePairs
      *
      * @return Money::USD
      */
-    public function baseVolumeUSDBid() {
+    public function baseVolumeUSDBid()
+    {
         $secrets = new Secrets();
+
         return Money::USD((int) $secrets->get(self::MIN_USD_VOLUME_SECRET));
     }
 
@@ -104,6 +106,7 @@ class BitstampTradePairs
     public function bidPrice()
     {
         $secrets = new Secrets();
+
         return Money::USD($this->orderBook->bids()->percentileCap(1 - $secrets->get(self::PERCENTILE_SECRET)));
     }
 
@@ -160,7 +163,9 @@ class BitstampTradePairs
      */
     public function askPrice()
     {
-        return Money::USD($this->orderBook->asks()->percentileCap($this::PERCENTILE));
+        $secrets = new Secrets();
+
+        return Money::USD($this->orderBook->asks()->percentileCap($secrets->get(self::PERCENTILE_SECRET)));
     }
 
     /**
