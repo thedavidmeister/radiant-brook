@@ -2,6 +2,7 @@
 
 namespace AppBundle\API\Bitstamp;
 
+use AppBundle\Secrets;
 use Money\Money;
 
 /**
@@ -24,8 +25,7 @@ use Money\Money;
  */
 class BitstampTradePairs
 {
-    // As of May 15, 2014 the minimum allowable trade will be USD $5.
-    const MIN_VOLUME_USD = 500;
+    const MIN_USD_VOLUME_SECRET = 'BITSTAMP_MIN_USD_VOLUME';
 
     // Bitcoin has precision of 8.
     const BTC_PRECISION = 8;
@@ -63,13 +63,23 @@ class BitstampTradePairs
     {
         $this->fees = $fees;
         $this->dupes = $dupes;
-        $this->orderBook = $orderbook;
         $this->buySell = $buySell;
+        $this->orderBook = $orderbook;
     }
 
     /**
      * BIDS
      */
+
+    /**
+     * The base USD volume from config pre-isofee scaling.
+     *
+     * @return Money::USD
+     */
+    public function baseVolumeUSDBid() {
+        $secrets = new Secrets();
+        return Money::USD((int) $secrets->get(self::MIN_USD_VOLUME_SECRET));
+    }
 
     /**
      * The USD bid volume pre-fees.
@@ -81,7 +91,7 @@ class BitstampTradePairs
      */
     public function volumeUSDBid()
     {
-        return $this->fees->isofeeMaxUSD(Money::USD(self::MIN_VOLUME_USD));
+        return $this->fees->isofeeMaxUSD($this->baseVolumeUSDBid());
     }
 
     /**

@@ -38,6 +38,8 @@ class BuySellTest extends WebTestCase
 
     /**
      * Tests execute() to ensure the right values are being sent to Bitstamp.
+     *
+     * @group stable
      */
     public function testExecute()
     {
