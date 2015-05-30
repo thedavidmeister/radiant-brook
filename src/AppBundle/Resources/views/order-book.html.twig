@@ -9,11 +9,11 @@
 {% block body %}
   <table class="pure-table pure-table-striped">
     <tr>
-      <th></th><th>Price</th><th>Volume</th>
+      <th></th><th>Price</th><th>Volume</th><th>Cap</th>
     </tr>
     {% for key, value in stats %}
     <tr>
-      <td>{{ key }} </td><td>{{ value.0 }}</td><td>{{ value.1 }}</td>
+      <td>{{ key }} </td><td>{{ value.0 }}</td><td>{{ value.1 }}</td><td>{{ value.2 }}</td>
     </tr>
     {% endfor %}
   </table>

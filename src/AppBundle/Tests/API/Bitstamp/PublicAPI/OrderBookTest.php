@@ -3,6 +3,7 @@
 namespace AppBundle\Tests\API\Bitstamp\PublicAPI;
 
 use AppBundle\API\Bitstamp\OrderList;
+use Money\Money;
 
 /**
  * Tests Bitstamp order book class.
@@ -14,6 +15,8 @@ class OrderBookTest extends PublicAPITest
 
     /**
      * Test bids() and asks() methods for OrderBook.
+     *
+     * @group stable
      */
     public function testBidsAsks()
     {
@@ -32,10 +35,10 @@ class OrderBookTest extends PublicAPITest
 
         // Test that the created OrderList represents the correct data.
         $class = $this->getClass();
-        $this->assertEquals($class->bids()->data()[0], ['239.53', '0.20874212']);
-        $this->assertEquals($class->bids()->data()[1], ['238.92', '0.92129583']);
-        $this->assertEquals($class->asks()->data()[0], ['239.78', '0.08472315']);
-        $this->assertEquals($class->asks()->data()[1], ['239.79', '13.50000000']);
+        $this->assertEquals(['usd' => Money::USD(1), 'btc' => Money::BTC(6050000000000)], $class->bids()->min());
+        $this->assertEquals(['usd' => Money::USD(23953), 'btc' => Money::BTC(20874212)], $class->bids()->max());
+        $this->assertEquals(['usd' => Money::USD(23978), 'btc' => Money::BTC(8472315)], $class->asks()->min());
+        $this->assertEquals(['usd' => Money::USD(9999900), 'btc' => Money::BTC(2413989060)], $class->asks()->max());
     }
 
     // Real order books are far larger than this.

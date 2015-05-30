@@ -9,36 +9,17 @@ use GuzzleHttp\Stream\Stream;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\Tests\API\Bitstamp\APITest;
 use AppBundle\Secrets;
-use AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator;
 
 /**
  * Abstract class for testing bitstamp private API wrappers.
  */
 abstract class PrivateAPITest extends APITest
 {
-    /**
-     * Creates a mock authenticator for private API tests.
-     *
-     * @return PrivateAPIAuthenticator
-     */
-    public function mockAuthenticator()
-    {
-        $authenticator = $this
-        ->getMockBuilder('\AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator')
-        ->disableOriginalConstructor()
-        ->getMock();
-
-        $authenticator->method('getAuthParams')->willReturn([
-            'key' => 'foo',
-            'nonce' => 'bar',
-            'signature' => 'baz',
-        ]);
-
-        return $authenticator;
-    }
 
     /**
      * Tests that Bitstamp private API executions include auth parameters.
+     *
+     * @group stable
      */
     public function testAuthenticationParams()
     {
@@ -76,6 +57,7 @@ abstract class PrivateAPITest extends APITest
      *
      * @expectedException Exception
      * @expectedExceptionMessage You cannot directly set authentication parameters
+     * @group stable
      *
      * @param  string $key
      *   The name of the parameter to test.

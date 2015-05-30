@@ -25,6 +25,16 @@ class DefaultControllerTest extends WebTestCase
     }
 
     /**
+     * Provides an anonymous client.
+     *
+     * @return client
+     */
+    protected function createAnonClient()
+    {
+        return static::createClient();
+    }
+
+    /**
      * Asserts no access for unauthenticated users.
      *
      * @param string $uri
@@ -32,7 +42,7 @@ class DefaultControllerTest extends WebTestCase
      */
     public function assertNoAnonymousAccess($uri)
     {
-        $client = static::createClient();
+        $client = $this->createAnonClient();
 
         $client->request('GET', $uri);
 
@@ -73,10 +83,31 @@ class DefaultControllerTest extends WebTestCase
     }
 
     /**
+     * Tests that / produces a 200.
+     *
+     * @covers AppBundle\Controller\DefaultController::indexAction
+     * @group stable
+     */
+    public function testIndex()
+    {
+        $uri = '/';
+
+        $anon = $this->createAnonClient();
+        $anon->request('GET', $uri);
+        $this->assertEquals(200, $anon->getResponse()->getStatusCode());
+
+        $auth = $this->createAuthClient();
+        $auth->request('GET', $uri);
+        $this->assertEquals(200, $auth->getResponse()->getStatusCode());
+    }
+
+    /**
      * Tests that /trade/trade is producing trade pair suggestions.
      *
+     * @covers AppBundle\Controller\DefaultController::tradeAction
      * @group slow
      * @group functional
+     * @group stable
      */
     public function testTrade()
     {
@@ -87,16 +118,21 @@ class DefaultControllerTest extends WebTestCase
             'bid/buy USD Base Volume',
             'bid/buy BTC Volume',
             'bid/buy USD Price',
-            'bid/buy USD Volume post fees',
+            'bid/buy USD Volume post fees (what USD must we spend to play?)',
+            'bid/buy BTC Volume * USD Price',
+            'bid/buy BTC Volume * USD Price as USD',
             '-Asks-',
             'ask/sell USD Base Volume',
             'ask/sell BTC Volume',
             'ask/sell USD Price',
-            'ask/sell USD Volume post fees',
+            'ask/sell BTC Volume * USD Price',
+            'ask/sell BTC Volume * USD Price as USD',
+            'ask/sell USD Volume post fees (what USD can we keep from sale?)',
             '-Diff-',
-            'BTC Profit',
-            'BTC Profit USD value (midpoint)',
-            'USD Profit',
+            'BTC Profit (satoshis)',
+            'BTC Profit (BTC)',
+            'BTC Profit USD value (midpoint) as USD cents',
+            'USD Profit (USD cents)',
             'Is profitable',
             'Has dupes',
             'Is valid trade',
@@ -106,10 +142,8 @@ class DefaultControllerTest extends WebTestCase
             'Dupe ask range',
             'Dupe asks',
             '-Facts-',
-            'Fees',
-            'Book time',
-            'Balance time',
-            'Open orders time',
+            'Fees bids multiplier',
+            'Fees asks multiplier',
         ];
 
         $this->standardTests($uri, $expecteds);
@@ -118,8 +152,10 @@ class DefaultControllerTest extends WebTestCase
     /**
      * Tests that /trade/orderbook is producing stats.
      *
+     * @covers AppBundle\Controller\DefaultController::orderBookAction
      * @group slow
      * @group functional
+     * @group stable
      */
     public function testOrderBook()
     {

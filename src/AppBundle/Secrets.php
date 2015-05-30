@@ -2,29 +2,39 @@
 
 namespace AppBundle;
 
+use Dotenv;
+
 /**
- * Handles things that need to be secret.
+ * Handles things that need to be secret by reading things from env.
  */
 class Secrets
 {
     /**
+     * DI constructor.
+     */
+    public function __construct()
+    {
+        // Ensure that any secrets in .env are loaded.
+        Dotenv::load(__DIR__);
+    }
+
+    /**
      * Extracts secret keys from the file system or environment variables.
      *
      * @param string $name
-     *   THe name of the secret to get.
+     *   The name of the secret to get.
      *
      * @return string
      *   Returns the secret if found.
      */
     public function get($name)
     {
-        // First try environment variables.
-        if (getenv($name)) {
-            return trim(getenv($name));
+        if ($value = getenv($name)) {
+            return trim($value);
         }
 
-        if (file_exists(__DIR__ . '/Resources/keys/' . $name)) {
-            return trim(file_get_contents(__DIR__ . '/Resources/keys/' . $name));
-        }
+        // If some class needs a secret, we cannot accept it not being available
+        // as functionality will surely rely on it.
+        throw new \Exception('Secret not found: ' . $name);
     }
 }

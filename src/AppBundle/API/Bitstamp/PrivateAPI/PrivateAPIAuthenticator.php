@@ -20,14 +20,21 @@ class PrivateAPIAuthenticator
     // API key parameter name.
     const KEY = 'key';
 
+    // API key secret name.
+    const KEY_SECRET = 'BITSTAMP_KEY';
+
     // HMAC signature parameter name.
     const SIGNATURE = 'signature';
 
     // Client ID parameter name.
     const CLIENT_ID = 'client_id';
 
+    const CLIENT_ID_SECRET = 'BITSTAMP_CLIENT_ID';
+
     // API key secret parameter name.
     const SECRET = 'secret';
+
+    const SECRET_SECRET = 'BITSTAMP_SECRET';
 
     /**
      * Handles DI.
@@ -76,7 +83,7 @@ class PrivateAPIAuthenticator
      */
     protected function key()
     {
-        return $this->secrets->get($this::KEY);
+        return $this->secrets->get(self::KEY_SECRET);
     }
 
     /**
@@ -95,9 +102,9 @@ class PrivateAPIAuthenticator
      */
     protected function ensureSignature()
     {
-        $data = $this->nonce() . $this->secrets->get($this::CLIENT_ID) . $this->secrets->get($this::KEY);
+        $data = $this->nonce() . $this->secrets->get(self::CLIENT_ID_SECRET) . $this->secrets->get(self::KEY_SECRET);
 
-        return strtoupper(hash_hmac('sha256', $data, $this->secrets->get($this::SECRET)));
+        return strtoupper(hash_hmac('sha256', $data, $this->secrets->get(self::SECRET_SECRET)));
     }
 
     /**

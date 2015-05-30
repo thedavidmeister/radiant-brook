@@ -96,7 +96,7 @@ class API implements APIInterface
      * @param mixed  $value
      *   The value to set for this parameter.
      *
-     * @return PrivateBitstampAPI
+     * @return API
      *   $this
      */
     public function setParam($key, $value)
@@ -156,19 +156,32 @@ class API implements APIInterface
      * @param string $key
      *   The name of the parameter to get.
      *
-     * @return mixed
-     *   A previously set parameter.
+     * @return null|mixed
+     *   A previously set parameter or null if not set.
      */
     public function getParam($key)
     {
-        return $this->params[$key];
+        return isset($this->params[$key]) ? $this->params[$key] : null;
+    }
+
+    /**
+     * Clears all previously set parameters.
+     *
+     * @return API
+     *   $this
+     */
+    public function clearParams()
+    {
+        $this->params = [];
+
+        return $this;
     }
 
     protected function ensureRequiredParams()
     {
         foreach ($this->requiredParams() as $required) {
             if (!isset($this->params[$required])) {
-                throw new \Exception('Required parameter ' . $required . ' must be sent for endpoint ' . $this->endpoint());
+                throw new \Exception('Required parameter ' . $required . ' must be set for endpoint ' . $this->endpoint());
             }
         }
     }

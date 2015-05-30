@@ -29,7 +29,116 @@ abstract class APITest extends WebTestCase
     }
 
     /**
+     * Data provider for testDatetimeException.
+     *
+     * @return array
+     */
+    public function dataDatetimeException()
+    {
+        return [
+            [true],
+            [false],
+            [[]],
+            ['string'],
+            [123],
+            [0],
+            [1.23],
+        ];
+    }
+
+    /**
+     * Test that datetime provides exceptions when not provided with a DateTime.
+     *
+     * @dataProvider dataDatetimeException
+     * @expectedException Exception
+     * @expectedExceptionMessage New datetime must be a DateTime object.
+     * @group stable
+     *
+     * @param mixed $notTimes
+     *   Things that aren't DateTime objects.
+     */
+    public function testDatetimeException($notTimes)
+    {
+        $class = $this->getClass();
+
+        $class->datetime($notTimes);
+    }
+
+    /**
+     * Tests that we can clear the parameters previously set.
+     *
+     * @group stable
+     */
+    public function testClearParameters()
+    {
+        $class = $this->getClass();
+
+        $class->setParam('foo', 'bar');
+        $class->clearParams();
+        $this->assertNull($class->getParam('foo'));
+    }
+
+    /**
+     * Data provider for testRequiredParameters.
+     *
+     * @return array
+     */
+    public function dataRequiredParameters()
+    {
+        $class = $this->getClass();
+
+        $testMaster = [];
+        foreach ($class->requiredParams() as $required) {
+            $testMaster[$required] = $required;
+        }
+
+        $tests = [];
+        foreach ($class->requiredParams() as $required) {
+            $test = $testMaster;
+            unset($test[$required]);
+            $tests[] = [$test, $required];
+        }
+
+        // Placeholder sillyness for anything with no required parameters.
+        if (empty($class->requiredParams())) {
+            $tests[] = [['foo'], 'bar'];
+        }
+
+        return $tests;
+    }
+
+    /**
+     * Test require parameters.
+     *
+     * @dataProvider dataRequiredParameters
+     * @group stable
+     *
+     * @param array  $params
+     *   Parameters array missing required parameters.
+     *
+     * @param string $required
+     *   The required parameter that is missing.
+     */
+    public function testRequiredParameters($params, $required)
+    {
+        $class = $this->getClass();
+        if ($class->requiredParams() === []) {
+            // Nothing to test here.
+            $this->assertTrue(true);
+
+            return;
+        }
+
+        $this->setExpectedException('Exception', 'Required parameter ' . $required . ' must be set for endpoint');
+        $class->clearParams();
+        $class->setParams($params);
+        $class->execute();
+    }
+
+    /**
      * Test basic setters and getters for parameters.
+     *
+     * @group stable
      */
     public function testParams()
     {
@@ -49,6 +158,7 @@ abstract class APITest extends WebTestCase
      *
      * @expectedException Exception
      * @expectedExceptionMessage Bitstamp error: Bitstamp likes to report errors as 200
+     * @group stable
      */
     public function testBitstampError()
     {
@@ -226,6 +336,7 @@ abstract class APITest extends WebTestCase
      * Tests that we can spot obvious errors in the API responses.
      *
      * @dataProvider badResponseCodes
+     * @group stable
      *
      * @param int $responseCode
      *   The response code to test.
@@ -242,6 +353,8 @@ abstract class APITest extends WebTestCase
 
     /**
      * Tests that the class can be built as a service.
+     *
+     * @group stable
      */
     public function testService()
     {
@@ -253,6 +366,8 @@ abstract class APITest extends WebTestCase
 
     /**
      * Test mocks of the execute() method.
+     *
+     * @group stable
      */
     public function testExecute()
     {
@@ -272,6 +387,8 @@ abstract class APITest extends WebTestCase
 
     /**
      * Test mocks of the data() method.
+     *
+     * @group stable
      */
     public function testData()
     {
@@ -290,6 +407,8 @@ abstract class APITest extends WebTestCase
 
     /**
      * Test that the endpoint URLs are correct.
+     *
+     * @group stable
      */
     public function testEndpoints()
     {
@@ -304,6 +423,7 @@ abstract class APITest extends WebTestCase
      * Test that timestamp dates are recorded properly.
      *
      * @group slow
+     * @group stable
      */
     public function testDatesData()
     {
