@@ -22,3 +22,7 @@ https://radiant-brook-3028.herokuapp.com/trade/trade
 https://radiant-brook-3028.herokuapp.com/trade/order_book
 
 5. Push to master so that Codeship picks it up
+
+6. After deploy check screenshots vs prod
+
+7. Enable the trade scheduler on Heroku
