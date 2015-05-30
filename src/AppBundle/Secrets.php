@@ -14,8 +14,13 @@ class Secrets
      */
     public function __construct()
     {
-        // Ensure that any secrets in .env are loaded.
-        Dotenv::load(__DIR__);
+        // Dotenv throws an exception if the .env file can't be found, but if we
+        // are soley relying on previously set environment variables we don't
+        // want the overhead of creating that file.
+        if (!getenv('PHPDOTENV_BYPASS')) {
+            // Ensure that any secrets in .env are loaded.
+            Dotenv::load(__DIR__);
+        }
     }
 
     /**
