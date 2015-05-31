@@ -58,7 +58,7 @@ class SnapshotBitstamp
      */
     public function persist()
     {
-        $this->logger->info('Persisting state to Keen IO', ['projectID' => $this->secrets->get(self::PROJECT_ID_SECRET_NAME)]);
+        $this->logger->info('Persisting state to Keen IO', ['projectID' => $this->secrets->get(self::PROJECT_ID_SECRET_NAME), 'state' => $this->state]);
         $this->keenio->addEvent(self::EVENT_NAME, $this->state);
     }
 }
