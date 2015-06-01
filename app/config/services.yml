@@ -9,8 +9,15 @@ services:
     class: KeenIO\Client\KeenIOClient
 
   app.snapshot_bitstamp:
-    class: AppBundle\SnapshotBitstamp
-    arguments: [@keenio.client, @logger, @app.secrets, @bitstamp.balance]
+    class: AppBundle\Snapshot\SnapshotBitstamp
+    calls:
+      - [ setLogger, [@logger]]
+      - [ setKeenIOClient, [@keenio.client]]
+      - [ setSecrets, [@app.secrets]]
+
+  app.snapshot_bitstamp_balance:
+    class: AppBundle\Snapshot\SnapshotBitstampBalance
+    arguments: [@bitstamp.balance]
 
   app.command.snapshot_bitstamp:
     class: AppBundle\Command\SnapshotBitstampCommand
