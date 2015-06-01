@@ -207,7 +207,7 @@ class API implements APIInterface
         $data = $response->json();
 
         if (!empty($data['error'])) {
-            $e = new \Exception('Bitstamp error: ' . $data['error']);
+            $e = new \Exception('Bitstamp error: ' . json_encode($data));
             $this->logger->error('Bitstamp error', ['data' => $data, 'exception' => $e]);
             throw $e;
         }

@@ -55,10 +55,14 @@ class BuySell
      */
     public function execute(Money $bidPrice, Money $bidVolume, Money $askPrice, Money $askVolume)
     {
-        $this->buy
-            ->setParam(self::PRICE_KEY, MoneyStrings::USDToString($bidPrice))
-            ->setParam(self::VOLUME_KEY, MoneyStrings::BTCToString($bidVolume))
-            ->execute();
+        try {
+            $this->buy
+                ->setParam(self::PRICE_KEY, MoneyStrings::USDToString($bidPrice))
+                ->setParam(self::VOLUME_KEY, MoneyStrings::BTCToString($bidVolume))
+                ->execute();
+        } catch (\Exception $e) {
+            // Even if the buy failed, we want to continue to the sell.
+        }
 
         $this->sell
             ->setParam(self::PRICE_KEY, MoneyStrings::USDToString($askPrice))
