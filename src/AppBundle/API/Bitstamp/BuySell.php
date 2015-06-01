@@ -32,6 +32,22 @@ class BuySell
 
     const VOLUME_KEY = 'amount';
 
+    protected function doBuy(Money $bidPrice, Money $bidVolume)
+    {
+        $this->buy
+            ->setParam(self::PRICE_KEY, MoneyStrings::USDToString($bidPrice))
+            ->setParam(self::VOLUME_KEY, MoneyStrings::BTCToString($bidVolume))
+            ->execute();
+    }
+
+    protected function doSell(Money $askPrice, Money $askVolume)
+    {
+        $this->sell
+            ->setParam(self::PRICE_KEY, MoneyStrings::USDToString($askPrice))
+            ->setParam(self::VOLUME_KEY, MoneyStrings::BTCToString($askVolume))
+            ->execute();
+    }
+
     /**
      * Executes a buy and a sell simultaneously.
      *
@@ -56,18 +72,12 @@ class BuySell
     public function execute(Money $bidPrice, Money $bidVolume, Money $askPrice, Money $askVolume)
     {
         try {
-            $this->buy
-                ->setParam(self::PRICE_KEY, MoneyStrings::USDToString($bidPrice))
-                ->setParam(self::VOLUME_KEY, MoneyStrings::BTCToString($bidVolume))
-                ->execute();
+            $this->doBuy($bidPrice, $bidVolume);
         } catch (\Exception $e) {
             // Even if the buy failed, we want to continue to the sell.
         }
 
-        $this->sell
-            ->setParam(self::PRICE_KEY, MoneyStrings::USDToString($askPrice))
-            ->setParam(self::VOLUME_KEY, MoneyStrings::BTCToString($askVolume))
-            ->execute();
+        $this->doSell($askPrice, $askVolume);
 
         $this->logger->info('Trade pairs executed.');
     }

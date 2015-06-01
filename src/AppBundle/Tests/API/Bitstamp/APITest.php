@@ -157,7 +157,7 @@ abstract class APITest extends WebTestCase
      * Tests that we can pickup a Bitstamp "error".
      *
      * @expectedException Exception
-     * @expectedExceptionMessage Bitstamp error: Bitstamp likes to report errors as 200
+     * @expectedExceptionMessage Bitstamp error: {"error":"Bitstamp likes to report errors as 200"}
      * @group stable
      */
     public function testBitstampError()
