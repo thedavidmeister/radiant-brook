@@ -18,7 +18,6 @@ class AppKernel extends Kernel
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new AppBundle\AppBundle(),
             new RaulFraile\Bundle\LadybugBundle\RaulFraileLadybugBundle(),
-            new RadiantBrook\SanityBundle\RadiantBrookSanityBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
