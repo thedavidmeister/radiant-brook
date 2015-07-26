@@ -27,6 +27,8 @@ class BitstampTradePairs
 {
     const MIN_USD_VOLUME_SECRET = 'BITSTAMP_MIN_USD_VOLUME';
 
+    const MIN_USD_PROFIT_SECRET = 'BITSTAMP_MIN_USD_PROFIT';
+
     const PERCENTILE_SECRET = 'BITSTAMP_PERCENTILE';
 
     // Bitcoin has precision of 8.
@@ -240,6 +242,18 @@ class BitstampTradePairs
     }
 
     /**
+     * Returns the minimum acceptable USD profit for a valid pair.
+     *
+     * @return Money::USD
+     */
+    public function minProfitUSD()
+    {
+        $secrets = new Secrets();
+
+        return Money::USD((int) $secrets->get(self::MIN_USD_PROFIT_SECRET));
+    }
+
+    /**
      * Returns the USD profit of the suggested pair.
      *
      * @return Money::USD
@@ -293,7 +307,7 @@ class BitstampTradePairs
      */
     public function isProfitable()
     {
-        return $this->profitUSD() >= Money::USD(self::MIN_PROFIT_USD) && $this->profitBTC() > Money::BTC(0);
+        return $this->profitUSD() >= $this->minProfitUSD() && $this->profitBTC() > Money::BTC(0);
     }
 
     /**
