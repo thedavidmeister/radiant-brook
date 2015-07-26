@@ -125,7 +125,7 @@ class BitstampTradePairsTest extends WebTestCase
     public function testMinProfitUSD()
     {
         $tp = $this->tp();
-        // set, expect.
+        // sets, expects.
         $tests = [
             ['1', Money::USD(1)],
             ['100', Money::USD(100)],
@@ -139,18 +139,25 @@ class BitstampTradePairsTest extends WebTestCase
 
     /**
      * Data provider for testMinProfitUSDExceptions().
+     *
+     * @return array
      */
-    public function dataMinProfitUSDExceptions() {
+    public function dataMinProfitUSDExceptions()
+    {
+        // sets, expects.
         return [
-            ['foo', Money::USD(0)],
-            [1.5, Money::USD(1)],
-            ['1.0', Money::USD(1)],
-            ['1.99', Money::USD(1)],
+            ['foo'],
+            [1.5],
+            ['1.0'],
+            ['1.99'],
         ];
     }
 
     /**
      * Test minProfitUSD Exceptions.
+     *
+     * @param mixed $sets
+     *   Invalid minimum profit configuration that should throw an exception.
      *
      * @dataProvider dataMinProfitUSDExceptions
      * @expectedException Exception
@@ -158,9 +165,10 @@ class BitstampTradePairsTest extends WebTestCase
      *
      * @group stable
      */
-    public function testMinProfitUSDExceptions($config, $expected) {
+    public function testMinProfitUSDExceptions($sets)
+    {
         $tp = $this->tp();
-        $this->setMinUSDProfit($config);
+        $this->setMinUSDProfit($sets);
         $tp->minProfitUSD();
     }
 }

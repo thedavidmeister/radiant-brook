@@ -249,13 +249,13 @@ class BitstampTradePairs
     public function minProfitUSD()
     {
         $secrets = new Secrets();
-        $min_usd_profit = $secrets->get(self::MIN_USD_PROFIT_SECRET);
+        $minProfitUSD = $secrets->get(self::MIN_USD_PROFIT_SECRET);
 
-        if (filter_var($min_usd_profit, FILTER_VALIDATE_INT) == false) {
+        if (filter_var($minProfitUSD, FILTER_VALIDATE_INT) == false) {
             throw new \Exception('Minimum USD profit configuration must be an integer value.');
         }
 
-        return Money::USD((int) $min_usd_profit);
+        return Money::USD((int) $minProfitUSD);
     }
 
     /**
