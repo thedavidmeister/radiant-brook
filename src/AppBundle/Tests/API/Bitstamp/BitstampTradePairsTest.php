@@ -33,19 +33,29 @@ class BitstampTradePairsTest extends WebTestCase
         return $this->mock('\AppBundle\API\Bitstamp\Dupes');
     }
 
-    protected function orderbook()
-    {
-        return $this->mock('\AppBundle\API\Bitstamp\PublicAPI\OrderBook');
-    }
-
     protected function buysell()
     {
         return $this->mock('\AppBundle\API\Bitstamp\BuySell');
     }
 
+    protected function orderbook()
+    {
+        return $this->mock('\AppBundle\API\Bitstamp\PublicAPI\OrderBook');
+    }
+
+    protected function tp()
+    {
+        return new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $this->orderbook());
+    }
+
     protected function setMinUSDVolume($volume)
     {
         putenv('BITSTAMP_MIN_USD_VOLUME=' . $volume);
+    }
+
+    protected function setMinUSDProfit($min)
+    {
+        putenv('BITSTAMP_MIN_USD_PROFIT=' . $min);
     }
 
     protected function setPercentile($percentile)
@@ -105,5 +115,48 @@ class BitstampTradePairsTest extends WebTestCase
         foreach ([0.05, 0.01, 0.5] as $percentile) {
             $this->assertEquals(Money::USD((int) $percentile * 1000000), $tp->bidPrice());
         }
+    }
+
+    /**
+     * Test minProfitUSD().
+     */
+    public function testMinProfitUSD()
+    {
+        $tp = $this->tp();
+        // set, expect.
+        $tests = [
+            ['1', Money::USD(1)],
+            ['100', Money::USD(100)],
+            [1, Money::USD(1)],
+        ];
+        foreach ($tests as $test) {
+            $this->setMinUSDProfit($test[0]);
+            $this->assertEquals($test[1], $tp->minProfitUSD());
+        }
+    }
+
+    /**
+     * Data provider for testMinProfitUSDExceptions().
+     */
+    public function dataMinProfitUSDExceptions() {
+        return [
+            ['foo', Money::USD(0)],
+            [1.5, Money::USD(1)],
+            ['1.0', Money::USD(1)],
+            ['1.99', Money::USD(1)],
+        ];
+    }
+
+    /**
+     * Test minProfitUSD Exceptions.
+     *
+     * @dataProvider dataMinProfitUSDExceptions
+     * @expectedException Exception
+     * @expectedExceptionMessage Minimum USD profit configuration must be an integer value.
+     */
+    public function testMinProfitUSDExceptions($config, $expected) {
+        $tp = $this->tp();
+        $this->setMinUSDProfit($config);
+        $tp->minProfitUSD();
     }
 }
