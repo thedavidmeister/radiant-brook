@@ -1,3 +1,7 @@
+radiant_brook_sanity:
+    resource: "@RadiantBrookSanityBundle/Resources/config/routing.yml"
+    prefix:   /
+
 app:
     resource: "@AppBundle/Controller/"
     type:     annotation

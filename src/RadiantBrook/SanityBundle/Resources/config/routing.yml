@@ -1,0 +1,3 @@
+radiant_brook_sanity_homepage:
+    path:     /hello/{name}
+    defaults: { _controller: RadiantBrookSanityBundle:Default:index }
