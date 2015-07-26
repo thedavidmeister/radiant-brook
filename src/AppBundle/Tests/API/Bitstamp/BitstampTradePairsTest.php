@@ -119,6 +119,8 @@ class BitstampTradePairsTest extends WebTestCase
 
     /**
      * Test minProfitUSD().
+     *
+     * @group stable
      */
     public function testMinProfitUSD()
     {
@@ -153,6 +155,8 @@ class BitstampTradePairsTest extends WebTestCase
      * @dataProvider dataMinProfitUSDExceptions
      * @expectedException Exception
      * @expectedExceptionMessage Minimum USD profit configuration must be an integer value.
+     *
+     * @group stable
      */
     public function testMinProfitUSDExceptions($config, $expected) {
         $tp = $this->tp();
