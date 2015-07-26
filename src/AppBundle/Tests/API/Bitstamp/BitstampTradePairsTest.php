@@ -8,6 +8,7 @@ use AppBundle\API\Bitstamp\PrivateAPI\Balance;
 use AppBundle\API\Bitstamp\BitstampTradePairs;
 use AppBundle\Tests\GuzzleTestTrait;
 use AppBundle\API\Bitstamp\Dupes;
+use AppBundle\Secrets;
 use Money\Money;
 
 /**
@@ -15,6 +16,62 @@ use Money\Money;
  */
 class BitstampTradePairsTest extends WebTestCase
 {
+    protected $overriddenEnv = [];
+
+    /**
+     * Set environment variables in a way that we can clear them post-suite.
+     *
+     * If we set environment variables without tracking what we set, we cannot
+     * clean them up later. If we cannot clean them up later, future usage of
+     * Secrets will inherit our cruft and break future tests.
+     *
+     * @param string $key
+     *   The key to set.
+     * @param string $value
+     *   The value to set.
+     *
+     * @see clearEnv()
+     */
+    protected function setEnv($key, $value)
+    {
+        $this->overriddenEnv[] = $key;
+        $this->overriddenEnv = array_unique($this->overriddenEnv);
+
+        $secrets = new Secrets();
+        $secrets->set($key, $value);
+    }
+
+    /**
+     * Clear the environment variables so that DotEnv will
+     * @param  [type] $key [description]
+     * @return [type]      [description]
+     */
+    protected function clearEnv($key)
+    {
+        $secrets = new Secrets();
+        $secrets->clear($key);
+    }
+
+    protected function tearDown()
+    {
+        array_walk($this->overriddenEnv, [$this, 'clearEnv']);
+    }
+
+    protected function setMinUSDVolume($volume)
+    {
+        $this->setEnv('BITSTAMP_MIN_USD_VOLUME', $volume);
+    }
+
+    protected function setMinUSDProfit($min)
+    {
+        $this->setEnv('BITSTAMP_MIN_USD_PROFIT', $min);
+    }
+
+    protected function setPercentile($percentile)
+    {
+        $this->setEnv('BITSTAMP_PERCENTILE', $percentile);
+    }
+
     protected function mock($class)
     {
         return $this
@@ -46,21 +103,6 @@ class BitstampTradePairsTest extends WebTestCase
     protected function tp()
     {
         return new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $this->orderbook());
-    }
-
-    protected function setMinUSDVolume($volume)
-    {
-        putenv('BITSTAMP_MIN_USD_VOLUME=' . $volume);
-    }
-
-    protected function setMinUSDProfit($min)
-    {
-        putenv('BITSTAMP_MIN_USD_PROFIT=' . $min);
-    }
-
-    protected function setPercentile($percentile)
-    {
-        putenv('BITSTAMP_PERCENTILE=' . $percentile);
     }
 
     /**

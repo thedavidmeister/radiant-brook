@@ -2,7 +2,8 @@
 
 namespace AppBundle;
 
-use Dotenv;
+use Dotenv\Dotenv;
+use Dotenv\Loader;
 
 /**
  * Handles things that need to be secret by reading things from env.
@@ -10,36 +11,72 @@ use Dotenv;
 class Secrets
 {
     /**
-     * DI constructor.
-     */
-    public function __construct()
+    * Returns the path that Dotenv should scan for a .env file.
+    *
+    * On Acquia, we need to handle their symlinky file system structure. On local
+    * dev we can simply dump our .env file into sites/all.
+    *
+    * @return string
+    *   Path to the directory containing .env.
+    */
+    protected function dotEnvPath()
     {
-        // Dotenv throws an exception if the .env file can't be found, but if we
-        // are soley relying on previously set environment variables we don't
-        // want the overhead of creating that file.
-        if (!getenv('PHPDOTENV_BYPASS')) {
-            // Ensure that any secrets in .env are loaded.
-            Dotenv::load(__DIR__);
-        }
+        return __DIR__;
     }
 
     /**
-     * Extracts secret keys from the file system or environment variables.
+     * Sets an environment variable in a Dotenv compatible way.
+     *
+     * @param string $key
+     *   The environment variable name to set.
+     * @param string $value
+     *   The value of the environment variable to set.
+     */
+    public function set($key, $value)
+    {
+        // Get a mutable loader.
+        $loader = new Loader($this->dotEnvPath());
+        $loader->setEnvironmentVariable($key, $value);
+    }
+
+    /**
+     * Clears an environment variable in a Dotenv compatible way.
+     *
+     * @param string $key
+     *   The environment variable to clear.
+     */
+    public function clear($key)
+    {
+        putenv($key);
+        unset($_ENV[$key]);
+        unset($_SERVER[$key]);
+    }
+
+    /**
+     * Gets environment variables, or dies trying.
      *
      * @param string $name
-     *   The name of the secret to get.
+     *   The name of the environment variable to get.
      *
      * @return string
-     *   Returns the secret if found.
+     *   The environment variable found.
      */
     public function get($name)
     {
-        if ($value = getenv($name)) {
-            return trim($value);
+        if (!is_string($name)) {
+            throw new \Exception('Environment variables must be a string');
         }
 
-        // If some class needs a secret, we cannot accept it not being available
-        // as functionality will surely rely on it.
-        throw new \Exception('Secret not found: ' . $name);
+        // If the environment variable is already set, don't try to use Dotenv as
+        // an exception will be thrown if a .env file cannot be found.
+        if (!$value = getenv($name)) {
+            $dotenv = new Dotenv($this->dotEnvPath());
+            $dotenv->load($this->dotEnvPath());
+            if (!$value = getenv($name)) {
+                throw new \Exception('Environment variable not found: ' . $name . ' - This probably means you did not set your .env file up properly, you dingus.');
+            }
+        }
+
+        return $value;
     }
 }
