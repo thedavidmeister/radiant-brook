@@ -15,15 +15,36 @@ class SecretsTest extends WebTestCase
         return new Secrets();
     }
 
+    protected function assertEnvironmentSet($setFunc)
+    {
+        // Generate a unique tuple that will not collide with previous sets.
+        $tuple = [uniqid(), uniqid()];
+        $setFunc($tuple);
+        $this->assertSame($tuple[1], $this->secrets()->get($tuple[0]));
+    }
+
     /**
-     * Tests that secrets can find variables in the environment.
+     * Tests that secrets can find variables set by putenv().
      *
      * @group stable
      */
-    public function testSecretsEnv()
+    public function testSecretsSet()
     {
-        putenv('FOOBAR=BINGBAZ');
-        $this->assertSame('BINGBAZ', $this->secrets()->get('FOOBAR'));
+        $tests = [
+            function($tuple) {
+                $this->secrets()->set($tuple[0], $tuple[1]);
+            },
+            function($tuple) {
+                putenv($tuple[0] . '=' . $tuple[1]);
+            },
+            function($tuple) {
+                $_ENV[$tuple[0]] = $tuple[1];
+            },
+            function($tuple) {
+                $_SERVER[$tuple[0]] = $tuple[1];
+            },
+        ];
+        array_walk($tests, [$this, 'assertEnvironmentSet']);
     }
 
     /**

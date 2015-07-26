@@ -41,20 +41,20 @@ class BitstampTradePairsTest extends WebTestCase
         $secrets->set($key, $value);
     }
 
-    /**
-     * Clear the environment variables so that DotEnv will
-     * @param  [type] $key [description]
-     * @return [type]      [description]
-     */
     protected function clearEnv($key)
     {
         $secrets = new Secrets();
         $secrets->clear($key);
     }
 
-    protected function tearDown()
+    protected function clearAllSetEnv()
     {
         array_walk($this->overriddenEnv, [$this, 'clearEnv']);
+    }
+
+    protected function tearDown()
+    {
+        $this->clearAllSetEnv();
     }
 
     protected function setMinUSDVolume($volume)
