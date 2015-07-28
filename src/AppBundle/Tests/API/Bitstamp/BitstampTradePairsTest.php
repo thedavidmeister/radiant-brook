@@ -267,7 +267,7 @@ class BitstampTradePairsTest extends WebTestCase
      *
      * @dataProvider dataMinProfitUSDExceptions
      * @expectedException Exception
-     * @expectedExceptionMessage Minimum USD profit configuration must be an integer value.
+     * @expectedExceptionMessage Minimum BTC profit configuration must be an integer value.
      *
      * @group stable
      */
