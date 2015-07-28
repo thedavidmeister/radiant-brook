@@ -223,6 +223,8 @@ class BitstampTradePairsTest extends WebTestCase
 
     /**
      * Test min profit BTC.
+     *
+     * @group stable
      */
     public function testMinProfitBTC()
     {
