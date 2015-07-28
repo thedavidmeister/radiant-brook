@@ -29,6 +29,8 @@ class BitstampTradePairs
 
     const MIN_USD_PROFIT_SECRET = 'BITSTAMP_MIN_USD_PROFIT';
 
+    const MIN_BTC_PROFIT_SECRET = 'BITSTAMP_MIN_BTC_PROFIT';
+
     const PERCENTILE_SECRET = 'BITSTAMP_PERCENTILE';
 
     // Bitcoin has precision of 8.
@@ -232,6 +234,23 @@ class BitstampTradePairs
      */
 
     /**
+     * Returns the minimum acceptable BTC profit for a valid pair.
+     *
+     * @return Money::BTC
+     */
+    public function minProfitBTC()
+    {
+        $secrets = new Secrets();
+        $minProfitBTC = $secrets->get(self::MIN_BTC_PROFIT_SECRET);
+
+        if (filter_var($minProfitBTC, FILTER_VALIDATE_INT) === false) {
+            throw new \Exception('Minimum BTC profit configuration must be an integer value. data: ' . print_r($minProfitBTC, true));
+        }
+
+        return Money::BTC((int) $minProfitBTC);
+    }
+
+    /**
      * Returns the BTC profit of the suggested pair.
      *
      * @return Money::BTC
@@ -251,7 +270,7 @@ class BitstampTradePairs
         $secrets = new Secrets();
         $minProfitUSD = $secrets->get(self::MIN_USD_PROFIT_SECRET);
 
-        if (filter_var($minProfitUSD, FILTER_VALIDATE_INT) == false) {
+        if (filter_var($minProfitUSD, FILTER_VALIDATE_INT) === false) {
             throw new \Exception('Minimum USD profit configuration must be an integer value. data: ' . print_r($minProfitUSD, true));
         }
 
@@ -312,7 +331,7 @@ class BitstampTradePairs
      */
     public function isProfitable()
     {
-        return $this->profitUSD() >= $this->minProfitUSD() && $this->profitBTC() > Money::BTC(0);
+        return $this->profitUSD() >= $this->minProfitUSD() && $this->profitBTC() > $this->minProfitBTC();
     }
 
     /**

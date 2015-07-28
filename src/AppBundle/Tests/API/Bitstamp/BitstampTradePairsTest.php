@@ -67,6 +67,11 @@ class BitstampTradePairsTest extends WebTestCase
         $this->setEnv('BITSTAMP_MIN_USD_PROFIT', $min);
     }
 
+    protected function setMinBTCProfit($min)
+    {
+        $this->setEnv('BITSTAMP_MIN_BTC_PROFIT', $min);
+    }
+
     protected function setPercentile($percentile)
     {
         $this->setEnv('BITSTAMP_PERCENTILE', $percentile);
@@ -169,6 +174,8 @@ class BitstampTradePairsTest extends WebTestCase
         $tp = $this->tp();
         // sets, expects.
         $tests = [
+            [0, Money::USD(0)],
+            ['0', Money::USD(0)],
             ['1', Money::USD(1)],
             ['100', Money::USD(100)],
             [1, Money::USD(1)],
@@ -212,5 +219,60 @@ class BitstampTradePairsTest extends WebTestCase
         $tp = $this->tp();
         $this->setMinUSDProfit($sets);
         $tp->minProfitUSD();
+    }
+
+    /**
+     * Test min profit BTC.
+     */
+    public function testMinProfitBTC()
+    {
+        $tp = $this->tp();
+        // sets, expects.
+        $tests = [
+            [0, Money::BTC(0)],
+            ['0', Money::BTC(0)],
+            ['1', Money::BTC(1)],
+            ['100', Money::BTC(100)],
+            [1, Money::BTC(1)],
+        ];
+        foreach ($tests as $test) {
+            $this->setMinBTCProfit($test[0]);
+            $this->assertEquals($test[1], $tp->minProfitBTC());
+        }
+    }
+
+    /**
+     * Data provider for testMinProfitBTCExceptions().
+     *
+     * @return array
+     */
+    public function dataMinProfitBTCExceptions()
+    {
+        // sets, expects.
+        return [
+            ['foo'],
+            [1.5],
+            ['1.0'],
+            ['1.99'],
+        ];
+    }
+
+    /**
+     * Test minProfitBTC Exceptions.
+     *
+     * @param mixed $sets
+     *   Invalid minimum profit configuration that should throw an exception.
+     *
+     * @dataProvider dataMinProfitUSDExceptions
+     * @expectedException Exception
+     * @expectedExceptionMessage Minimum USD profit configuration must be an integer value.
+     *
+     * @group stable
+     */
+    public function testMinProfitBTCExceptions($sets)
+    {
+        $tp = $this->tp();
+        $this->setMinBTCProfit($sets);
+        $tp->minProfitBTC();
     }
 }
