@@ -111,6 +111,22 @@ class BitstampTradePairsTest extends WebTestCase
     }
 
     /**
+     * Test volumeUSDBidPostFees().
+     *
+     * @group stable
+     */
+    public function testVolumeUSDBidPostFees() {
+        // The USD bid volume post fees is equal to the max isofee USD volume
+        // plus the absolute value of USD fees.
+        $fees = $this->fees();
+        $fees->method('absoluteFeeUSD')->willReturn(Money::USD(2340));
+        $fees->method('isofeeMaxUSD')->willReturn(Money::USD(3450));
+
+        $tp = new BitstampTradePairs($fees, $this->dupes(), $this->buysell(), $this->orderbook());
+        $this->assertEquals(Money::USD(5790), $tp->volumeUSDBidPostFees());
+    }
+
+    /**
      * Test baseVolumeUSDBid() and volumeUSDBid().
      *
      * @group stable
