@@ -10,6 +10,12 @@ task :phpcbf do
   puts `#{cmd}`
 end
 
+desc 'run security checker'
+task :"security-check" do
+  cmd = "app/console security:check"
+  puts `#{cmd}`
+end
+
 desc 'run phpunit tests including functional tests'
 task :phpunit do
   cmd = "bin/phpunit -c app/"
@@ -47,6 +53,6 @@ task :"heroku-snapshot-bitstamp" do
 end
 
 desc 'run all tests'
-task :tests => [:phpcs, :phpunit]
+task :tests => [:phpcs, :phpunit, :"security-check"]
 
 task :default => :phpcs
