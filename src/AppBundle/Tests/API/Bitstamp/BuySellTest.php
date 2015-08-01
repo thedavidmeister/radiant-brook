@@ -73,6 +73,8 @@ class BuySellTest extends WebTestCase
 
     /**
      * Exceptions on execute() risks us not trading the other leg of the pair.
+     *
+     * @group stable
      */
     public function testExecuteErrors()
     {
