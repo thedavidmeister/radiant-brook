@@ -44,6 +44,8 @@ class Secrets
      *
      * @param string $key
      *   The environment variable to clear.
+     *
+     * @see https://github.com/vlucas/phpdotenv/issues/106
      */
     public function clear($key)
     {
