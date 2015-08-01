@@ -135,7 +135,7 @@ class DefaultControllerTest extends WebTestCase
             'USD Profit (USD cents)',
             'Is profitable',
             'Has dupes',
-            'Is valid trade',
+            'Is trading',
             '-Dupes-',
             'Dupe bid range',
             'Dupe bids',
