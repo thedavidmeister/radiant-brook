@@ -25,6 +25,8 @@ use Money\Money;
  */
 class BitstampTradePairs
 {
+    const IS_TRADING_SECRET = 'BITSTAMP_IS_TRADING';
+
     const MIN_USD_VOLUME_SECRET = 'BITSTAMP_MIN_USD_VOLUME';
 
     const MIN_USD_PROFIT_SECRET = 'BITSTAMP_MIN_USD_PROFIT';
@@ -311,7 +313,17 @@ class BitstampTradePairs
      */
     public function isValid()
     {
-        return $this->isProfitable() && !$this->hasDupes();
+        return $this->isTrading() && $this->isProfitable() && !$this->hasDupes();
+    }
+
+    /**
+     * Is trading currently enabled?
+     */
+    public function isTrading()
+    {
+        $isTrading = $this->secrets->get(self::IS_TRADING_SECRET);
+
+        return filter_var($isTrading, FILTER_VALIDATE_BOOLEAN);
     }
 
     /**
