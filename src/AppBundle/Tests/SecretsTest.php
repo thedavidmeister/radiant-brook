@@ -31,16 +31,16 @@ class SecretsTest extends WebTestCase
     public function testSecretsSet()
     {
         $tests = [
-            function($tuple) {
+            function(array $tuple) {
                 $this->secrets()->set($tuple[0], $tuple[1]);
             },
-            function($tuple) {
+            function(array $tuple) {
                 putenv($tuple[0] . '=' . $tuple[1]);
             },
-            function($tuple) {
+            function(array $tuple) {
                 $_ENV[$tuple[0]] = $tuple[1];
             },
-            function($tuple) {
+            function(array $tuple) {
                 $_SERVER[$tuple[0]] = $tuple[1];
             },
         ];
