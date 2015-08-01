@@ -110,20 +110,56 @@ class BitstampTradePairsTest extends WebTestCase
         return new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $this->orderbook());
     }
 
+    public function testVolumeUSDAsk() {
+        // The USD ask volume required to cover the bid volume, desired USD
+        // profit and all fees is:
+        // (bidUSDPostFees + minUSDProfit) / feeAskMultiplier
+        // => (absoluteFeeUSD + isofeeMaxUSD + minProfitUSD) / feeAskMultiplier
+        // @see volumeUSDAsk() documentation.
+        $tests = [
+            // absoluteFeeUSD, isofeeMaxUSD, minProfitUSD, feeAskMultiplier,
+            // expected.
+            [Money::USD(1), Money::USD(1), 1, 3, Money::USD(1)],
+            [Money::USD(2), Money::USD(2), 2, 3, Money::USD(2)],
+            [Money::USD(100), Money::USD(200), 300, 0.5, Money::USD(1200)],
+        ];
+
+        array_walk($tests, function($test) {
+            $fees = $this->fees();
+            $fees->method('absoluteFeeUSD')->willReturn($test[0]);
+            $fees->method('isofeeMaxUSD')->willReturn($test[1]);
+            $this->setMinUSDProfit($test[2]);
+            $fees->method('asksMultiplier')->willReturn($test[3]);
+
+            $tp = new BitstampTradePairs($fees, $this->dupes(), $this->buysell(), $this->orderbook());
+            $this->assertEquals($test[4], $tp->volumeUSDAsk());
+        });
+    }
+
     /**
      * Test volumeUSDBidPostFees().
-     *
-     * @group stable
      */
     public function testVolumeUSDBidPostFees() {
         // The USD bid volume post fees is equal to the max isofee USD volume
         // plus the absolute value of USD fees.
-        $fees = $this->fees();
-        $fees->method('absoluteFeeUSD')->willReturn(Money::USD(2340));
-        $fees->method('isofeeMaxUSD')->willReturn(Money::USD(3450));
+        // absoluteFeeUSD, isofeeMaxUSD, expected.
+        $tests = [
+            [Money::USD(2340), Money::USD(3450), Money::USD(5790)],
+            [Money::USD(0), Money::USD(0), Money::USD(0)],
+            [Money::USD(1), Money::USD(0), Money::USD(1)],
+            [Money::USD(0), Money::USD(1), Money::USD(1)],
+            [Money::USD(-1), Money::USD(0), Money::USD(-1)],
+            [Money::USD(0), Money::USD(-1), Money::USD(-1)],
+        ];
 
-        $tp = new BitstampTradePairs($fees, $this->dupes(), $this->buysell(), $this->orderbook());
-        $this->assertEquals(Money::USD(5790), $tp->volumeUSDBidPostFees());
+        array_walk($tests, function($test) {
+            $fees = $this->fees();
+            $fees->method('absoluteFeeUSD')->willReturn($test[0]);
+            $fees->method('isofeeMaxUSD')->willReturn($test[1]);
+
+            $tp = new BitstampTradePairs($fees, $this->dupes(), $this->buysell(), $this->orderbook());
+            $this->assertEquals($test[2], $tp->volumeUSDBidPostFees());
+        });
     }
 
     /**

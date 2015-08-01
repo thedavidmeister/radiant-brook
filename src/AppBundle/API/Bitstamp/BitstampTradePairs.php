@@ -68,6 +68,7 @@ class BitstampTradePairs
         $this->dupes = $dupes;
         $this->buySell = $buySell;
         $this->orderBook = $orderbook;
+        $this->secrets = new Secrets();
     }
 
     /**
@@ -81,9 +82,7 @@ class BitstampTradePairs
      */
     public function baseVolumeUSDBid()
     {
-        $secrets = new Secrets();
-
-        return Money::USD((int) $secrets->get(self::MIN_USD_VOLUME_SECRET));
+        return Money::USD((int) $this->secrets->get(self::MIN_USD_VOLUME_SECRET));
     }
 
     /**
@@ -109,9 +108,7 @@ class BitstampTradePairs
      */
     public function bidPrice()
     {
-        $secrets = new Secrets();
-
-        return Money::USD($this->orderBook->bids()->percentileCap(1 - $secrets->get(self::PERCENTILE_SECRET)));
+        return Money::USD($this->orderBook->bids()->percentileCap(1 - $this->secrets->get(self::PERCENTILE_SECRET)));
     }
 
     /**
@@ -167,9 +164,7 @@ class BitstampTradePairs
      */
     public function askPrice()
     {
-        $secrets = new Secrets();
-
-        return Money::USD($this->orderBook->asks()->percentileCap($secrets->get(self::PERCENTILE_SECRET)));
+        return Money::USD($this->orderBook->asks()->percentileCap($this->secrets->get(self::PERCENTILE_SECRET)));
     }
 
     /**
@@ -191,7 +186,7 @@ class BitstampTradePairs
      */
     public function volumeUSDAsk()
     {
-        $x = ($this->volumeUSDBidPostFees()->getAmount() + self::MIN_PROFIT_USD) / $this->fees->asksMultiplier();
+        $x = ($this->volumeUSDBidPostFees()->getAmount() + $this->secrets->get(self::MIN_USD_PROFIT_SECRET)) / $this->fees->asksMultiplier();
 
         // We have to ceil() $x or risk losing our USD profit to fees.
         return Money::USD((int) ceil($x));
@@ -240,8 +235,7 @@ class BitstampTradePairs
      */
     public function minProfitBTC()
     {
-        $secrets = new Secrets();
-        $minProfitBTC = $secrets->get(self::MIN_BTC_PROFIT_SECRET);
+        $minProfitBTC = $this->secrets->get(self::MIN_BTC_PROFIT_SECRET);
 
         if (filter_var($minProfitBTC, FILTER_VALIDATE_INT) === false) {
             throw new \Exception('Minimum BTC profit configuration must be an integer value. data: ' . print_r($minProfitBTC, true));
@@ -267,8 +261,7 @@ class BitstampTradePairs
      */
     public function minProfitUSD()
     {
-        $secrets = new Secrets();
-        $minProfitUSD = $secrets->get(self::MIN_USD_PROFIT_SECRET);
+        $minProfitUSD = $this->secrets->get(self::MIN_USD_PROFIT_SECRET);
 
         if (filter_var($minProfitUSD, FILTER_VALIDATE_INT) === false) {
             throw new \Exception('Minimum USD profit configuration must be an integer value. data: ' . print_r($minProfitUSD, true));
