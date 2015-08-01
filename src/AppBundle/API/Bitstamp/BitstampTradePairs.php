@@ -313,18 +313,15 @@ class BitstampTradePairs
     {
         $errors = [];
 
+        // break statements are intentionally left out here to allow multiple
+        // error messages to be collated.
         switch (false) {
             case $this->isTrading():
                 $errors[] = 'Bitstamp trading is disabled at this time.';
-                break;
-
             case $this->isProfitable():
                 $errors[] = 'No profitable trade pairs found.';
-                break;
-
             case !$this->hasDupes():
                 $errors[] = 'Duplicate trade pairs found';
-                break;
         }
 
         if (!empty($errors)) {
