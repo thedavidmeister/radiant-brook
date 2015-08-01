@@ -26,7 +26,8 @@
         "keen-io/keen-io": "~2.5",
         "mathiasverraes/money": "dev-master",
         "vlucas/phpdotenv": "^2.0",
-        "masterminds/html5": "^2.1"
+        "masterminds/html5": "^2.1",
+        "psy/psysh": "@stable"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
