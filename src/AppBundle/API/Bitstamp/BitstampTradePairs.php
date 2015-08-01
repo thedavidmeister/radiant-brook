@@ -39,9 +39,6 @@ class BitstampTradePairs
     // USD has precision of 2.
     const USD_PRECISION = 2;
 
-    // The minimum amount of USD cents profit we need to commit to a pair.
-    const MIN_PROFIT_USD = 1;
-
     /**
      * Constructor to store services passed by Symfony.
      *
