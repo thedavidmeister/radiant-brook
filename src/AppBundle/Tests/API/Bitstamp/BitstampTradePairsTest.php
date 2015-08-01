@@ -8,6 +8,7 @@ use AppBundle\API\Bitstamp\PrivateAPI\Balance;
 use AppBundle\API\Bitstamp\BitstampTradePairs;
 use AppBundle\Tests\GuzzleTestTrait;
 use AppBundle\API\Bitstamp\Dupes;
+use AppBundle\Secrets;
 use Money\Money;
 
 /**
@@ -15,6 +16,67 @@ use Money\Money;
  */
 class BitstampTradePairsTest extends WebTestCase
 {
+    protected $overriddenEnv = [];
+
+    /**
+     * Set environment variables in a way that we can clear them post-suite.
+     *
+     * If we set environment variables without tracking what we set, we cannot
+     * clean them up later. If we cannot clean them up later, future usage of
+     * Secrets will inherit our cruft and break future tests.
+     *
+     * @param string $key
+     *   The key to set.
+     * @param string $value
+     *   The value to set.
+     *
+     * @see clearEnv()
+     */
+    protected function setEnv($key, $value)
+    {
+        $this->overriddenEnv[] = $key;
+        $this->overriddenEnv = array_unique($this->overriddenEnv);
+
+        $secrets = new Secrets();
+        $secrets->set($key, $value);
+    }
+
+    protected function clearEnv($key)
+    {
+        $secrets = new Secrets();
+        $secrets->clear($key);
+    }
+
+    protected function clearAllSetEnv()
+    {
+        array_walk($this->overriddenEnv, [$this, 'clearEnv']);
+    }
+
+    protected function tearDown()
+    {
+        $this->clearAllSetEnv();
+    }
+
+    protected function setMinUSDVolume($volume)
+    {
+        $this->setEnv('BITSTAMP_MIN_USD_VOLUME', $volume);
+    }
+
+    protected function setMinUSDProfit($min)
+    {
+        $this->setEnv('BITSTAMP_MIN_USD_PROFIT', $min);
+    }
+
+    protected function setMinBTCProfit($min)
+    {
+        $this->setEnv('BITSTAMP_MIN_BTC_PROFIT', $min);
+    }
+
+    protected function setPercentile($percentile)
+    {
+        $this->setEnv('BITSTAMP_PERCENTILE', $percentile);
+    }
+
     protected function mock($class)
     {
         return $this
@@ -33,24 +95,87 @@ class BitstampTradePairsTest extends WebTestCase
         return $this->mock('\AppBundle\API\Bitstamp\Dupes');
     }
 
-    protected function orderbook()
-    {
-        return $this->mock('\AppBundle\API\Bitstamp\PublicAPI\OrderBook');
-    }
-
     protected function buysell()
     {
         return $this->mock('\AppBundle\API\Bitstamp\BuySell');
     }
 
-    protected function setMinUSDVolume($volume)
+    protected function orderbook()
     {
-        putenv('BITSTAMP_MIN_USD_VOLUME=' . $volume);
+        return $this->mock('\AppBundle\API\Bitstamp\PublicAPI\OrderBook');
     }
 
-    protected function setPercentile($percentile)
+    protected function tp()
     {
-        putenv('BITSTAMP_PERCENTILE=' . $percentile);
+        return new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $this->orderbook());
+    }
+
+    /**
+     * Test volumeUSDAsk().
+     *
+     * @group stable
+     */
+    public function testVolumeUSDAsk()
+    {
+        // The USD ask volume required to cover the bid volume, desired USD
+        // profit and all fees is:
+        // (bidUSDPostFees + minUSDProfit) / feeAskMultiplier
+        // => (absoluteFeeUSD + isofeeMaxUSD + minProfitUSD) / feeAskMultiplier
+        // We get the ceiling of this to be absolutely sure we've covered
+        // everything.
+        // @see volumeUSDAsk() documentation.
+        // absoluteFeeUSD, isofeeMaxUSD, minProfitUSD, feeAskMultiplier,
+        // expected.
+        $tests = [
+            // Simple cases.
+            [Money::USD(0), Money::USD(0), 0, 1, Money::USD(0)],
+            [Money::USD(1), Money::USD(1), 1, 3, Money::USD(1)],
+            [Money::USD(2), Money::USD(2), 2, 3, Money::USD(2)],
+            // Flush out failures to handle min USD profit setting.
+            [Money::USD(100), Money::USD(200), 300, 0.5, Money::USD(1200)],
+            // Test for something where ceiling will matter.
+            [Money::USD(123), Money::USD(234), 345, 0.456, Money::USD(1540)],
+        ];
+
+        array_walk($tests, function($test) {
+            $fees = $this->fees();
+            $fees->method('absoluteFeeUSD')->willReturn($test[0]);
+            $fees->method('isofeeMaxUSD')->willReturn($test[1]);
+            $this->setMinUSDProfit($test[2]);
+            $fees->method('asksMultiplier')->willReturn($test[3]);
+
+            $tp = new BitstampTradePairs($fees, $this->dupes(), $this->buysell(), $this->orderbook());
+            $this->assertEquals($test[4], $tp->volumeUSDAsk());
+        });
+    }
+
+    /**
+     * Test volumeUSDBidPostFees().
+     *
+     * @group stable
+     */
+    public function testVolumeUSDBidPostFees()
+    {
+        // The USD bid volume post fees is equal to the max isofee USD volume
+        // plus the absolute value of USD fees.
+        // absoluteFeeUSD, isofeeMaxUSD, expected.
+        $tests = [
+            [Money::USD(2340), Money::USD(3450), Money::USD(5790)],
+            [Money::USD(0), Money::USD(0), Money::USD(0)],
+            [Money::USD(1), Money::USD(0), Money::USD(1)],
+            [Money::USD(0), Money::USD(1), Money::USD(1)],
+            [Money::USD(-1), Money::USD(0), Money::USD(-1)],
+            [Money::USD(0), Money::USD(-1), Money::USD(-1)],
+        ];
+
+        array_walk($tests, function($test) {
+            $fees = $this->fees();
+            $fees->method('absoluteFeeUSD')->willReturn($test[0]);
+            $fees->method('isofeeMaxUSD')->willReturn($test[1]);
+
+            $tp = new BitstampTradePairs($fees, $this->dupes(), $this->buysell(), $this->orderbook());
+            $this->assertEquals($test[2], $tp->volumeUSDBidPostFees());
+        });
     }
 
     /**
@@ -105,5 +230,119 @@ class BitstampTradePairsTest extends WebTestCase
         foreach ([0.05, 0.01, 0.5] as $percentile) {
             $this->assertEquals(Money::USD((int) $percentile * 1000000), $tp->bidPrice());
         }
+    }
+
+    /**
+     * Test minProfitUSD().
+     *
+     * @group stable
+     */
+    public function testMinProfitUSD()
+    {
+        $tp = $this->tp();
+        // sets, expects.
+        $tests = [
+            [0, Money::USD(0)],
+            ['0', Money::USD(0)],
+            ['1', Money::USD(1)],
+            ['100', Money::USD(100)],
+            [1, Money::USD(1)],
+        ];
+        foreach ($tests as $test) {
+            $this->setMinUSDProfit($test[0]);
+            $this->assertEquals($test[1], $tp->minProfitUSD());
+        }
+    }
+
+    /**
+     * Data provider for testMinProfitUSDExceptions().
+     *
+     * @return array
+     */
+    public function dataMinProfitUSDExceptions()
+    {
+        // sets, expects.
+        return [
+            ['foo'],
+            [1.5],
+            ['1.0'],
+            ['1.99'],
+        ];
+    }
+
+    /**
+     * Test minProfitUSD Exceptions.
+     *
+     * @param mixed $sets
+     *   Invalid minimum profit configuration that should throw an exception.
+     *
+     * @dataProvider dataMinProfitUSDExceptions
+     * @expectedException Exception
+     * @expectedExceptionMessage Minimum USD profit configuration must be an integer value.
+     *
+     * @group stable
+     */
+    public function testMinProfitUSDExceptions($sets)
+    {
+        $tp = $this->tp();
+        $this->setMinUSDProfit($sets);
+        $tp->minProfitUSD();
+    }
+
+    /**
+     * Test min profit BTC.
+     *
+     * @group stable
+     */
+    public function testMinProfitBTC()
+    {
+        $tp = $this->tp();
+        // sets, expects.
+        $tests = [
+            [0, Money::BTC(0)],
+            ['0', Money::BTC(0)],
+            ['1', Money::BTC(1)],
+            ['100', Money::BTC(100)],
+            [1, Money::BTC(1)],
+        ];
+        foreach ($tests as $test) {
+            $this->setMinBTCProfit($test[0]);
+            $this->assertEquals($test[1], $tp->minProfitBTC());
+        }
+    }
+
+    /**
+     * Data provider for testMinProfitBTCExceptions().
+     *
+     * @return array
+     */
+    public function dataMinProfitBTCExceptions()
+    {
+        // sets, expects.
+        return [
+            ['foo'],
+            [1.5],
+            ['1.0'],
+            ['1.99'],
+        ];
+    }
+
+    /**
+     * Test minProfitBTC Exceptions.
+     *
+     * @param mixed $sets
+     *   Invalid minimum profit configuration that should throw an exception.
+     *
+     * @dataProvider dataMinProfitUSDExceptions
+     * @expectedException Exception
+     * @expectedExceptionMessage Minimum BTC profit configuration must be an integer value.
+     *
+     * @group stable
+     */
+    public function testMinProfitBTCExceptions($sets)
+    {
+        $tp = $this->tp();
+        $this->setMinBTCProfit($sets);
+        $tp->minProfitBTC();
     }
 }

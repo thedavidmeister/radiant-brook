@@ -31,7 +31,8 @@ class DupesTest extends WebTestCase
 
     protected function setRangeMultiplier($multiplier)
     {
-        putenv('DUPES_RANGE_MULTIPLIER=' . $multiplier);
+        $secrets = new Secrets();
+        $secrets->set('DUPES_RANGE_MULTIPLIER', $multiplier);
     }
 
     /**
@@ -158,7 +159,7 @@ class DupesTest extends WebTestCase
         ];
 
         foreach ($askTests as $test) {
-            putenv('DUPES_RANGE_MULTIPLIER=' . $test[0]);
+            $this->setRangeMultiplier($test[0]);
             $this->assertEquals($test[3], $this->dupes()->$test[1]($test[2]));
         }
     }

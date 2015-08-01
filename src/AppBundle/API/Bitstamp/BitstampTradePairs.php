@@ -27,6 +27,10 @@ class BitstampTradePairs
 {
     const MIN_USD_VOLUME_SECRET = 'BITSTAMP_MIN_USD_VOLUME';
 
+    const MIN_USD_PROFIT_SECRET = 'BITSTAMP_MIN_USD_PROFIT';
+
+    const MIN_BTC_PROFIT_SECRET = 'BITSTAMP_MIN_BTC_PROFIT';
+
     const PERCENTILE_SECRET = 'BITSTAMP_PERCENTILE';
 
     // Bitcoin has precision of 8.
@@ -34,9 +38,6 @@ class BitstampTradePairs
 
     // USD has precision of 2.
     const USD_PRECISION = 2;
-
-    // The minimum amount of USD cents profit we need to commit to a pair.
-    const MIN_PROFIT_USD = 1;
 
     /**
      * Constructor to store services passed by Symfony.
@@ -64,6 +65,7 @@ class BitstampTradePairs
         $this->dupes = $dupes;
         $this->buySell = $buySell;
         $this->orderBook = $orderbook;
+        $this->secrets = new Secrets();
     }
 
     /**
@@ -77,9 +79,7 @@ class BitstampTradePairs
      */
     public function baseVolumeUSDBid()
     {
-        $secrets = new Secrets();
-
-        return Money::USD((int) $secrets->get(self::MIN_USD_VOLUME_SECRET));
+        return Money::USD((int) $this->secrets->get(self::MIN_USD_VOLUME_SECRET));
     }
 
     /**
@@ -105,9 +105,7 @@ class BitstampTradePairs
      */
     public function bidPrice()
     {
-        $secrets = new Secrets();
-
-        return Money::USD($this->orderBook->bids()->percentileCap(1 - $secrets->get(self::PERCENTILE_SECRET)));
+        return Money::USD($this->orderBook->bids()->percentileCap(1 - $this->secrets->get(self::PERCENTILE_SECRET)));
     }
 
     /**
@@ -163,9 +161,7 @@ class BitstampTradePairs
      */
     public function askPrice()
     {
-        $secrets = new Secrets();
-
-        return Money::USD($this->orderBook->asks()->percentileCap($secrets->get(self::PERCENTILE_SECRET)));
+        return Money::USD($this->orderBook->asks()->percentileCap($this->secrets->get(self::PERCENTILE_SECRET)));
     }
 
     /**
@@ -187,7 +183,7 @@ class BitstampTradePairs
      */
     public function volumeUSDAsk()
     {
-        $x = ($this->volumeUSDBidPostFees()->getAmount() + self::MIN_PROFIT_USD) / $this->fees->asksMultiplier();
+        $x = ($this->volumeUSDBidPostFees()->getAmount() + $this->secrets->get(self::MIN_USD_PROFIT_SECRET)) / $this->fees->asksMultiplier();
 
         // We have to ceil() $x or risk losing our USD profit to fees.
         return Money::USD((int) ceil($x));
@@ -230,6 +226,22 @@ class BitstampTradePairs
      */
 
     /**
+     * Returns the minimum acceptable BTC profit for a valid pair.
+     *
+     * @return Money::BTC
+     */
+    public function minProfitBTC()
+    {
+        $minProfitBTC = $this->secrets->get(self::MIN_BTC_PROFIT_SECRET);
+
+        if (filter_var($minProfitBTC, FILTER_VALIDATE_INT) === false) {
+            throw new \Exception('Minimum BTC profit configuration must be an integer value. data: ' . print_r($minProfitBTC, true));
+        }
+
+        return Money::BTC((int) $minProfitBTC);
+    }
+
+    /**
      * Returns the BTC profit of the suggested pair.
      *
      * @return Money::BTC
@@ -237,6 +249,22 @@ class BitstampTradePairs
     public function profitBTC()
     {
         return Money::BTC((int) floor($this->bidBTCVolume()->getAmount() - $this->askBTCVolume()->getAmount()));
+    }
+
+    /**
+     * Returns the minimum acceptable USD profit for a valid pair.
+     *
+     * @return Money::USD
+     */
+    public function minProfitUSD()
+    {
+        $minProfitUSD = $this->secrets->get(self::MIN_USD_PROFIT_SECRET);
+
+        if (filter_var($minProfitUSD, FILTER_VALIDATE_INT) === false) {
+            throw new \Exception('Minimum USD profit configuration must be an integer value. data: ' . print_r($minProfitUSD, true));
+        }
+
+        return Money::USD((int) $minProfitUSD);
     }
 
     /**
@@ -293,7 +321,7 @@ class BitstampTradePairs
      */
     public function isProfitable()
     {
-        return $this->profitUSD() >= Money::USD(self::MIN_PROFIT_USD) && $this->profitBTC() > Money::BTC(0);
+        return $this->profitUSD() >= $this->minProfitUSD() && $this->profitBTC() > $this->minProfitBTC();
     }
 
     /**
