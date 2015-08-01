@@ -57,6 +57,11 @@ class BitstampTradePairsTest extends WebTestCase
         $this->clearAllSetEnv();
     }
 
+    protected function setIsTrading($isTrading)
+    {
+        $this->setEnv('BITSTAMP_IS_TRADING', $isTrading);
+    }
+
     protected function setMinUSDVolume($volume)
     {
         $this->setEnv('BITSTAMP_MIN_USD_VOLUME', $volume);
@@ -108,6 +113,35 @@ class BitstampTradePairsTest extends WebTestCase
     protected function tp()
     {
         return new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $this->orderbook());
+    }
+
+    /**
+     * Tests isTrading().
+     */
+    public function testIsTrading()
+    {
+        // env value, expected.
+        $tests = [
+            // Truthy strings.
+            ['true', true],
+            ['1', true],
+            ['yes', true],
+            [1, true],
+            [true, true],
+            // Other things.
+            ['', false],
+            [null, false],
+            ['no', false],
+            ['one', false],
+            ['foo', false],
+            // filter_var() doesn't recognise y/n.
+            ['y', false],
+            ['n', false],
+        ];
+        array_walk($tests, function($test) {
+            $this->setIsTrading($test[0]);
+            $this->assertEquals($test[1], $this->tp()->isTrading());
+        });
     }
 
     /**
