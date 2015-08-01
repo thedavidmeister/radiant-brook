@@ -59,7 +59,22 @@ task :"heroku-snapshot-bitstamp" do
   puts `#{cmd}`
 end
 
+namespace :git do
+  desc 'Cleanup (delete) all local branches that have already been merged into master (locally)'
+  task :cleanup do
+    `git branch --merged master`.lines.map(&:chomp).select {|i| i != '  master' && i[0,2] != '* ' }.each {|b| sh "git branch -d #{b.strip}" }
+  end
+end
+
 desc 'run all tests'
 task :tests => [:phpcs, :phpunit, :"security-check"]
 
-task :default => :phpcs
+task :default => :help
+
+# No description for this task so it doesn't show in task lists.
+task :help do
+  puts 'Use rake -D for detailed information on available tasks.'
+  puts
+
+  system 'rake', '-T'
+end
