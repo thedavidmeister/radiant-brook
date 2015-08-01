@@ -1,3 +1,10 @@
+desc 'run a psysh console'
+task :psysh do
+  cmd = "vendor/psy/psysh/bin/psysh"
+  # puts will not work here.
+  exec cmd
+end
+
 desc 'checks coding standards'
 task :phpcs do
   cmd = "bin/phpcs --standard=vendor/leaphub/phpcs-symfony2-standard/leaphub/phpcs/Symfony2/ --extensions=php src/"
