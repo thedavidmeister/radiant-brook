@@ -109,7 +109,7 @@ class DefaultController extends Controller
             'USD Profit (USD cents)' => $tp->profitUSD()->getAmount(),
             'Is profitable' => $tp->isProfitable() ? 'Yes' : 'No',
             'Has dupes' => $tp->hasDupes() ? 'Yes' : 'No',
-            'Is valid trade' => $tp->isValid() ? 'Yes' : 'No',
+            'Is trading' => $tp->isTrading() ? 'Yes' : 'No',
             '-Dupes-' => '',
             'Dupe bid range' => $tp->bidPrice()->getAmount() * $tp->dupes->rangeMultiplier(),
             'Dupe bids' => var_export($tp->dupes->bids($tp->bidPrice()), true),

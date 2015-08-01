@@ -299,10 +299,8 @@ class BitstampTradePairs
      */
     public function execute()
     {
-        if ($this->isValid()) {
+        if ($this->ensureValid()) {
             $this->buySell->execute($this->bidPrice(), $this->bidBTCVolume(), $this->askPrice(), $this->askBTCVolume());
-        } else {
-            throw new \Exception('It is not safe to execute a trade pair at this time.');
         }
     }
 
@@ -311,13 +309,42 @@ class BitstampTradePairs
      *
      * @return bool
      */
-    public function isValid()
+    public function ensureValid()
     {
-        return $this->isTrading() && $this->isProfitable() && !$this->hasDupes();
+        $errors = [];
+
+        switch (false) {
+            case $this->isTrading():
+                $errors[] = 'Bitstamp trading is disabled at this time.';
+                break;
+
+            case $this->isProfitable():
+                $errors[] = 'No profitable trade pairs found.';
+                break;
+
+            case !$this->hasDupes():
+                $errors[] = 'Duplicate trade pairs found';
+                break;
+        }
+
+        if (!empty($errors)) {
+            throw new \Exception('Invalid trade pairs: ' . implode(' ', $errors));
+        } else {
+            return true;
+        }
     }
 
     /**
      * Is trading currently enabled?
+     *
+     * The following values for the BITSTAMP_IS_TRADING environment variable is
+     * supported as true:
+     * - '1'
+     * - 'true'
+     * - 'yes'
+     *
+     * @return bool
+     *   true if trading is enabled.
      */
     public function isTrading()
     {
