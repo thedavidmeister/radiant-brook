@@ -115,7 +115,8 @@ class BitstampTradePairsTest extends WebTestCase
      *
      * @group stable
      */
-    public function testVolumeUSDAsk() {
+    public function testVolumeUSDAsk()
+    {
         // The USD ask volume required to cover the bid volume, desired USD
         // profit and all fees is:
         // (bidUSDPostFees + minUSDProfit) / feeAskMultiplier
@@ -153,7 +154,8 @@ class BitstampTradePairsTest extends WebTestCase
      *
      * @group stable
      */
-    public function testVolumeUSDBidPostFees() {
+    public function testVolumeUSDBidPostFees()
+    {
         // The USD bid volume post fees is equal to the max isofee USD volume
         // plus the absolute value of USD fees.
         // absoluteFeeUSD, isofeeMaxUSD, expected.
