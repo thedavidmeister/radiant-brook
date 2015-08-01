@@ -124,6 +124,7 @@ class BitstampTradePairsTest extends WebTestCase
         $tests = [
             // Truthy strings.
             ['true', true],
+            ['TRUE', true],
             ['1', true],
             ['yes', true],
             [1, true],
@@ -134,6 +135,8 @@ class BitstampTradePairsTest extends WebTestCase
             ['no', false],
             ['one', false],
             ['foo', false],
+            ['false', false],
+            ['FALSE', false],
             // filter_var() doesn't recognise y/n.
             ['y', false],
             ['n', false],
