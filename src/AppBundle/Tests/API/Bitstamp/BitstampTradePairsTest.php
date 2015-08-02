@@ -275,6 +275,8 @@ class BitstampTradePairsTest extends WebTestCase
 
     /**
      * Test askPrice().
+     *
+     * @group stable
      */
     public function testAskPrice()
     {
@@ -312,6 +314,8 @@ class BitstampTradePairsTest extends WebTestCase
 
     /**
      * Test bidPrice().
+     *
+     * @group stable
      */
     public function testBidPrice()
     {
