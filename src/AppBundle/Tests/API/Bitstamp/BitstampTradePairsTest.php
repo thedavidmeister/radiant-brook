@@ -338,7 +338,7 @@ class BitstampTradePairsTest extends WebTestCase
 
                 return $bids;
             }));
-            // bidPrice() passes 1 - $percentile internally.
+            // bidPrice() passes (1 - $percentile) to percentileCap().
             $expected = Money::USD((int) (1 - $test[0]) * 1000000);
 
             $this->setPercentile($test[0]);
