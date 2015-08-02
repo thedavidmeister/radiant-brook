@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\API\Bitstamp;
+namespace AppBundle\API\Bitstamp\TradePairs;
 
 use AppBundle\Secrets;
 use Money\Money;
@@ -60,7 +60,7 @@ class BitstampTradePairs
         Fees $fees,
         Dupes $dupes,
         BuySell $buySell,
-        PublicAPI\OrderBook $orderbook
+        \AppBundle\API\Bitstamp\PublicAPI\OrderBook $orderbook
     )
     {
         $this->fees = $fees;

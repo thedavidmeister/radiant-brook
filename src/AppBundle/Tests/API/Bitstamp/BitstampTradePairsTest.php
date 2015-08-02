@@ -5,7 +5,7 @@ namespace AppBundle\Tests\API\Bitstamp;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\API\Bitstamp\Fees;
 use AppBundle\API\Bitstamp\PrivateAPI\Balance;
-use AppBundle\API\Bitstamp\BitstampTradePairs;
+use AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs;
 use AppBundle\Tests\GuzzleTestTrait;
 use AppBundle\API\Bitstamp\Dupes;
 use AppBundle\Secrets;
@@ -92,17 +92,17 @@ class BitstampTradePairsTest extends WebTestCase
 
     protected function fees()
     {
-        return $this->mock('\AppBundle\API\Bitstamp\Fees');
+        return $this->mock('\AppBundle\API\Bitstamp\TradePairs\Fees');
     }
 
     protected function dupes()
     {
-        return $this->mock('\AppBundle\API\Bitstamp\Dupes');
+        return $this->mock('\AppBundle\API\Bitstamp\TradePairs\Dupes');
     }
 
     protected function buysell()
     {
-        return $this->mock('\AppBundle\API\Bitstamp\BuySell');
+        return $this->mock('\AppBundle\API\Bitstamp\TradePairs\BuySell');
     }
 
     protected function orderbook()
@@ -277,6 +277,8 @@ class BitstampTradePairsTest extends WebTestCase
      * Test askPrice().
      *
      * @group stable
+     *
+     * @return null
      */
     public function testAskPrice()
     {
@@ -309,13 +311,14 @@ class BitstampTradePairsTest extends WebTestCase
 
             $this->assertEquals($expected, $tp->askPrice());
         });
-
     }
 
     /**
      * Test bidPrice().
      *
      * @group stable
+     *
+     * @return null
      */
     public function testBidPrice()
     {

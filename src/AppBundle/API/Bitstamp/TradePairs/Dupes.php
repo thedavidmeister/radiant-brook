@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\API\Bitstamp;
+namespace AppBundle\API\Bitstamp\TradePairs;
 
 use Money\Money;
 use AppBundle\MoneyStrings;
@@ -31,7 +31,7 @@ class Dupes
      * @param PrivateAPI\OpenOrders $openOrders
      * @param \AppBundle\Secrets    $secrets
      */
-    public function __construct(PrivateAPI\OpenOrders $openOrders, \AppBundle\Secrets $secrets)
+    public function __construct(\AppBundle\API\Bitstamp\PrivateAPI\OpenOrders $openOrders, \AppBundle\Secrets $secrets)
     {
         $this->openOrders = $openOrders;
         $this->secrets = $secrets;
@@ -55,7 +55,6 @@ class Dupes
      */
     protected function findDupes(Money $price, $type)
     {
-        // fwrite(STDERR, print_r($range, TRUE));
         $matches = [];
         foreach ($this->openOrders->data() as $order) {
             // Ignore any orders of the wrong type.

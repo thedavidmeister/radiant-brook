@@ -1,11 +1,11 @@
 <?php
 
-namespace AppBundle\Tests\API\Bitstamp;
+namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\API\Bitstamp\PrivateAPI\Buy;
 use AppBundle\API\Bitstamp\PrivateAPI\Sell;
-use AppBundle\API\Bitstamp\BuySell;
+use AppBundle\API\Bitstamp\TradePairs\BuySell;
 use Money\Money;
 use AppBundle\Tests\GuzzleTestTrait;
 use GuzzleHttp\Client;

@@ -1,11 +1,11 @@
 <?php
 
-namespace AppBundle\Tests\API\Bitstamp;
+namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\Tests\GuzzleTestTrait;
 use AppBundle\API\Bitstamp\PrivateAPI\Balance;
-use AppBundle\API\Bitstamp\Fees;
+use AppBundle\API\Bitstamp\TradePairs\Fees;
 use Money\Money;
 
 /**

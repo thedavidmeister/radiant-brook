@@ -1,11 +1,11 @@
 <?php
 
-namespace AppBundle\Tests\API\Bitstamp;
+namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\Tests\GuzzleTestTrait;
 use AppBundle\API\Bitstamp\PrivateAPI\OpenOrders;
-use AppBundle\API\Bitstamp\Dupes;
+use AppBundle\API\Bitstamp\TradePairs\Dupes;
 use AppBundle\Secrets;
 use Money\Money;
 

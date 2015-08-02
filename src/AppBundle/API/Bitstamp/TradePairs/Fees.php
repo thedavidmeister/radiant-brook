@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\API\Bitstamp;
+namespace AppBundle\API\Bitstamp\TradePairs;
 
 use Money\Money;
 
@@ -14,7 +14,7 @@ class Fees
      *
      * @param PrivateAPI\Balance $balance
      */
-    public function __construct(PrivateAPI\Balance $balance)
+    public function __construct(\AppBundle\API\Bitstamp\PrivateAPI\Balance $balance)
     {
         $this->balance = $balance;
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\API\Bitstamp;
+namespace AppBundle\API\Bitstamp\TradePairs;
 
 use AppBundle\MoneyStrings;
 use Money\Money;
@@ -18,8 +18,8 @@ class BuySell
      * @param \Psr\Log\LoggerInterface $logger
      */
     public function __construct(
-      PrivateAPI\Buy $buy,
-      PrivateAPI\Sell $sell,
+      \AppBundle\API\Bitstamp\PrivateAPI\Buy $buy,
+      \AppBundle\API\Bitstamp\PrivateAPI\Sell $sell,
       \Psr\Log\LoggerInterface $logger
     )
     {
