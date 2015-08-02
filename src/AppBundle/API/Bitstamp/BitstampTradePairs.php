@@ -326,9 +326,9 @@ class BitstampTradePairs
 
         if (!empty($errors)) {
             throw new \Exception('Invalid trade pairs: ' . implode(' ', $errors));
-        } else {
-            return true;
         }
+
+        return true;
     }
 
     /**
