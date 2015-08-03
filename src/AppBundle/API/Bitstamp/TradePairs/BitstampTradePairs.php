@@ -6,6 +6,8 @@ use AppBundle\Secrets;
 use Money\Money;
 use AppBundle\API\Bitstamp\TradePairs\PriceProposer;
 
+use function Functional\first;
+
 /**
  * Suggests and executes profitable trade pairs.
  *
@@ -54,13 +56,15 @@ class BitstampTradePairs
         Fees $fees,
         Dupes $dupes,
         BuySell $buySell,
-        \AppBundle\API\Bitstamp\PublicAPI\OrderBook $orderbook
+        PriceProposer $proposer
+        // \AppBundle\API\Bitstamp\PublicAPI\OrderBook $orderbook
     )
     {
         $this->fees = $fees;
         $this->dupes = $dupes;
         $this->buySell = $buySell;
-        $this->orderBook = $orderbook;
+        $this->proposer = $proposer;
+        // $this->orderBook = $orderbook;
         $this->secrets = new Secrets();
     }
 
@@ -159,8 +163,12 @@ class BitstampTradePairs
      */
     public function execute()
     {
-        $proposer = new PriceProposer($this->orderBook);
 
+        foreach ($this->proposer as $proposition) {
+            print_r($proposition);
+        }
+
+        // fwrite(STDERR, print_r($debug, TRUE));
         // if ($this->ensureValid()) {
         //     $this->buySell->execute($this->bidPrice(), $this->bidBTCVolume(), $this->askPrice(), $this->askBTCVolume());
         // }

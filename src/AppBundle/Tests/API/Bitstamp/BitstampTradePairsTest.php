@@ -110,9 +110,14 @@ class BitstampTradePairsTest extends WebTestCase
         return $this->mock('\AppBundle\API\Bitstamp\PublicAPI\OrderBook');
     }
 
+    protected function proposer()
+    {
+        return $this->mock('\AppBundle\API\Bitstamp\TradePairs\PriceProposer');
+    }
+
     protected function tp()
     {
-        return new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $this->orderbook());
+        return new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $this->proposer());
     }
 
     public function testExecute()

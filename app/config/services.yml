@@ -42,7 +42,11 @@ services:
 
   bitstamp.trade_pairs:
     class: AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs
-    arguments: [@bitstamp.fees, @bitstamp.dupes, @bitstamp.buysell, @bitstamp.order_book]
+    arguments: [@bitstamp.fees, @bitstamp.dupes, @bitstamp.buysell, @bitstamp.price_proposer]
+
+  bitstamp.price_proposer:
+    class: AppBundle\API\Bitstamp\TradePairs\PriceProposer
+    arguments: [@bitstamp.order_book]
 
   # Private API
   bitstamp.private_api_authenticator:

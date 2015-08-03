@@ -26,6 +26,8 @@ class PriceProposer implements \Iterator
 
     protected $currentPercentile;
 
+    protected $orderBook;
+
 
     /**
      * DI Constructor.
@@ -33,11 +35,11 @@ class PriceProposer implements \Iterator
      * @param \AppBundle\API\Bitstamp\PublicAPI\OrderBook $orderbook
      */
     public function __construct(
-        \AppBundle\API\Bitstamp\PublicAPI\OrderBook $orderbook
+        \AppBundle\API\Bitstamp\PublicAPI\OrderBook $orderBook
     )
     {
         // DI.
-        $this->orderBook = $orderbook;
+        $this->orderBook = $orderBook;
 
         // Secrets.
         $this->secrets = new Secrets();
@@ -97,7 +99,7 @@ class PriceProposer implements \Iterator
      *   Returns scalar on success, or NULL on failure.
      */
     function key() {
-
+        return $this->currentPercentile;
     }
 
     /**
@@ -108,7 +110,7 @@ class PriceProposer implements \Iterator
      * @see http://php.net/manual/en/iterator.next.php
      */
     function next() {
-
+        $this->currentPercentile += $this->stepSize;
     }
 
     /**
@@ -119,7 +121,7 @@ class PriceProposer implements \Iterator
      * @see http://php.net/manual/en/iterator.rewind.php
      */
     function rewind() {
-
+        $this->currentPercentile = $this->minPercentile;
     }
 
     /**
@@ -135,6 +137,10 @@ class PriceProposer implements \Iterator
      *   TRUE on success or FALSE on failure.
      */
     function valid() {
-
+        return $this->currentPercentile <= $this->maxPercentile
+            && $this->currentPercentile >= $this->minPercentile
+            && is_numeric($this->currentPercentile)
+            && is_numeric($this->minPercentile)
+            && is_numeric($this->maxPercentile);
     }
 }
