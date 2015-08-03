@@ -4,7 +4,7 @@ namespace AppBundle\API\Bitstamp\TradePairs;
 
 use AppBundle\Secrets;
 use Money\Money;
-use AppBundle\API\Bitstamp\TradePairs\Proposer;
+use AppBundle\API\Bitstamp\TradePairs\PriceProposer;
 
 /**
  * Suggests and executes profitable trade pairs.
@@ -28,16 +28,9 @@ class BitstampTradePairs
 {
     const IS_TRADING_SECRET = 'BITSTAMP_IS_TRADING';
 
-    const MIN_USD_VOLUME_SECRET = 'BITSTAMP_MIN_USD_VOLUME';
-
-    const MIN_USD_PROFIT_SECRET = 'BITSTAMP_MIN_USD_PROFIT';
-
     const MIN_BTC_PROFIT_SECRET = 'BITSTAMP_MIN_BTC_PROFIT';
 
     const PERCENTILE_SECRET = 'BITSTAMP_PERCENTILE';
-
-    // Bitcoin has precision of 8.
-    const BTC_PRECISION = 8;
 
     // USD has precision of 2.
     const USD_PRECISION = 2;
@@ -75,122 +68,10 @@ class BitstampTradePairs
      * BIDS
      */
 
-    /**
-     * The base USD volume from config pre-isofee scaling.
-     *
-     * @return Money::USD
-     */
-    public function baseVolumeUSDBid()
-    {
-        return Money::USD((int) $this->secrets->get(self::MIN_USD_VOLUME_SECRET));
-    }
-
-    /**
-     * The USD bid volume pre-fees.
-     *
-     * We can simply scale the minimum USD volume allowable using the fee
-     * structure as a limit.
-     *
-     * @return Money::USD
-     */
-    public function volumeUSDBid()
-    {
-        return $this->fees->isofeeMaxUSD($this->baseVolumeUSDBid());
-    }
-
-    /**
-     * The bid USD price of the suggested pair.
-     *
-     * For bids, we use the cap percentile as it's harder for other users to
-     * manipulate and we want 1 - PERCENTILE as bids are decending.
-     *
-     * @return Money::USD
-     */
-    public function bidPrice()
-    {
-        return Money::USD($this->orderBook->bids()->percentileCap(1 - $this->secrets->get(self::PERCENTILE_SECRET)));
-    }
-
-    /**
-     * The USD bid volume including fees.
-     *
-     * We can simply add the fees for this USD volume to the USD volume.
-     *
-     * @return Money::USD
-     */
-    public function volumeUSDBidPostFees()
-    {
-        return $this->volumeUSDBid()->add($this->fees->absoluteFeeUSD($this->volumeUSDBid()));
-    }
-
-    /**
-     * The bid BTC volume of the suggested pair.
-     *
-     * The volume of BTC is simply the amount of USD we have to spend divided by
-     * the amount we're willing to spend per Satoshi.
-     *
-     * @return Money::BTC
-     */
-    public function bidBTCVolume()
-    {
-        // Its very important that when we lodge our bid with Bitstamp, the
-        // BTC volume times the USD price does not exceed the maximum USD volume
-        // on the isofee. For this reason, we floor any fractions of satoshis
-        // that come out of this equation to avoid any risk of being one satoshi
-        // over the limit from Bitstamp's perspective.
-        //
-        // For this reason we do NOT use something like MoneyStrings.
-        $satoshis = (int) floor(($this->volumeUSDBid()->getAmount() / $this->bidPrice()->getAmount()) * (10 ** self::BTC_PRECISION));
-
-        // This must never happen.
-        if ($satoshis * $this->bidPrice()->getAmount() / (10 ** self::BTC_PRECISION) > $this->volumeUSDBid()->getAmount()) {
-            throw new \Exception($satoshis . ' satoshis were attempted to be purchased at ' . $this->bidPrice()->getAmount() . ' per BTC which exceeds allowed volume USD ' . $this->volumeUSDBid()->getAmount());
-        }
-
-        return Money::BTC($satoshis);
-    }
 
     /**
      * ASKS
      */
-
-    /**
-     * The asking USD price in the suggested pair.
-     *
-     * For asks, we use the BTC volume percentile as it's harder for other users
-     * to manipulate. Asks are sorted ascending so we can use $pc directly.
-     *
-     * @return Money::USD
-     */
-    public function askPrice()
-    {
-        return Money::USD($this->orderBook->asks()->percentileCap($this->secrets->get(self::PERCENTILE_SECRET)));
-    }
-
-    /**
-     * Returns the USD volume required to cover the bid USD + fees.
-     *
-     * The volume USD that we get to keep K is:
-     *   - X = USD value of BTC sold
-     *   - Fa = Fee asks multiplier
-     *   - K = X * Fa
-     *
-     * If we want to keep enough to cover our total bid cost B + profit P then:
-     *   - K = B + P
-     *
-     * Therefore:
-     *   - B + P = X * Fa
-     *   - X = (B + P) / Fa
-     *
-     * @return Money::USD
-     */
-    public function volumeUSDAsk()
-    {
-        $x = ($this->volumeUSDBidPostFees()->getAmount() + $this->secrets->get(self::MIN_USD_PROFIT_SECRET)) / $this->fees->asksMultiplier();
-
-        // We have to ceil() $x or risk losing our USD profit to fees.
-        return Money::USD((int) ceil($x));
-    }
 
     /**
      * How much USD can we keep from our sale, post fees?
@@ -200,28 +81,6 @@ class BitstampTradePairs
     public function volumeUSDAskPostFees()
     {
         return Money::USD((int) floor($this->volumeUSDAsk()->getAmount() * $this->fees->asksMultiplier()));
-    }
-
-    /**
-     * The asking volume of BTC in the suggested pair.
-     *
-     * BTC volume is simply the amount of USD we need to sell divided by the
-     * USD price per BTC.
-     *
-     * @return Money::BTC
-     */
-    public function askBTCVolume()
-    {
-        // We have to ceiling our satoshis to guarantee that we meet our minimum
-        // ask USD volume, or we risk fees killing our profits.
-        $satoshis = (int) ceil($this->volumeUSDAsk()->getAmount() / $this->askPrice()->getAmount() * 10 ** self::BTC_PRECISION);
-
-        // This must never happen.
-        if ($satoshis * $this->askPrice()->getAmount() / (10 ** self::BTC_PRECISION) < $this->volumeUSDAsk()->getAmount()) {
-            throw new \Exception($satoshis . ' satoshis were attempted to be purchased at ' . $this->askPrice()->getAmount() . ' per BTC which does not meet required volume USD ' . $this->volumeUSDAsk()->getAmount());
-        }
-
-        return Money::BTC($satoshis);
     }
 
     /**
@@ -300,7 +159,7 @@ class BitstampTradePairs
      */
     public function execute()
     {
-        $proposer = new Proposer();
+        $proposer = new PriceProposer($this->orderBook);
 
         // if ($this->ensureValid()) {
         //     $this->buySell->execute($this->bidPrice(), $this->bidBTCVolume(), $this->askPrice(), $this->askBTCVolume());
