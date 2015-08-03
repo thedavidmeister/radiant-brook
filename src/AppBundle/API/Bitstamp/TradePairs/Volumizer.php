@@ -5,33 +5,52 @@ namespace AppBundle\API\Bitstamp\TradePairs;
 use AppBundle\Secrets;
 use Money\Money;
 
+/**
+ * AppBundle\API\Bitstamp\TradePairs\Volumizer.
+ */
 class Volumizer
 {
-  protected $prices;
+    protected $prices;
 
     const MIN_USD_VOLUME_SECRET = 'BITSTAMP_MIN_USD_VOLUME';
 
+    /**
+     * DI Constructor.
+     * @param array $prices
+     * @param Fees  $fees
+     */
+    public function __construct(
+        array $prices,
+        Fees $fees
+    )
+    {
+        foreach (['bidUSDPrice', 'askUSDPrice'] as $price) {
+            $this->{$price} = isset($prices[$price]) ? $prices[$price] : throw new \Exception('Missing ' . $price);
+        }
 
-  public function __construct(
-    array $prices,
-    Fees $fees
-  )
-  {
-    foreach (['bidUSDPrice', 'askUSDPrice'] as $price) {
-      $this->{$price} = isset($prices[$price]) ? $prices[$price] : throw new \Exception('Missing ' . $price);
+        $this->fees = $fees;
+        $this->secrets = new Secrets();
     }
 
-    $this->fees = $fees;
-    $this->secrets = new Secrets();
-  }
+    /**
+     * Gets $this->bidUSDPrice.
+     *
+     * @return Money::USD
+     */
+    public function bidUSDPrice()
+    {
+        return $this->bidUSDPrice;
+    }
 
-  public function bidUSDPrice() {
-    return $this->bidUSDPrice;
-  }
-
-  public function askUSDPrice() {
-    return $this->askUSDPrice;
-  }
+    /**
+     * Gets $this->askUSDPrice.
+     *
+     * @return Money::USD
+     */
+    public function askUSDPrice()
+    {
+        return $this->askUSDPrice;
+    }
 
     /**
      * The base USD volume from config pre-isofee scaling.
@@ -142,11 +161,16 @@ class Volumizer
         return Money::BTC($satoshis);
     }
 
-  public function get()
-  {
-    return $this->prices += [
-      'bidBTCVolume' => $this->bidBTCVolume(),
-      'askBTCVolume' => $this->askBTCVolume(),
-    ];
-  }
+    /**
+     * Merge the calculated volumes into the prices.
+     *
+     * @return array
+     */
+    public function get()
+    {
+        return $this->prices += [
+          'bidBTCVolume' => $this->bidBTCVolume(),
+          'askBTCVolume' => $this->askBTCVolume(),
+        ];
+    }
 }

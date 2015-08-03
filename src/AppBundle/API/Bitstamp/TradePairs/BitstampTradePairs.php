@@ -40,31 +40,29 @@ class BitstampTradePairs
     /**
      * Constructor to store services passed by Symfony.
      *
-     * @param Fees      $fees
+     * @param Fees          $fees
      *   Bitstamp Fees service.
      *
-     * @param Dupes     $dupes
+     * @param Dupes         $dupes
      *   Bitstamp Dupes service.
      *
-     * @param BuySell   $buySell
+     * @param BuySell       $buySell
      *   Combined Bitstamp buy/sell service.
      *
-     * @param OrderBook $orderbook
-     *   Bitstamp order book service.
+     * @param PriceProposer $proposer
+     *   Bitstamp proposer service.
      */
     public function __construct(
         Fees $fees,
         Dupes $dupes,
         BuySell $buySell,
         PriceProposer $proposer
-        // \AppBundle\API\Bitstamp\PublicAPI\OrderBook $orderbook
     )
     {
         $this->fees = $fees;
         $this->dupes = $dupes;
         $this->buySell = $buySell;
         $this->proposer = $proposer;
-        // $this->orderBook = $orderbook;
         $this->secrets = new Secrets();
     }
 
@@ -163,15 +161,9 @@ class BitstampTradePairs
      */
     public function execute()
     {
-
         foreach ($this->proposer as $proposition) {
             print_r($proposition);
         }
-
-        // fwrite(STDERR, print_r($debug, TRUE));
-        // if ($this->ensureValid()) {
-        //     $this->buySell->execute($this->bidPrice(), $this->bidBTCVolume(), $this->askPrice(), $this->askBTCVolume());
-        // }
     }
 
     /**

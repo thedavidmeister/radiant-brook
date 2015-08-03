@@ -120,6 +120,9 @@ class BitstampTradePairsTest extends WebTestCase
         return new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $this->proposer());
     }
 
+    /**
+     * Tests execution of trade pairs.
+     */
     public function testExecute()
     {
         $this->tp()->execute();

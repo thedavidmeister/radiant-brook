@@ -5,6 +5,9 @@ namespace AppBundle\API\Bitstamp\TradePairs;
 use AppBundle\Secrets;
 use Money\Money;
 
+/**
+ * AppBundle\API\Bitstamp\TracePairs\PriceProposer.
+ */
 class PriceProposer implements \Iterator
 {
     const MIN_USD_PROFIT_SECRET = 'BITSTAMP_MIN_USD_PROFIT';
@@ -32,7 +35,7 @@ class PriceProposer implements \Iterator
     /**
      * DI Constructor.
      *
-     * @param \AppBundle\API\Bitstamp\PublicAPI\OrderBook $orderbook
+     * @param \AppBundle\API\Bitstamp\PublicAPI\OrderBook $orderBook
      */
     public function __construct(
         \AppBundle\API\Bitstamp\PublicAPI\OrderBook $orderBook
@@ -83,7 +86,8 @@ class PriceProposer implements \Iterator
      *
      * @return mixed
      */
-    function current() {
+    public function current()
+    {
         return [
             'bidUSDPrice' => $this->bidUSDPrice(),
             'askUSDPrice' => $this->askUSDPrice(),
@@ -98,7 +102,8 @@ class PriceProposer implements \Iterator
      * @return scalar|null
      *   Returns scalar on success, or NULL on failure.
      */
-    function key() {
+    public function key()
+    {
         return $this->currentPercentile;
     }
 
@@ -109,7 +114,8 @@ class PriceProposer implements \Iterator
      *
      * @see http://php.net/manual/en/iterator.next.php
      */
-    function next() {
+    public function next()
+    {
         $this->currentPercentile += $this->stepSize;
     }
 
@@ -120,7 +126,8 @@ class PriceProposer implements \Iterator
      *
      * @see http://php.net/manual/en/iterator.rewind.php
      */
-    function rewind() {
+    public function rewind()
+    {
         $this->currentPercentile = $this->minPercentile;
     }
 
@@ -136,7 +143,8 @@ class PriceProposer implements \Iterator
      *   The return value will be casted to boolean and then evaluated. Returns
      *   TRUE on success or FALSE on failure.
      */
-    function valid() {
+    public function valid()
+    {
         return $this->currentPercentile <= $this->maxPercentile
             && $this->currentPercentile >= $this->minPercentile
             && is_numeric($this->currentPercentile)
