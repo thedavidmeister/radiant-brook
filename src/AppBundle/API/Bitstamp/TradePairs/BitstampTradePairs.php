@@ -4,6 +4,7 @@ namespace AppBundle\API\Bitstamp\TradePairs;
 
 use AppBundle\Secrets;
 use Money\Money;
+use AppBundle\API\Bitstamp\TradePairs\Proposer;
 
 /**
  * Suggests and executes profitable trade pairs.
@@ -299,9 +300,11 @@ class BitstampTradePairs
      */
     public function execute()
     {
-        if ($this->ensureValid()) {
-            $this->buySell->execute($this->bidPrice(), $this->bidBTCVolume(), $this->askPrice(), $this->askBTCVolume());
-        }
+        $proposer = new Proposer();
+
+        // if ($this->ensureValid()) {
+        //     $this->buySell->execute($this->bidPrice(), $this->bidBTCVolume(), $this->askPrice(), $this->askBTCVolume());
+        // }
     }
 
     /**
