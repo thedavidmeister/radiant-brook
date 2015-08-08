@@ -37,8 +37,8 @@ class EnsureTest extends WebTestCase
    * @group stable
    */
   public function testSetExceptions() {
-    $this->setExpectedException('Exception', 'NULL is not set.');
-    Ensure::set(NULL);
+    $this->setExpectedException('Exception', 'null is not set.');
+    Ensure::set(null);
   }
 
   /**
@@ -49,7 +49,7 @@ class EnsureTest extends WebTestCase
     return [
       [1, '1 is not empty.'],
       ['1', '"1" is not empty.'],
-      [[NULL], '[null] is not empty.'],
+      [[null], '[null] is not empty.'],
       [new \StdClass(), '{} is not empty.'],
     ];
   }
@@ -60,7 +60,7 @@ class EnsureTest extends WebTestCase
       [0, '0 is empty.'],
       ['0', '"0" is empty.'],
       [[], '[] is empty.'],
-      [NULL, 'null is empty.'],
+      [null, 'null is empty.'],
     ];
   }
 
@@ -128,7 +128,7 @@ class EnsureTest extends WebTestCase
     return [
       [1.1, '1.1 is not an int.'],
       ['foo', '"foo" is not an int.'],
-      [NULL, 'null is not an int.'],
+      [null, 'null is not an int.'],
       [[], '[] is not an int.'],
     ];
   }
