@@ -33,9 +33,86 @@ class TradeProposalTest extends WebTestCase
     }
 
     /**
+     * Test baseVolumeUSDBid() and volumeUSDBid().
+     *
+     * @group stable
+     */
+    // public function testVolumeUSDBid()
+    // {
+    //     $fees = $this->fees();
+    //     // Set a value for isofeeMaxUSD to return because we need to check it
+    //     // when testing volumeUSDBid().
+    //     $fees->method('isofeeMaxUSD')->willReturn(Money::USD(1230));
+
+    //     // Check that the min USD volume can be read from config.
+    //     $tp = new TradeProposal($fees, $this->dupes(), $this->buysell(), $this->orderbook());
+    //     foreach ([123, 234] as $test) {
+    //         $this->setMinUSDVolume($test);
+    //         $this->assertEquals(Money::USD($test), $tp->baseVolumeUSDBid());
+    //     }
+
+    //     // Check that volumeUSDBid() is interacting with isofee correctly.
+    //     $this->assertEquals(Money::USD(1230), $tp->volumeUSDBid());
+    // }
+
+    /**
+     * Test bidUSDPrice().
+     *
+     * @group stable
+     */
+    public function testBidUSDPrice()
+    {
+      $prices = $this->randomBidAskPrices();
+      $tradeProposal = new TradeProposal($prices, $this->fees());
+      $this->assertEquals($prices['bidUSDPrice'], $tradeProposal->bidUSDPrice());
+    }
+
+    /**
+     * Test bidUSDVolumeBase().
+     *
+     * @group stable
+     */
+    public function testBidUSDVolumeBase()
+    {
+      // Check basic functionality.
+      $minVolume = mt_rand();
+      $this->setEnv('BITSTAMP_MIN_USD_VOLUME', $minVolume);
+      $this->assertEquals(Money::USD($minVolume), $this->tradeProposal()->bidUSDVolumeBase());
+    }
+
+    /**
+     * Test bidUSDVolume().
+     */
+    public function testBidUSDVolume()
+    {
+      // Check that the isofee is returned.
+      $fees = $this->fees();
+      $isoFeeAmount = mt_rand();
+      $fees->method('isofeeMaxUSD')->willReturn(Money::USD($isoFeeAmount));
+      $tradeProposal = new TradeProposal($this->randomBidAskPrices(), $fees);
+      $this->assertEquals(Money::USD($isoFeeAmount), $tradeProposal->bidUSDVolume());
+
+      // Check that the volume for a known isofee is returned. We mock isofee to
+      // just return 2x the base value.
+      $tests = [
+        [5, 10],
+        [10, 20],
+      ];
+      array_walk($tests, function($test) {
+        $fees = $this->fees();
+        $fees->method('isofeeMaxUSD')->will($this->returnCallback(function(Money $usd) {
+          return $usd->multiply(2);
+        }));
+        $tradeProposal = new TradeProposal($this->randomBidAskPrices(), $fees);
+        $this->setEnv('BITSTAMP_MIN_USD_VOLUME', $test[0]);
+        $this->assertEquals(Money::USD($test[1]), $tradeProposal->bidUSDVolume());
+      });
+    }
+
+    /**
      * Test bidUSDVolumePlusFees().
      *
-     * @groupz stable
+     * @group stable
      */
     public function testBidUSDVolumePlusFees()
     {
@@ -116,13 +193,13 @@ class TradeProposalTest extends WebTestCase
             $fees = $this->fees();
             $fees->method('absoluteFeeUSD')->willReturn($test[0]);
             $fees->method('isofeeMaxUSD')->willReturn($test[1]);
-            $this->setEnv('BITSTAMP_MIN_USD_PROFIT', $scenario[2]);
+            $this->setEnv('BITSTAMP_MIN_USD_PROFIT', $test[2]);
             $fees->method('asksMultiplier')->willReturn($test[3]);
 
             // The USD volume has nothing to do with the price.
             $tradeProposal = new TradeProposal($this->randomBidAskPrices(), $fees);
 
-            $this->assertEquals($test[4], $tradeProposal->volumeUSDAsk());
+            $this->assertEquals($test[4], $tradeProposal->askUSDVolumeCoverFees());
         });
     }
 

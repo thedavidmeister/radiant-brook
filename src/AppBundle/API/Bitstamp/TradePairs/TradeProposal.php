@@ -62,7 +62,8 @@ class TradeProposal
      */
     public function bidUSDVolumeBase()
     {
-        return Money::USD((int) $this->secrets->get(self::MIN_USD_VOLUME_SECRET));
+        $minUSDVolumeAmount = Ensure::isInt($this->secrets->get(self::MIN_USD_VOLUME_SECRET));
+        return Money::USD((int) $minUSDVolumeAmount);
     }
 
     /**

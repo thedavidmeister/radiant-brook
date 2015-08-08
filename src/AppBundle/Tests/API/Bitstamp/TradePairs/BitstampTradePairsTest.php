@@ -108,67 +108,44 @@ class BitstampTradePairsTest extends WebTestCase
     }
 
     /**
-     * Test baseVolumeUSDBid() and volumeUSDBid().
-     *
-     * @group stable
-     */
-    public function testVolumeUSDBid()
-    {
-        $fees = $this->fees();
-        // Set a value for isofeeMaxUSD to return because we need to check it
-        // when testing volumeUSDBid().
-        $fees->method('isofeeMaxUSD')->willReturn(Money::USD(1230));
-
-        // Check that the min USD volume can be read from config.
-        $tp = new BitstampTradePairs($fees, $this->dupes(), $this->buysell(), $this->orderbook());
-        foreach ([123, 234] as $test) {
-            $this->setMinUSDVolume($test);
-            $this->assertEquals(Money::USD($test), $tp->baseVolumeUSDBid());
-        }
-
-        // Check that volumeUSDBid() is interacting with isofee correctly.
-        $this->assertEquals(Money::USD(1230), $tp->volumeUSDBid());
-    }
-
-    /**
      * Test askPrice().
      *
      * @group stable
      *
      * @return null
      */
-    public function testAskPrice()
-    {
-        // percentile.
-        $tests = [
-            [0.05],
-            [0.01],
-            [0.5],
-            [1],
-            [0],
-        ];
-        array_walk($tests, function($test) {
-            $orderbook = $this->orderbook();
-            $orderbook->method('asks')->will($this->returnCallback(function() {
-                $asks = $this
-                    ->getMockBuilder('AppBundle\API\Bitstamp\OrderList')
-                    ->disableOriginalConstructor()
-                    ->getMock();
+    // public function testAskPrice()
+    // {
+    //     // percentile.
+    //     $tests = [
+    //         [0.05],
+    //         [0.01],
+    //         [0.5],
+    //         [1],
+    //         [0],
+    //     ];
+    //     array_walk($tests, function($test) {
+    //         $orderbook = $this->orderbook();
+    //         $orderbook->method('asks')->will($this->returnCallback(function() {
+    //             $asks = $this
+    //                 ->getMockBuilder('AppBundle\API\Bitstamp\OrderList')
+    //                 ->disableOriginalConstructor()
+    //                 ->getMock();
 
-                $asks->method('percentileCap')->will($this->returnCallback(function($percentile) {
-                    return (int) $percentile * 12345678;
-                }));
+    //             $asks->method('percentileCap')->will($this->returnCallback(function($percentile) {
+    //                 return (int) $percentile * 12345678;
+    //             }));
 
-                return $asks;
-            }));
+    //             return $asks;
+    //         }));
 
-            $expected = Money::USD((int) $test[0] * 12345678);
-            $this->setPercentile($test[0]);
-            $tp = new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $orderbook);
+    //         $expected = Money::USD((int) $test[0] * 12345678);
+    //         $this->setPercentile($test[0]);
+    //         $tp = new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $orderbook);
 
-            $this->assertEquals($expected, $tp->askPrice());
-        });
-    }
+    //         $this->assertEquals($expected, $tp->askPrice());
+    //     });
+    // }
 
     /**
      * Test bidPrice().
@@ -177,38 +154,38 @@ class BitstampTradePairsTest extends WebTestCase
      *
      * @return null
      */
-    public function testBidPrice()
-    {
-        // percentile.
-        $tests = [
-            [0.05],
-            [0.01],
-            [0.5],
-            [1],
-            [0],
-        ];
-        array_walk($tests, function($test) {
-            // This mocking gets deep...
-            $orderbook = $this->orderbook();
-            $orderbook->method('bids')->will($this->returnCallback(function() {
-                $bids = $this
-                    ->getMockBuilder('AppBundle\API\Bitstamp\OrderList')
-                    ->disableOriginalConstructor()
-                    ->getMock();
+    // public function testBidPrice()
+    // {
+    //     // percentile.
+    //     $tests = [
+    //         [0.05],
+    //         [0.01],
+    //         [0.5],
+    //         [1],
+    //         [0],
+    //     ];
+    //     array_walk($tests, function($test) {
+    //         // This mocking gets deep...
+    //         $orderbook = $this->orderbook();
+    //         $orderbook->method('bids')->will($this->returnCallback(function() {
+    //             $bids = $this
+    //                 ->getMockBuilder('AppBundle\API\Bitstamp\OrderList')
+    //                 ->disableOriginalConstructor()
+    //                 ->getMock();
 
-                $bids->method('percentileCap')->will($this->returnCallback(function($percentile) {
-                    return (int) $percentile * 1000000;
-                }));
+    //             $bids->method('percentileCap')->will($this->returnCallback(function($percentile) {
+    //                 return (int) $percentile * 1000000;
+    //             }));
 
-                return $bids;
-            }));
-            // bidPrice() passes (1 - $percentile) to percentileCap().
-            $expected = Money::USD((int) (1 - $test[0]) * 1000000);
+    //             return $bids;
+    //         }));
+    //         // bidPrice() passes (1 - $percentile) to percentileCap().
+    //         $expected = Money::USD((int) (1 - $test[0]) * 1000000);
 
-            $this->setPercentile($test[0]);
-            $tp = new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $orderbook);
+    //         $this->setPercentile($test[0]);
+    //         $tp = new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $orderbook);
 
-            $this->assertEquals($expected, $tp->bidPrice());
-        });
-    }
+    //         $this->assertEquals($expected, $tp->bidPrice());
+    //     });
+    // }
 }
