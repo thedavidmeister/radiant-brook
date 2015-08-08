@@ -4,6 +4,7 @@ namespace AppBundle;
 
 use Dotenv\Dotenv;
 use Dotenv\Loader;
+use AppBundle\Ensure;
 
 /**
  * Handles things that need to be secret by reading things from env.
@@ -29,29 +30,35 @@ class Secrets
      *
      * @param string $key
      *   The environment variable name to set.
+     *
      * @param string $value
      *   The value of the environment variable to set.
      */
-    public function set($key, $value)
+    public function set($name, $value)
     {
+        Ensure::isValidVariableName($name);
+        Ensure::isString($value);
+
         // Get a mutable loader.
         $loader = new Loader($this->dotEnvPath());
-        $loader->setEnvironmentVariable($key, $value);
+        $loader->setEnvironmentVariable($name, $value);
     }
 
     /**
      * Clears an environment variable in a Dotenv compatible way.
      *
-     * @param string $key
+     * @param string $name
      *   The environment variable to clear.
      *
      * @see https://github.com/vlucas/phpdotenv/issues/106
      */
-    public function clear($key)
+    public function clear($name)
     {
-        putenv($key);
-        unset($_ENV[$key]);
-        unset($_SERVER[$key]);
+        Ensure::isValidVariableName($name);
+
+        putenv($name);
+        unset($_ENV[$name]);
+        unset($_SERVER[$name]);
     }
 
     /**
@@ -65,9 +72,7 @@ class Secrets
      */
     public function get($name)
     {
-        if (!is_string($name)) {
-            throw new \Exception('Environment variables must be a string');
-        }
+        Ensure::isValidVariableName($name);
 
         $loader = new Loader($this->dotEnvPath());
 

@@ -38,7 +38,7 @@ class TradeProposalTest extends WebTestCase
     }
 
     /**
-     * @covers TradeProposal::bidUSDPrice
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::bidUSDPrice
      *
      * @group stable
      */
@@ -50,7 +50,7 @@ class TradeProposalTest extends WebTestCase
     }
 
     /**
-     * @covers TradeProposal::bidUSDVolumeBase
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::bidUSDVolumeBase
      *
      * @group stable
      */
@@ -63,7 +63,7 @@ class TradeProposalTest extends WebTestCase
     }
 
     /**
-     * @covers TradeProposal::bidUSDVolume
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::bidUSDVolume
      *
      * @group stable
      *
@@ -97,7 +97,7 @@ class TradeProposalTest extends WebTestCase
     }
 
     /**
-     * @covers TradeProposal::bidUSDVolumePlusFees
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::bidUSDVolumePlusFees
      *
      * @group stable
      */
@@ -128,7 +128,7 @@ class TradeProposalTest extends WebTestCase
     }
 
     /**
-     * @covers TradeProposal::minProfitBTC
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::minProfitBTC
      *
      * @group stable
      */
@@ -150,7 +150,7 @@ class TradeProposalTest extends WebTestCase
     }
 
     /**
-     * @covers TradeProposal::askUSDVolumeCoverFees
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::askUSDVolumeCoverFees
      *
      * @group stable
      */
@@ -191,7 +191,7 @@ class TradeProposalTest extends WebTestCase
     }
 
     /**
-     * @covers TradeProposalTest::minProfitUSD
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::minProfitUSD
      *
      * @group stable
      */
