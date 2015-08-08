@@ -74,14 +74,6 @@ class BitstampTradePairsTest extends WebTestCase
     }
 
     /**
-     * Tests execution of trade pairs.
-     */
-    public function testExecute()
-    {
-        $this->tp()->execute();
-    }
-
-    /**
      * Tests isTrading().
      *
      * @group stable

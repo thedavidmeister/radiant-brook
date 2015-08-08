@@ -24,6 +24,10 @@ final class Ensure {
         return (filter_var($value, FILTER_VALIDATE_INT) !== false) ? $value : self::fail($value, $message);
     }
 
+    public static function inRange($value, $min, $max, $message = '%s is not in range.') {
+        return ($min <= $value && $value <= $max) ? $value : self::fail($value, $message);
+    }
+
     public static function isInstanceOf($value, $class, $message = '%s is not an instance of %s.') {
         return ($value instanceof $class) ? $value : self::fail($value, $class, $message);
     }

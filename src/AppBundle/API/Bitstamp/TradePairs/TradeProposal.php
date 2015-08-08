@@ -225,7 +225,7 @@ class TradeProposal
      */
     public function profitUSD()
     {
-        return Money::USD((int) floor($this->askUSDVolumeCoverFees()->getAmount() - $this->bidUSDVolumePlusFees()->getAmount()));
+        return Money::USD((int) floor($this->askUSDVolumePostFees()->getAmount() - $this->bidUSDVolumePlusFees()->getAmount()));
     }
 
     /**
@@ -238,5 +238,9 @@ class TradeProposal
         $minProfitUSD = Ensure::isInt($this->secrets->get(self::MIN_USD_PROFIT_SECRET));
 
         return Money::USD((int) $minProfitUSD);
+    }
+
+    public function isProfitable() {
+        return $this->profitUSD() >= $this->minProfitUSD() && $this->profitBTC() > $this->minProfitBTC();
     }
 }

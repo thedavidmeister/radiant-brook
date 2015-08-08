@@ -1,3 +1,9 @@
+desc 'run a server'
+task :serve do
+  cmd = "app/console server:run"
+  exec cmd
+end
+
 desc 'run a psysh console'
 task :psysh do
   cmd = "vendor/psy/psysh/bin/psysh"

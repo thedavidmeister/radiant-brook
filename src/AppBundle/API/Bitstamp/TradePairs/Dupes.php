@@ -3,6 +3,8 @@
 namespace AppBundle\API\Bitstamp\TradePairs;
 
 use Money\Money;
+use AppBundle\Secrets;
+use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
 use AppBundle\MoneyStrings;
 
 /**
@@ -31,10 +33,10 @@ class Dupes
      * @param PrivateAPI\OpenOrders $openOrders
      * @param \AppBundle\Secrets    $secrets
      */
-    public function __construct(\AppBundle\API\Bitstamp\PrivateAPI\OpenOrders $openOrders, \AppBundle\Secrets $secrets)
+    public function __construct(\AppBundle\API\Bitstamp\PrivateAPI\OpenOrders $openOrders)
     {
         $this->openOrders = $openOrders;
-        $this->secrets = $secrets;
+        $this->secrets = new Secrets();
     }
 
     /**
@@ -117,6 +119,10 @@ class Dupes
     public function asks(Money $price)
     {
         return $this->findDupes($price, self::TYPE_SELL);
+    }
+
+    public function tradeProposalHasDupes(TradeProposal $tradeProposal) {
+        return !empty($this->bids($tradeProposal->bidUSDPrice())) || !empty($this->asks($tradeProposal->askUSDPrice()));
     }
 
     /**

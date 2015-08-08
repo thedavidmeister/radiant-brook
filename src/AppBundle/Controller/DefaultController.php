@@ -88,37 +88,45 @@ class DefaultController extends Controller
         $timeFormat = 'Y-m-d H:i:s';
 
         $stats = [
-            '-Bids-' => '',
-            'bid/buy USD Base Volume' => $tp->volumeUSDBid()->getAmount(),
-            'bid/buy BTC Volume' => $tp->bidBTCVolume()->getAmount(),
-            'bid/buy USD Price' => $tp->bidPrice()->getAmount(),
-            'bid/buy USD Volume post fees (what USD must we spend to play?)' => $tp->volumeUSDBidPostFees()->getAmount(),
-            'bid/buy BTC Volume * USD Price' => $tp->bidBTCVolume()->getAmount() * $tp->bidPrice()->getAmount(),
-            'bid/buy BTC Volume * USD Price as USD' => $tp->bidBTCVolume()->getAmount() * $tp->bidPrice()->getAmount() / (10 ** $tp::BTC_PRECISION),
-            '-Asks-' => '',
-            'ask/sell USD Base Volume' => $tp->volumeUSDAsk()->getAmount(),
-            'ask/sell BTC Volume' => $tp->askBTCVolume()->getAmount(),
-            'ask/sell USD Price' => $tp->askPrice()->getAmount(),
-            'ask/sell BTC Volume * USD Price' => $tp->askBTCVolume()->getAmount() * $tp->askPrice()->getAmount(),
-            'ask/sell BTC Volume * USD Price as USD' => $tp->askBTCVolume()->getAmount() * $tp->askPrice()->getAmount() / (10 ** $tp::BTC_PRECISION),
-            'ask/sell USD Volume post fees (what USD can we keep from sale?)' => $tp->volumeUSDAskPostFees()->getAmount(),
-            '-Diff-' => '',
-            'BTC Profit (satoshis)' => $tp->profitBTC()->getAmount(),
-            'BTC Profit (BTC)' => $tp->profitBTC()->getAmount() / (10 ** $tp::BTC_PRECISION),
-            'BTC Profit USD value (midpoint) as USD cents' => $tp->profitBTC()->getAmount() * $tp->midprice()->getAmount() / (10 ** $tp::BTC_PRECISION),
-            'USD Profit (USD cents)' => $tp->profitUSD()->getAmount(),
-            'Is profitable' => $tp->isProfitable() ? 'Yes' : 'No',
-            'Has dupes' => $tp->hasDupes() ? 'Yes' : 'No',
-            'Is trading' => $tp->isTrading() ? 'Yes' : 'No',
+            // 'Has dupes' => $tp->hasDupes() ? 'Yes' : 'No',
             '-Dupes-' => '',
-            'Dupe bid range' => $tp->bidPrice()->getAmount() * $tp->dupes->rangeMultiplier(),
-            'Dupe bids' => var_export($tp->dupes->bids($tp->bidPrice()), true),
-            'Dupe ask range' => $tp->askPrice()->getAmount() * $tp->dupes->rangeMultiplier(),
-            'Dupe asks' => var_export($tp->dupes->asks($tp->askPrice()), true),
+            // 'Dupe bid range' => $tp->bidPrice()->getAmount() * $tp->dupes->rangeMultiplier(),
+            // 'Dupe bids' => var_export($tp->dupes->bids($tp->bidPrice()), true),
+            // 'Dupe ask range' => $tp->askPrice()->getAmount() * $tp->dupes->rangeMultiplier(),
+            // 'Dupe asks' => var_export($tp->dupes->asks($tp->askPrice()), true),
             '-Facts-' => '',
             'Fees bids multiplier' => $tp->fees->bidsMultiplier(),
             'Fees asks multiplier' => $tp->fees->asksMultiplier(),
+            'Is trading' => $tp->isTrading(),
         ];
+
+        foreach ($tp->report() as $item) {
+            $name = uniqid();
+            $stats[$name] = '';
+            $methods = [
+                'bidUSDPrice',
+                'bidUSDVolumeBase',
+                'bidUSDVolume',
+                'bidUSDVolumePlusFees',
+                'bidBTCVolume',
+                'askUSDPrice',
+                'askUSDVolumeCoverFees',
+                'askUSDVolumePostFees',
+                'askBTCVolume',
+                'profitBTC',
+                'minProfitBTC',
+                'profitUSD',
+                'minProfitUSD',
+            ];
+            foreach ($methods as $method) {
+                $stats[$name . ' ' . $method] = $item['proposition']->{$method}()->getAmount();
+            }
+
+            $stats[$name . ' isProfitable'] = $item['proposition']->isProfitable() ? 'Yes' : 'No';
+            $stats[$name . ' state'] = $item['state'];
+            $stats[$name . ' reason'] = $item['reason'];
+
+        }
 
         return $this->render('AppBundle::index.html.twig', [
             'stats' => $stats,

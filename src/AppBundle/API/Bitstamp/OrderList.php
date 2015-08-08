@@ -175,30 +175,9 @@ class OrderList
      */
     public function percentileBTCVolume($pc)
     {
-        if ($pc < 0 || $pc > 1) {
-            throw new \Exception('Percentage must be between 0 - 1.');
-        }
-        // 1. Calculate the index, rounding up any decimals, which is not how
-        // Money would normally work if we called multiply().
-        $index = Money::BTC((int) ceil($this->totalVolume() * $pc));
-
-        // 2. Order all the values in the set in ascending order.
-        $this->sortUSDAsc();
-
-        // If index is less than the running total of the next datum, return the
-        // current datum.
-        $sum = Money::BTC(0);
-        foreach ($this->data as $datum) {
-            $sum = $sum->add($datum[self::BTC_KEY]);
-
-            // We've found the percentile, save it and break loop execution.
-            if ($index <= $sum) {
-                $return = $datum[self::USD_KEY]->getAmount();
-                break;
-            }
-        }
-
-        return $return;
+        return $this->percentileFinder($pc, function(array $datum, Money $running_sum) {
+            return $running_sum->add($datum[self::BTC_KEY]);
+        });
     }
 
     /**
@@ -215,18 +194,22 @@ class OrderList
      */
     public function percentileCap($pc)
     {
-        if ($pc < 0 || $pc > 1) {
-            throw new \Exception('Percentage must be between 0 - 1.');
-        }
+        return $this->percentileFinder($pc, function(array $datum, Money $running_sum) {
+            return $running_sum->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
+        });
+    }
+
+    protected function percentileFinder($pc, callable $sum_function) {
+        Ensure::inRange($pc, 0, 1);
 
         $index = Money::USD((int) ceil($this->totalCap() * $pc));
         $this->sortUSDAsc();
 
-        $sum = Money::USD(0);
+        $running_sum = Money::USD(0);
         foreach ($this->data as $datum) {
-            $sum = $sum->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
+            $running_sum = $sum_function($datum, $running_sum);
 
-            if ($index <= $sum) {
+            if ($index <= $running_sum) {
                 // We've found the cap percentile, save it and break loop
                 // execution.
                 $return = $datum[self::USD_KEY]->getAmount();
@@ -236,9 +219,9 @@ class OrderList
 
         // it's possible that because of the ceil() in the index generation, the
         // index can be 1 larger than the final sum. In this case, set the
-        // percentileCap to the calculated index.
+        // percentileCap to the highest data value.
         if (!isset($return)) {
-            $return = $index->getAmount();
+            $return = end($this->data)[self::USD_KEY]->getAmount();
         }
 
         return $return;

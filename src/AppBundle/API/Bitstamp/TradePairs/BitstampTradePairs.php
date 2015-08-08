@@ -75,9 +75,13 @@ class BitstampTradePairs
      */
     public function execute()
     {
+        if (!$this->isTrading()) {
+            throw new \Exception('Bitstamp trading is disabled at this time.');
+        }
+
         foreach ($this->proposer as $proposition) {
             $tradeProposal = new TradeProposal($proposition, $this->fees);
-            switch($this->validateVolumizedProposition($tradeProposal)) {
+            switch($this->validateTradeProposition($tradeProposal)) {
                 case self::PROPOSAL_VALID:
                     // Do trade.
                     // return, loop cannot continue.
@@ -93,32 +97,33 @@ class BitstampTradePairs
         }
     }
 
-    public function validateVolumizedProposition(TradeProposal $tradeProposal) {
-        // We should not be trading right now, panic!
-        if (!$this->isTrading()) {
-            return self::PROPOSAL_PANIC;
+    public function report()
+    {
+        $report = [];
+        foreach ($this->proposer as $proposition) {
+            $tradeProposal = new TradeProposal($proposition, $this->fees);
+            $report[] = ['proposition' => $tradeProposal] + $this->validateTradeProposition($tradeProposal);
         }
+        return $report;
+    }
+
+    public function validateTradeProposition(TradeProposal $tradeProposal) {
+        $state = self::PROPOSAL_VALID;
+        $reason = 'Valid trade pair.';
 
         // If we found dupes, we cannot continue trading, panic!
-        if ($this->propositionHasDupes($tradeProposal)) {
-            return self::PROPOSAL_PANIC;
+        if ($this->dupes->tradeProposalHasDupes($tradeProposal)) {
+            $state = self::PROPOSAL_PANIC;
+            $reason = 'Duplicate trade pairs found.';
         }
 
         // This proposition is not profitable, but others may be.
-        if (!$this->propositionIsProfitable($tradeProposal)) {
-            return self::PROPOSAL_INVALID;
+        if (!$tradeProposal->isProfitable()) {
+            $state = self::PROPOSAL_INVALID;
+            $reason = 'Not a profitable trade proposition.';
         }
 
-        // This proposition is valid.
-        return self::PROPOSAL_VALID;
-    }
-
-    public function propositionHasDupes(TradeProposal $tradeProposal) {
-        return !empty($this->dupes->bids($tradeProposal->bidUSDPrice())) || !empty($this->dupes->asks($tradeProposal->askUSDPrice()));
-    }
-
-    public function propositionIsProfitable(TradeProposal $tradeProposal) {
-        return $tradeProposal->profitUSD() >= $tradeProposal->minProfitUSD() && $tradeProposal->profitBTC() > $tradeProposal->minProfitBTC();
+        return ['state' => $state, 'reason' => $reason];
     }
 
     /**
