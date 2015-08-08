@@ -63,6 +63,7 @@ class TradeProposal
     public function bidUSDVolumeBase()
     {
         $minUSDVolumeAmount = Ensure::isInt($this->secrets->get(self::MIN_USD_VOLUME_SECRET));
+
         return Money::USD((int) $minUSDVolumeAmount);
     }
 
@@ -237,7 +238,12 @@ class TradeProposal
         return Money::BTC((int) $minProfitBTC);
     }
 
-    public function isProfitable() 
+    /**
+     * Returns true if this trade proposal meets minimum profit requirements.
+     *
+     * @return boolean
+     */
+    public function isProfitable()
     {
         return $this->profitUSD() >= $this->minProfitUSD() && $this->profitBTC() > $this->minProfitBTC();
     }

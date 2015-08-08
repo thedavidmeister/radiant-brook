@@ -97,6 +97,14 @@ class BitstampTradePairs
         }
     }
 
+    /**
+     * Provides a action plan report for a set of TradeProposals.
+     *
+     * @return array $report
+     *   - proposition
+     *   - state
+     *   - reason
+     */
     public function report()
     {
         $report = [];
@@ -104,10 +112,23 @@ class BitstampTradePairs
             $tradeProposal = new TradeProposal($proposition, $this->fees);
             $report[] = ['proposition' => $tradeProposal] + $this->validateTradeProposition($tradeProposal);
         }
+
         return $report;
     }
 
-    public function validateTradeProposition(TradeProposal $tradeProposal) 
+    /**
+     * Validates a given TradeProposal.
+     *
+     * A TradeProposal can either be valid (executable), invalid (unexecutable),
+     * or panic (halt all proposals).
+     *
+     * @param  TradeProposal $tradeProposal
+     *
+     * @return array
+     *   - state
+     *   - reason
+     */
+    public function validateTradeProposition(TradeProposal $tradeProposal)
     {
         $state = self::PROPOSAL_VALID;
         $reason = 'Valid trade pair.';
@@ -145,31 +166,4 @@ class BitstampTradePairs
 
         return filter_var($isTrading, FILTER_VALIDATE_BOOLEAN);
     }
-
-    // /**
-    //  * Does the pair meet all requirements for execution?
-    //  *
-    //  * @return bool
-    //  */
-    // public function ensureValid()
-    // {
-    //     $errors = [];
-
-    //     // break statements are intentionally left out here to allow multiple
-    //     // error messages to be collated.
-    //     switch (false) {
-    //         case $this->isTrading():
-    //             $errors[] = 'Bitstamp trading is disabled at this time.';
-    //         case $this->isProfitable():
-    //             $errors[] = 'No profitable trade pairs found.';
-    //         case !$this->hasDupes():
-    //             $errors[] = 'Duplicate trade pairs found';
-    //     }
-
-    //     if (!empty($errors)) {
-    //         throw new \Exception('Invalid trade pairs: ' . implode(' ', $errors));
-    //     }
-
-    //     return true;
-    // }
 }

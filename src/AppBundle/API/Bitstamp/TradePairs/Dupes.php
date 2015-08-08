@@ -31,7 +31,6 @@ class Dupes
      * DI constructor.
      *
      * @param PrivateAPI\OpenOrders $openOrders
-     * @param \AppBundle\Secrets    $secrets
      */
     public function __construct(\AppBundle\API\Bitstamp\PrivateAPI\OpenOrders $openOrders)
     {
@@ -121,7 +120,14 @@ class Dupes
         return $this->findDupes($price, self::TYPE_SELL);
     }
 
-    public function tradeProposalHasDupes(TradeProposal $tradeProposal) 
+    /**
+     * Returns true if a given TradeProposal has dupes.
+     *
+     * @param TradeProposal $tradeProposal
+     *
+     * @return boolean
+     */
+    public function tradeProposalHasDupes(TradeProposal $tradeProposal)
     {
         return !empty($this->bids($tradeProposal->bidUSDPrice())) || !empty($this->asks($tradeProposal->askUSDPrice()));
     }

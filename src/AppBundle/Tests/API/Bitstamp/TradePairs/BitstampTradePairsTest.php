@@ -74,9 +74,9 @@ class BitstampTradePairsTest extends WebTestCase
     }
 
     /**
-     * @covers BitstampTradePairs::isTrading
+     * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::isTrading
      *
-     * @group stable
+     * group stable
      */
     public function testIsTrading()
     {

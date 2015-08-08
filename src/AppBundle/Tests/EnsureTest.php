@@ -11,11 +11,11 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class EnsureTest extends WebTestCase
 {
     /**
-     * Test set().
+     * @covers Ensure::notNull
      *
      * @group stable
      */
-    public function testSet()
+    public function testNotNull()
     {
         // Everything is set... try a few things.
         $tests = [
@@ -28,16 +28,16 @@ class EnsureTest extends WebTestCase
             [],
         ];
         array_walk($tests, function($test) {
-            $this->assertSame($test, Ensure::set($test));
+            $this->assertSame($test, Ensure::notNull($test));
         });
     }
 
     /**
-     * Test exceptions from set().
+     * @covers Ensure::notNull
      *
      * @group stable
      */
-    public function testSetExceptions()
+    public function testNotNullExceptions()
     {
         $this->setExpectedException('Exception', 'null is not set.');
         Ensure::set(null);
@@ -45,6 +45,7 @@ class EnsureTest extends WebTestCase
 
     /**
      * Data provider for testIsEmptyExceptions().
+     *
      * @return array
      */
     public function dataIsEmptyExceptions()

@@ -175,14 +175,15 @@ class OrderList
      */
     public function percentileBTCVolume($pc)
     {
-        $index_function = function($pc) {
+        $indexFunction = function($pc) {
             return Money::BTC((int) ceil($this->totalVolume() * $pc));
         };
-        $sum_init = Money::BTC(0);
-        $running_function = function(array $datum, Money $running_sum) {
-            return $running_sum->add($datum[self::BTC_KEY]);
+        $sumInit = Money::BTC(0);
+        $runningFunction = function(array $datum, Money $runningSum) {
+            return $runningSum->add($datum[self::BTC_KEY]);
         };
-        return $this->percentileFinder($pc, $index_function, $sum_init, $running_function);
+
+        return $this->percentileFinder($pc, $indexFunction, $sumInit, $runningFunction);
     }
 
     /**
@@ -199,28 +200,29 @@ class OrderList
      */
     public function percentileCap($pc)
     {
-        $index_function = function($pc) {
+        $indexFunction = function($pc) {
             return Money::USD((int) ceil($this->totalCap() * $pc));
         };
-        $sum_init = Money::USD(0);
-        $sum_function = function(array $datum, Money $running_sum) {
-            return $running_sum->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
+        $sumInit = Money::USD(0);
+        $sumFunction = function(array $datum, Money $runningSum) {
+            return $runningSum->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
         };
-        return $this->percentileFinder($pc, $index_function, $sum_init, $sum_function);
+
+        return $this->percentileFinder($pc, $indexFunction, $sumInit, $sumFunction);
     }
 
-    protected function percentileFinder($pc, callable $index_function, Money $sum_init, callable $sum_function) 
+    protected function percentileFinder($pc, callable $indexFunction, Money $sumInit, callable $sumFunction)
     {
         Ensure::inRange($pc, 0, 1);
 
-        $index = $index_function($pc);
+        $index = $indexFunction($pc);
         $this->sortUSDAsc();
 
-        $running_sum = $sum_init;
+        $runningSum = $sumInit;
         foreach ($this->data as $datum) {
-            $running_sum = $sum_function($datum, $running_sum);
+            $runningSum = $sumFunction($datum, $runningSum);
 
-            if ($index <= $running_sum) {
+            if ($index <= $runningSum) {
                 // We've found the cap percentile, save it and break loop
                 // execution.
                 $return = $datum[self::USD_KEY]->getAmount();

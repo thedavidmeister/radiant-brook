@@ -137,6 +137,40 @@ final class Ensure
     }
 
     /**
+     * Ensures that a value is a string.
+     *
+     * @param string $value
+     *   The value to ensure is a string.
+     *
+     * @param string $message
+     *   The message to throw when $value is not a string.
+     *
+     * @return value
+     */
+    public static function isString($value, $message = '%s is not a string.')
+    {
+        return (is_string($value)) ? $value : self::fail($message, $value);
+    }
+
+    /**
+     * Ensures that a value is a valid PHP variable name.
+     *
+     * @param string $value
+     *   The string to check.
+     *
+     * @param string $message
+     *   The message to throw when $value is not a valid variable name.
+     *
+     * @return $value
+     */
+    public static function isValidVariableName($value, $message = '%s is not a valid variable name.')
+    {
+        $value = self::isString($value);
+
+        return preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $value) ? $value : self::fail($message, $value);
+    }
+
+    /**
      * Throws an exception because an ensure test failed.
      *
      * @param string $message
