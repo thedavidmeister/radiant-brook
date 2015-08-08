@@ -33,12 +33,9 @@ class TradeProposal
     )
     {
         foreach (['bidUSDPrice', 'askUSDPrice'] as $price) {
-            $this->{$price} = Ensure::set($prices[$price]);
-            // $this->{$price} = isset($prices[$price]) ? $prices[$price] : throw new \Exception('Missing ' . $price);
+            $this->{$price} = $prices[$price];
+            Ensure::isInstanceOf($this->{$price}, 'Money\Money');
         }
-
-        Ensure::notEmpty($this->bidUSDPrice);
-        Ensure::notEmpty($this->askUSDPrice);
 
         $this->fees = $fees;
         $this->secrets = new Secrets();

@@ -1,12 +1,13 @@
 <?php
 
-namespace AppBundle\Tests\API\Bitstamp;
+namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\API\Bitstamp\Fees;
 use AppBundle\API\Bitstamp\PrivateAPI\Balance;
 use AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs;
 use AppBundle\Tests\GuzzleTestTrait;
+use AppBundle\Tests\EnvironmentTestTrait;
 use AppBundle\API\Bitstamp\Dupes;
 use AppBundle\Secrets;
 use Money\Money;
@@ -16,46 +17,8 @@ use Money\Money;
  */
 class BitstampTradePairsTest extends WebTestCase
 {
-    protected $overriddenEnv = [];
 
-    /**
-     * Set environment variables in a way that we can clear them post-suite.
-     *
-     * If we set environment variables without tracking what we set, we cannot
-     * clean them up later. If we cannot clean them up later, future usage of
-     * Secrets will inherit our cruft and break future tests.
-     *
-     * @param string $key
-     *   The key to set.
-     * @param string $value
-     *   The value to set.
-     *
-     * @see clearEnv()
-     */
-    protected function setEnv($key, $value)
-    {
-        $this->overriddenEnv[] = $key;
-        $this->overriddenEnv = array_unique($this->overriddenEnv);
-
-        $secrets = new Secrets();
-        $secrets->set($key, $value);
-    }
-
-    protected function clearEnv($key)
-    {
-        $secrets = new Secrets();
-        $secrets->clear($key);
-    }
-
-    protected function clearAllSetEnv()
-    {
-        array_walk($this->overriddenEnv, [$this, 'clearEnv']);
-    }
-
-    protected function tearDown()
-    {
-        $this->clearAllSetEnv();
-    }
+    use EnvironmentTestTrait;
 
     protected function setIsTrading($isTrading)
     {
@@ -65,11 +28,6 @@ class BitstampTradePairsTest extends WebTestCase
     protected function setMinUSDVolume($volume)
     {
         $this->setEnv('BITSTAMP_MIN_USD_VOLUME', $volume);
-    }
-
-    protected function setMinUSDProfit($min)
-    {
-        $this->setEnv('BITSTAMP_MIN_USD_PROFIT', $min);
     }
 
     protected function setMinBTCProfit($min)
@@ -366,28 +324,6 @@ class BitstampTradePairsTest extends WebTestCase
 
             $this->assertEquals($expected, $tp->bidPrice());
         });
-    }
-
-    /**
-     * Test minProfitUSD().
-     *
-     * @group stable
-     */
-    public function testMinProfitUSD()
-    {
-        $tp = $this->tp();
-        // sets, expects.
-        $tests = [
-            [0, Money::USD(0)],
-            ['0', Money::USD(0)],
-            ['1', Money::USD(1)],
-            ['100', Money::USD(100)],
-            [1, Money::USD(1)],
-        ];
-        foreach ($tests as $test) {
-            $this->setMinUSDProfit($test[0]);
-            $this->assertEquals($test[1], $tp->minProfitUSD());
-        }
     }
 
     /**

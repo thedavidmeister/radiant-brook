@@ -20,6 +20,10 @@ final class Ensure {
         return !empty($value) ? $value : self::fail($value, $message);
     }
 
+    public static function isInstanceOf($value, $class, $message = '%s is not an instance of %s.') {
+        return ($value instanceof $class) ? $value : self::fail($value, $class, $message);
+    }
+
     public static function fail($value, $message) {
         throw new \Exception(vsprintf($message, var_export($value, true)));
     }

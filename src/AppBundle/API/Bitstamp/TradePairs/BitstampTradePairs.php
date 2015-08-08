@@ -122,33 +122,6 @@ class BitstampTradePairs
     }
 
     /**
-     * Does the pair meet all requirements for execution?
-     *
-     * @return bool
-     */
-    public function ensureValid()
-    {
-        $errors = [];
-
-        // break statements are intentionally left out here to allow multiple
-        // error messages to be collated.
-        switch (false) {
-            case $this->isTrading():
-                $errors[] = 'Bitstamp trading is disabled at this time.';
-            case $this->isProfitable():
-                $errors[] = 'No profitable trade pairs found.';
-            case !$this->hasDupes():
-                $errors[] = 'Duplicate trade pairs found';
-        }
-
-        if (!empty($errors)) {
-            throw new \Exception('Invalid trade pairs: ' . implode(' ', $errors));
-        }
-
-        return true;
-    }
-
-    /**
      * Is trading currently enabled?
      *
      * The following values for the BITSTAMP_IS_TRADING environment variable is
@@ -167,23 +140,30 @@ class BitstampTradePairs
         return filter_var($isTrading, FILTER_VALIDATE_BOOLEAN);
     }
 
-    /**
-     * Is the suggested pair profitable?
-     *
-     * @return bool
-     */
-    public function isProfitable()
-    {
-        return $this->profitUSD() >= $this->minProfitUSD() && $this->profitBTC() > $this->minProfitBTC();
-    }
+    // /**
+    //  * Does the pair meet all requirements for execution?
+    //  *
+    //  * @return bool
+    //  */
+    // public function ensureValid()
+    // {
+    //     $errors = [];
 
-    /**
-     * Does the pair duplicate open orders on either leg?
-     *
-     * @return bool
-     */
-    public function hasDupes()
-    {
-        return !empty($this->dupes->bids($this->bidPrice())) || !empty($this->dupes->asks($this->askPrice()));
-    }
+    //     // break statements are intentionally left out here to allow multiple
+    //     // error messages to be collated.
+    //     switch (false) {
+    //         case $this->isTrading():
+    //             $errors[] = 'Bitstamp trading is disabled at this time.';
+    //         case $this->isProfitable():
+    //             $errors[] = 'No profitable trade pairs found.';
+    //         case !$this->hasDupes():
+    //             $errors[] = 'Duplicate trade pairs found';
+    //     }
+
+    //     if (!empty($errors)) {
+    //         throw new \Exception('Invalid trade pairs: ' . implode(' ', $errors));
+    //     }
+
+    //     return true;
+    // }
 }
