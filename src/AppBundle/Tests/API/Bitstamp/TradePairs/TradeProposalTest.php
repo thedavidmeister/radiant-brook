@@ -82,6 +82,8 @@ class TradeProposalTest extends WebTestCase
 
     /**
      * Test bidUSDVolume().
+     *
+     * @group stable
      */
     public function testBidUSDVolume()
     {

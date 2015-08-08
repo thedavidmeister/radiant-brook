@@ -33,6 +33,6 @@ final class Ensure {
     }
 
     public static function fail($value, $message) {
-        throw new \Exception(vsprintf($message, var_export($value, true)));
+        throw new \Exception(vsprintf($message, json_encode($value, true)));
     }
 }
