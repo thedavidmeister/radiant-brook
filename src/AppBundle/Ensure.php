@@ -20,6 +20,10 @@ final class Ensure {
         return !empty($value) ? $value : self::fail($value, $message);
     }
 
+    public static function isInt($value, $message = '%s is not an int.') {
+        return (filter_var($value, FILTER_VALIDATE_INT) !== false) ? $value : self::fail($value, $message);
+    }
+
     public static function isInstanceOf($value, $class, $message = '%s is not an instance of %s.') {
         return ($value instanceof $class) ? $value : self::fail($value, $class, $message);
     }

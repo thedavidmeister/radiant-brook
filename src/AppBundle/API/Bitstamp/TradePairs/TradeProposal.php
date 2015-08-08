@@ -235,11 +235,7 @@ class TradeProposal
      */
     public function minProfitUSD()
     {
-        $minProfitUSD = $this->secrets->get(self::MIN_USD_PROFIT_SECRET);
-
-        if (filter_var($minProfitUSD, FILTER_VALIDATE_INT) === false) {
-            throw new \Exception('Minimum USD profit configuration must be an integer value. data: ' . print_r($minProfitUSD, true));
-        }
+        $minProfitUSD = Ensure::isInt($this->secrets->get(self::MIN_USD_PROFIT_SECRET));
 
         return Money::USD((int) $minProfitUSD);
     }

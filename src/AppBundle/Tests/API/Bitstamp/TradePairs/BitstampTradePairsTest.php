@@ -255,41 +255,6 @@ class BitstampTradePairsTest extends WebTestCase
     }
 
     /**
-     * Data provider for testMinProfitUSDExceptions().
-     *
-     * @return array
-     */
-    public function dataMinProfitUSDExceptions()
-    {
-        // sets, expects.
-        return [
-            ['foo'],
-            [1.5],
-            ['1.0'],
-            ['1.99'],
-        ];
-    }
-
-    /**
-     * Test minProfitUSD Exceptions.
-     *
-     * @param mixed $sets
-     *   Invalid minimum profit configuration that should throw an exception.
-     *
-     * @dataProvider dataMinProfitUSDExceptions
-     * @expectedException Exception
-     * @expectedExceptionMessage Minimum USD profit configuration must be an integer value.
-     *
-     * @group stable
-     */
-    public function testMinProfitUSDExceptions($sets)
-    {
-        $tp = $this->tp();
-        $this->setMinUSDProfit($sets);
-        $tp->minProfitUSD();
-    }
-
-    /**
      * Test min profit BTC.
      *
      * @group stable
