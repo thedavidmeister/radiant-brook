@@ -21,7 +21,8 @@ final class Ensure {
     }
 
     public static function isInt($value, $message = '%s is not an int.') {
-        return (filter_var($value, FILTER_VALIDATE_INT) !== false) ? $value : self::fail($value, $message);
+        // Cast the value to an int, if it's int-y.
+        return (filter_var($value, FILTER_VALIDATE_INT) !== false) ? (int) $value : self::fail($value, $message);
     }
 
     public static function inRange($value, $min, $max, $message = '%s is not in range.') {

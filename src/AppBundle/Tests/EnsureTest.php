@@ -68,6 +68,7 @@ class EnsureTest extends WebTestCase
    * Test isEmpty().
    *
    * @dataProvider dataNotEmptyExceptions
+   * @group stable
    */
   public function testIsEmpty($empty, $message) {
       $this->assertSame($empty, Ensure::isEmpty($empty));
@@ -98,9 +99,48 @@ class EnsureTest extends WebTestCase
    * Test exceptions for notEmpty().
    *
    * @dataProvider dataNotEmptyExceptions
+   * @group stable
    */
   public function testNotEmptyExceptions($empty, $message) {
     $this->setExpectedException('Exception' , $message);
     Ensure::notEmpty($empty);
+  }
+
+  /**
+   * Test isInt().
+   *
+   * @group stable
+   */
+  public function testIsInt() {
+    $i = -5;
+    while ($i <= 5) {
+      $this->assertSame($i, Ensure::isInt($i));
+      $this->assertSame($i, Ensure::isInt((string) $i));
+      $i++;
+    }
+    $this->assertSame(PHP_INT_MAX, Ensure::isInt(PHP_INT_MAX));
+  }
+
+  /**
+   * Data provider for dataIsIntExceptions
+   */
+  public function dataIsIntExceptions() {
+    return [
+      [1.1, '1.1 is not an int.'],
+      ['foo', '"foo" is not an int.'],
+      [NULL, 'null is not an int.'],
+      [[], '[] is not an int.'],
+    ];
+  }
+
+  /**
+   * Test exceptions for isInt().
+   *
+   * @dataProvider dataIsIntExceptions
+   * @group stable
+   */
+  public function testIsIntExceptions($notInt, $message) {
+    $this->setExpectedException('Exception', $message);
+    Ensure::isInt($notInt);
   }
 }
