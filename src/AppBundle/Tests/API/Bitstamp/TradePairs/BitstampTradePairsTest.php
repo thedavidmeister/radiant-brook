@@ -74,7 +74,7 @@ class BitstampTradePairsTest extends WebTestCase
     }
 
     /**
-     * Tests isTrading().
+     * @covers BitstampTradePairs::isTrading
      *
      * @group stable
      */

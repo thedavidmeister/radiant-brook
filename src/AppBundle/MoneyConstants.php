@@ -2,6 +2,9 @@
 
 namespace AppBundle;
 
+/**
+ * Constants related to money that should never change.
+ */
 class MoneyConstants
 {
     // BTC has precision of 8.

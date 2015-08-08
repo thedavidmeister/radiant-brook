@@ -2,39 +2,113 @@
 
 namespace AppBundle;
 
+/**
+ * Ensure various post and preconditions in a convenient and consistent way.
+ */
 final class Ensure
 {
 
-    private function __construct() 
+    /**
+     * No instantiation allowed.
+     *
+     * @codeCoverageIgnore
+     */
+    private function __construct()
     {
         // Do nothing.
     }
 
-    public static function set($value, $message = '%s is not set.') 
+    /**
+     * Ensure that a value is not null.
+     *
+     * @param mixed  $value
+     *   Any value that may or may not be null.
+     *
+     * @param string $message
+     *
+     * @return mixed $value
+     */
+    public static function notNull($value, $message = '%s is not set.')
     {
-        return isset($value) ? $value : self::fail($message, $value);
+        return (null !== $value) ? $value : self::fail($message, $value);
     }
 
-    public static function isEmpty($value, $message = '%s is not empty.') 
+    /**
+     * Ensures that a value is empty.
+     *
+     * @param  mixed  $value
+     *   The value to ensure is empty.
+     *
+     * @param  string $message
+     *   The exception message to throw when value is not empty.
+     *
+     * @return mixed  $value
+     */
+    public static function isEmpty($value, $message = '%s is not empty.')
     {
         return empty($value) ? $value : self::fail($message, $value);
     }
 
-    public static function notEmpty($value, $message = '%s is empty.') 
+    /**
+     * Ensures that a value is not empty.
+     *
+     * @param mixed  $value
+     *   The value to ensure is not empty.
+     *
+     * @param string $message
+     *   The exception message to throw when value is empty.
+     *
+     * @return mixed $value
+     */
+    public static function notEmpty($value, $message = '%s is empty.')
     {
         return !empty($value) ? $value : self::fail($message, $value);
     }
 
-    public static function isInt($value, $message = '%s is not an int.') 
+    /**
+     * Ensures that a value is an integer.
+     *
+     * FILTER_VALIDATE_INT is used. If the value is an integer string, it will
+     * be cast to an integer primitive.
+     *
+     * @param mixed  $value
+     *   The value to ensure is an integer.
+     *
+     * @param string $message
+     *   The exception message to throw if value is not an integer.
+     *
+     * @return int $value
+     */
+    public static function isInt($value, $message = '%s is not an int.')
     {
         // Cast the value to an int, if it's int-y.
         return (filter_var($value, FILTER_VALIDATE_INT) !== false) ? (int) $value : self::fail($message, $value);
     }
 
-    public static function inRange($value, $bound_one, $bound_two, $message = '%s is not in the range of %s and %s.') 
+    /**
+     * Ensures that a numerical value is within a given range.
+     *
+     * The bounds given can both be either an upper or lower bound, only the
+     * overall range is important.
+     *
+     * @param  number $value
+     *   The value to ensure is in bounds.
+     *
+     * @param  number $boundOne
+     *   The first bound on the range.
+     *
+     * @param  number $boundTwo
+     *   The second bound on the range.
+     *
+     * @param  string $message
+     *   The message to throw when $value is out of bounds.
+     *
+     * @return number $value
+     */
+    public static function inRange($value, $boundOne, $boundTwo, $message = '%s is not in the range of %s and %s.')
     {
-        $min = min([$bound_one, $bound_two]);
-        $max = max([$bound_one, $bound_two]);
+        $min = min([$boundOne, $boundTwo]);
+        $max = max([$boundOne, $boundTwo]);
         if ($min <= $value && $value <= $max) {
             return $value;
         } else {
@@ -42,18 +116,45 @@ final class Ensure
         }
     }
 
-    public static function isInstanceOf($value, $class, $message = '%s is not an instance of %s.') 
+    /**
+     * Ensures that a value is an instance of a given class.
+     *
+     * @param object $value
+     *   An object with a class to test.
+     *
+     * @param string $class
+     *   The expected class of the object.
+     *
+     * @param string $message
+     *   The message to throw when $value is not an instance of $class.
+     *
+     * @return object
+     *   $value
+     */
+    public static function isInstanceOf($value, $class, $message = '%s is not an instance of %s.')
     {
         return ($value instanceof $class) ? $value : self::fail($message, $value, $class);
     }
 
-    public static function fail($message, ...$args) 
+    /**
+     * Throws an exception because an ensure test failed.
+     *
+     * @param string $message
+     *   The message to pass to vsprintf then throw as an exception. Use %s for
+     *   substitutions as all $args will be JSON encoded before substitution.
+     *
+     * @param splat  $args
+     *   Any args to JSON encode and pass into vsprintf. This should include the
+     *   original value.
+     *
+     * @return void
+     */
+    public static function fail($message, ...$args)
     {
         // Convert the value and all extra args into JSON for legibility in the
         // exception message.
-        $json_args = array_map(function($arg) { return json_encode($arg, true); 
-        }, $args);
+        $jsonArgs = array_map('json_encode', $args);
 
-        throw new \Exception(vsprintf($message, $json_args));
+        throw new \Exception(vsprintf($message, $jsonArgs));
     }
 }

@@ -11,10 +11,10 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class EnsureTest extends WebTestCase
 {
     /**
-    * Test set().
-    *
-    * @group stable
-    */
+     * Test set().
+     *
+     * @group stable
+     */
     public function testSet()
     {
         // Everything is set... try a few things.
@@ -33,10 +33,10 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-    * Test exceptions from set().
-    *
-    * @group stable
-    */
+     * Test exceptions from set().
+     *
+     * @group stable
+     */
     public function testSetExceptions()
     {
         $this->setExpectedException('Exception', 'null is not set.');
@@ -44,9 +44,9 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-   * Data provider for testIsEmptyExceptions().
-   * @return array
-   */
+     * Data provider for testIsEmptyExceptions().
+     * @return array
+     */
     public function dataIsEmptyExceptions()
     {
         return [
@@ -57,6 +57,11 @@ class EnsureTest extends WebTestCase
         ];
     }
 
+    /**
+     * Data provider for testNotEmptyExceptions
+     *
+     * @return array
+     */
     public function dataNotEmptyExceptions()
     {
         return [
@@ -69,22 +74,34 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-   * Test isEmpty().
-   *
-   * @dataProvider dataNotEmptyExceptions
-   * @group stable
-   */
+     * Test isEmpty().
+     *
+     * @param empty  $empty
+     *   Anything empty.
+     *
+     * @param string $message
+     *   The expected exception message (ignored in this test).
+     *
+     * @dataProvider dataNotEmptyExceptions
+     * @group stable
+     */
     public function testIsEmpty($empty, $message)
     {
         $this->assertSame($empty, Ensure::isEmpty($empty));
     }
 
     /**
-   * Test exceptions from isEmpty().
-   *
-   * @dataProvider dataIsEmptyExceptions
-   * @group stable
-   */
+     * Test exceptions from isEmpty().
+     *
+     * @param mixed  $notEmpty
+     *   Anything not empty.
+     *
+     * @param string $message
+     *   The expected exception message.
+     *
+     * @dataProvider dataIsEmptyExceptions
+     * @group stable
+     */
     public function testIsEmptyExceptions($notEmpty, $message)
     {
         $this->setExpectedException('Exception', $message);
@@ -92,22 +109,34 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-   * Test notEmpty().
-   *
-   * @dataProvider dataIsEmptyExceptions
-   * @group stable
-   */
+     * Test notEmpty().
+     *
+     * @param mixed  $notEmpty
+     *   Anything not empty.
+     *
+     * @param string $message
+     *   The expected expection message (ignored in this test).
+     *
+     * @dataProvider dataIsEmptyExceptions
+     * @group stable
+     */
     public function testNotEmpty($notEmpty, $message)
     {
         $this->assertSame($notEmpty, Ensure::notEmpty($notEmpty));
     }
 
     /**
-   * Test exceptions for notEmpty().
-   *
-   * @dataProvider dataNotEmptyExceptions
-   * @group stable
-   */
+     * Test exceptions for notEmpty().
+     *
+     * @param empty  $empty
+     *   Anything empty.
+     *
+     * @param string $message
+     *   The expected exception message.
+     *
+     * @dataProvider dataNotEmptyExceptions
+     * @group stable
+     */
     public function testNotEmptyExceptions($empty, $message)
     {
         $this->setExpectedException('Exception', $message);
@@ -115,10 +144,10 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-   * Test isInt().
-   *
-   * @group stable
-   */
+     * Test isInt().
+     *
+     * @group stable
+     */
     public function testIsInt()
     {
         $i = -5;
@@ -131,8 +160,10 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-   * Data provider for dataIsIntExceptions
-   */
+     * Data provider for dataIsIntExceptions
+     *
+     * @return array
+     */
     public function dataIsIntExceptions()
     {
         return [
@@ -144,11 +175,17 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-   * Test exceptions for isInt().
-   *
-   * @dataProvider dataIsIntExceptions
-   * @group stable
-   */
+     * Test exceptions for isInt().
+     *
+     * @param mixed  $notInt
+     *   Not an integer.
+     *
+     * @param string $message
+     *   The message to expect in the exception.
+     *
+     * @dataProvider dataIsIntExceptions
+     * @group stable
+     */
     public function testIsIntExceptions($notInt, $message)
     {
         $this->setExpectedException('Exception', $message);
@@ -156,10 +193,10 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-   * Tests inRange().
-   *
-   * @group stable
-   */
+     * Tests inRange().
+     *
+     * @group stable
+     */
     public function testInRange()
     {
         $tests = [
@@ -177,10 +214,10 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-   * Data provider for testInRangeExceptions.
-   *
-   * @return array
-   */
+     * Data provider for testInRangeExceptions.
+     *
+     * @return array
+     */
     public function dataInRangeExceptions()
     {
         return [
@@ -194,15 +231,27 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-   * Tests exceptions for inRange().
-   *
-   * @dataProvider dataInRangeExceptions
-   * @group stable
-   */
-    public function testInRangeExceptions($value, $bound_one, $bound_two, $message)
+     * Tests exceptions for inRange().
+     *
+     * @param number $value
+     *   A number in range.
+     *
+     * @param number $boundOne
+     *   The first range bound.
+     *
+     * @param number $boundTwo
+     *   The second range bound.
+     *
+     * @param string $message
+     *   The expected exception message for out of range.
+     *
+     * @dataProvider dataInRangeExceptions
+     * @group stable
+     */
+    public function testInRangeExceptions($value, $boundOne, $boundTwo, $message)
     {
         $this->setExpectedException('Exception', $message);
-        Ensure::inRange($value, $bound_one, $bound_two);
+        Ensure::inRange($value, $boundOne, $boundTwo);
     }
 
     /**
@@ -221,6 +270,11 @@ class EnsureTest extends WebTestCase
         });
     }
 
+    /**
+     * Data provider for testIsInstanceOfExceptions().
+     *
+     * @return array
+     */
     public function dataIsInstanceOfExceptions()
     {
         return [
@@ -231,11 +285,20 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-   * Tests exceptions for isInstanceOf().
-   *
-   * @dataProvider dataIsInstanceOfExceptions
-   * @group stable
-   */
+     * Tests exceptions for isInstanceOf().
+     *
+     * @param mixed  $value
+     *   The value to check against instance of $class.
+     *
+     * @param string $class
+     *   A class that $value is not.
+     *
+     * @param string $message
+     *   The message to expect in the exception thrown.
+     *
+     * @dataProvider dataIsInstanceOfExceptions
+     * @group stable
+     */
     public function testIsInstanceOfExceptions($value, $class, $message)
     {
         $this->setExpectedException('Exception', $message);
@@ -245,7 +308,7 @@ class EnsureTest extends WebTestCase
     /**
    * Tests exceptions thrown by fail().
    *
-   * @group stable
+   * group stable
    */
     public function testFail()
     {
