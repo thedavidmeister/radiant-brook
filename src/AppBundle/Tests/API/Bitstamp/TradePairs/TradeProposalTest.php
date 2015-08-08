@@ -33,9 +33,31 @@ class TradeProposalTest extends WebTestCase
     }
 
     /**
+     * Test min profit BTC.
+     *
+     * @group stable
+     */
+    public function testMinProfitBTC()
+    {
+        // sets, expects.
+        $scenarios = [
+            [0, Money::BTC(0)],
+            ['0', Money::BTC(0)],
+            ['1', Money::BTC(1)],
+            ['100', Money::BTC(100)],
+            [1, Money::BTC(1)],
+        ];
+        $test = function($scenario) {
+            $this->setEnv('BITSTAMP_MIN_BTC_PROFIT', $scenario[0]);
+            $this->assertEquals($scenario[1], $this->tradeProposal()->minProfitBTC());
+        };
+        array_walk($scenarios, $test);
+    }
+
+    /**
      * Test askUSDVolumeCoverFees().
      *
-     * @groupz stable
+     * @group stable
      */
     public function testAskUSDVolumeCoverFees()
     {

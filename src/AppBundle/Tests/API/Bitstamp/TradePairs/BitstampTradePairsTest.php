@@ -30,11 +30,6 @@ class BitstampTradePairsTest extends WebTestCase
         $this->setEnv('BITSTAMP_MIN_USD_VOLUME', $volume);
     }
 
-    protected function setMinBTCProfit($min)
-    {
-        $this->setEnv('BITSTAMP_MIN_BTC_PROFIT', $min);
-    }
-
     protected function setPercentile($percentile)
     {
         $this->setEnv('BITSTAMP_PERCENTILE', $percentile);
@@ -252,28 +247,6 @@ class BitstampTradePairsTest extends WebTestCase
 
             $this->assertEquals($expected, $tp->bidPrice());
         });
-    }
-
-    /**
-     * Test min profit BTC.
-     *
-     * @group stable
-     */
-    public function testMinProfitBTC()
-    {
-        $tp = $this->tp();
-        // sets, expects.
-        $tests = [
-            [0, Money::BTC(0)],
-            ['0', Money::BTC(0)],
-            ['1', Money::BTC(1)],
-            ['100', Money::BTC(100)],
-            [1, Money::BTC(1)],
-        ];
-        foreach ($tests as $test) {
-            $this->setMinBTCProfit($test[0]);
-            $this->assertEquals($test[1], $tp->minProfitBTC());
-        }
     }
 
     /**
