@@ -59,10 +59,10 @@ class OrderListTest extends WebTestCase
         foreach ($methods as $method) {
             foreach ($expected as $key => $value) {
                 if ($value[0] === 'pair') {
-                    $this->assertTrue(is_array($this->$method()->$key()));
+                    $this->assertTrue(is_array($this->{$method}()->{$key}()));
                 }
                 if ($value[0] === 'aggregate') {
-                    $this->assertTrue(!is_array($this->$method()->$key(isset($value[1]) ? $value[1] : null)));
+                    $this->assertTrue(!is_array($this->{$method}()->{$key}(isset($value[1]) ? $value[1] : null)));
                 }
             }
         }
@@ -159,40 +159,6 @@ class OrderListTest extends WebTestCase
     }
 
     /**
-     * Data provider for testPercentileException().
-     *
-     * @return array
-     */
-    public function dataPercentileException()
-    {
-        return [
-        ['bids', 1.1],
-        ['bids', -99],
-        ['asks', PHP_INT_MAX],
-        ['asks', -0.001],
-        ];
-    }
-
-    /**
-     * Tests exception handling in percentileBTCVolume().
-     *
-     * @dataProvider dataPercentileException
-     * @expectedException Exception
-     * @expectedExceptionMessage Percentage must be between 0 - 1.
-     * @group stable
-     *
-     * @param string $method
-     *   The method to test. Can be 'bids' or 'asks'.
-     *
-     * @param float  $value
-     *   The value to test. Should thrown an exception.
-     */
-    public function testPercentileException($method, $value)
-    {
-        $this->$method()->percentileBTCVolume($value);
-    }
-
-    /**
      * Tests percentileCap() calculations.
      *
      * @group stable
@@ -233,42 +199,5 @@ class OrderListTest extends WebTestCase
         $this->assertEquals(9999900, $this->asks()->percentileCap(0.99));
         $this->assertEquals(9999900, $this->asks()->percentileCap(0.999));
         $this->assertEquals(9999900, $this->asks()->percentileCap(1));
-    }
-
-    /**
-     * Data provider for testPercentileCapException().
-     *
-     * @return array
-     */
-    public function dataPercentileCapException()
-    {
-        // We could re-use dataPercentileException() but they're not testing the
-        // same method and so there might be some crazy bug in the future if we
-        // reuse the data.
-        return [
-        ['bids', 1.2],
-        ['bids', -1],
-        ['asks', 5],
-        ['asks', -1234],
-        ];
-    }
-
-    /**
-     * Test exception handling in percentileCap().
-     *
-     * @dataProvider dataPercentileCapException
-     * @expectedException Exception
-     * @expectedExceptionMessage Percentage must be between 0 - 1.
-     * @group stable
-     *
-     * @param string $method
-     *   The name of the method to test.
-     *
-     * @param float  $value
-     *   The value to test. Should trigger an exception.
-     */
-    public function testPercentileCapException($method, $value)
-    {
-        $this->$method()->percentileCap($value);
     }
 }

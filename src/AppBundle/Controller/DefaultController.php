@@ -88,18 +88,13 @@ class DefaultController extends Controller
         $timeFormat = 'Y-m-d H:i:s';
 
         $stats = [
-            // 'Has dupes' => $tp->hasDupes() ? 'Yes' : 'No',
-            '-Dupes-' => '',
-            // 'Dupe bid range' => $tp->bidPrice()->getAmount() * $tp->dupes->rangeMultiplier(),
-            // 'Dupe bids' => var_export($tp->dupes->bids($tp->bidPrice()), true),
-            // 'Dupe ask range' => $tp->askPrice()->getAmount() * $tp->dupes->rangeMultiplier(),
-            // 'Dupe asks' => var_export($tp->dupes->asks($tp->askPrice()), true),
             '-Facts-' => '',
             'Fees bids multiplier' => $tp->fees->bidsMultiplier(),
             'Fees asks multiplier' => $tp->fees->asksMultiplier(),
             'Is trading' => $tp->isTrading(),
         ];
 
+        $stats['-Trade proposals-'] = '';
         foreach ($tp->report() as $item) {
             $name = uniqid();
             $stats[$name] = '';

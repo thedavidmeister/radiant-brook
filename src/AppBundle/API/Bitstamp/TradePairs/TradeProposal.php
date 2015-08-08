@@ -193,32 +193,6 @@ class TradeProposal
      */
 
     /**
-     * Returns the BTC profit of the suggested pair.
-     *
-     * @return Money::BTC
-     */
-    public function profitBTC()
-    {
-        return Money::BTC((int) floor($this->bidBTCVolume()->getAmount() - $this->askBTCVolume()->getAmount()));
-    }
-
-    /**
-     * Returns the minimum acceptable BTC profit for a valid pair.
-     *
-     * @return Money::BTC
-     */
-    public function minProfitBTC()
-    {
-        $minProfitBTC = $this->secrets->get(self::MIN_BTC_PROFIT_SECRET);
-
-        if (filter_var($minProfitBTC, FILTER_VALIDATE_INT) === false) {
-            throw new \Exception('Minimum BTC profit configuration must be an integer value. data: ' . print_r($minProfitBTC, true));
-        }
-
-        return Money::BTC((int) $minProfitBTC);
-    }
-
-    /**
      * Returns the USD profit of the suggested pair.
      *
      * @return Money::USD
@@ -226,6 +200,16 @@ class TradeProposal
     public function profitUSD()
     {
         return Money::USD((int) floor($this->askUSDVolumePostFees()->getAmount() - $this->bidUSDVolumePlusFees()->getAmount()));
+    }
+
+    /**
+     * Returns the BTC profit of the suggested pair.
+     *
+     * @return Money::BTC
+     */
+    public function profitBTC()
+    {
+        return Money::BTC((int) floor($this->bidBTCVolume()->getAmount() - $this->askBTCVolume()->getAmount()));
     }
 
     /**
@@ -238,6 +222,18 @@ class TradeProposal
         $minProfitUSD = Ensure::isInt($this->secrets->get(self::MIN_USD_PROFIT_SECRET));
 
         return Money::USD((int) $minProfitUSD);
+    }
+
+    /**
+     * Returns the minimum acceptable BTC profit for a valid pair.
+     *
+     * @return Money::BTC
+     */
+    public function minProfitBTC()
+    {
+        $minProfitBTC = Ensure::isInt($this->secrets->get(self::MIN_BTC_PROFIT_SECRET));
+
+        return Money::BTC((int) $minProfitBTC);
     }
 
     public function isProfitable() {

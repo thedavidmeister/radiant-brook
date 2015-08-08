@@ -78,7 +78,7 @@ class DefaultControllerTest extends WebTestCase
         $this->assertNav($crawler);
 
         foreach ($expecteds as $expected) {
-            $this->assertTrue($crawler->filter('html:contains("' . $expected . '")')->count() > 0);
+            $this->assertTrue($crawler->filter('html:contains("' . $expected . '")')->count() > 0, $expected . ' is missing from the page.');
         }
     }
 
@@ -114,36 +114,27 @@ class DefaultControllerTest extends WebTestCase
         $uri = '/trade/trade';
 
         $expecteds = [
-            '-Bids-',
-            'bid/buy USD Base Volume',
-            'bid/buy BTC Volume',
-            'bid/buy USD Price',
-            'bid/buy USD Volume post fees (what USD must we spend to play?)',
-            'bid/buy BTC Volume * USD Price',
-            'bid/buy BTC Volume * USD Price as USD',
-            '-Asks-',
-            'ask/sell USD Base Volume',
-            'ask/sell BTC Volume',
-            'ask/sell USD Price',
-            'ask/sell BTC Volume * USD Price',
-            'ask/sell BTC Volume * USD Price as USD',
-            'ask/sell USD Volume post fees (what USD can we keep from sale?)',
-            '-Diff-',
-            'BTC Profit (satoshis)',
-            'BTC Profit (BTC)',
-            'BTC Profit USD value (midpoint) as USD cents',
-            'USD Profit (USD cents)',
-            'Is profitable',
-            'Has dupes',
-            'Is trading',
-            '-Dupes-',
-            'Dupe bid range',
-            'Dupe bids',
-            'Dupe ask range',
-            'Dupe asks',
             '-Facts-',
             'Fees bids multiplier',
             'Fees asks multiplier',
+            'Is trading',
+            '-Trade proposals-',
+            'bidUSDPrice',
+            'bidUSDVolumeBase',
+            'bidUSDVolume',
+            'bidUSDVolumePlusFees',
+            'bidBTCVolume',
+            'askUSDPrice',
+            'askUSDVolumeCoverFees',
+            'askUSDVolumePostFees',
+            'askBTCVolume',
+            'profitBTC',
+            'minProfitBTC',
+            'profitUSD',
+            'minProfitUSD',
+            'isProfitable',
+            'state',
+            'reason',
         ];
 
         $this->standardTests($uri, $expecteds);
