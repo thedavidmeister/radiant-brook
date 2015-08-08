@@ -178,10 +178,11 @@ class OrderList
         $index_function = function($pc) {
             return Money::BTC((int) ceil($this->totalVolume() * $pc));
         };
+        $sum_init = Money::BTC(0);
         $running_function = function(array $datum, Money $running_sum) {
             return $running_sum->add($datum[self::BTC_KEY]);
         };
-        return $this->percentileFinder($pc, $index_function, $running_function);
+        return $this->percentileFinder($pc, $index_function, $sum_init, $running_function);
     }
 
     /**
@@ -201,19 +202,20 @@ class OrderList
         $index_function = function($pc) {
             return Money::USD((int) ceil($this->totalCap() * $pc));
         };
-        $running_function = function(array $datum, Money $running_sum) {
+        $sum_init = Money::USD(0);
+        $sum_function = function(array $datum, Money $running_sum) {
             return $running_sum->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
         };
-        return $this->percentileFinder($pc, $index_function, $running_function);
+        return $this->percentileFinder($pc, $index_function, $sum_init, $sum_function);
     }
 
-    protected function percentileFinder($pc, callable $index_function, callable $sum_function) {
+    protected function percentileFinder($pc, callable $index_function, Money $sum_init, callable $sum_function) {
         Ensure::inRange($pc, 0, 1);
 
         $index = $index_function($pc);
         $this->sortUSDAsc();
 
-        $running_sum = Money::USD(0);
+        $running_sum = $sum_init;
         foreach ($this->data as $datum) {
             $running_sum = $sum_function($datum, $running_sum);
 

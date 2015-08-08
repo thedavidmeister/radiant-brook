@@ -33,6 +33,37 @@ class TradeProposalTest extends WebTestCase
     }
 
     /**
+     * Test bidUSDVolumePlusFees().
+     *
+     * @groupz stable
+     */
+    public function testBidUSDVolumePlusFees()
+    {
+        // The USD bid volume post fees is equal to the max isofee USD volume
+        // plus the absolute value of USD fees.
+        // absoluteFeeUSD, isofeeMaxUSD, expected.
+        $tests = [
+            [Money::USD(2340), Money::USD(3450), Money::USD(5790)],
+            [Money::USD(0), Money::USD(0), Money::USD(0)],
+            [Money::USD(1), Money::USD(0), Money::USD(1)],
+            [Money::USD(0), Money::USD(1), Money::USD(1)],
+            [Money::USD(-1), Money::USD(0), Money::USD(-1)],
+            [Money::USD(0), Money::USD(-1), Money::USD(-1)],
+        ];
+
+        array_walk($tests, function($test) {
+            $fees = $this->fees();
+            $fees->method('absoluteFeeUSD')->willReturn($test[0]);
+            $fees->method('isofeeMaxUSD')->willReturn($test[1]);
+
+            // USD bid volume has nothing to do with prices.
+            $tradeProposal = new TradeProposal($this->randomBidAskPrices(), $fees);
+
+            $this->assertEquals($test[2], $tradeProposal->bidUSDVolumePlusFees());
+        });
+    }
+
+    /**
      * Test min profit BTC.
      *
      * @group stable
