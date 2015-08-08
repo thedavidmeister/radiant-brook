@@ -87,39 +87,6 @@ class BitstampTradePairsTest extends WebTestCase
     }
 
     /**
-     * Data provider for testEnsureValid().
-     *
-     * @return array
-     */
-    public function dataEnsureValidExceptions()
-    {
-        return [
-            ['Bitstamp trading is disabled at this time.', function() {
-                $this->setIsTrading('false');
-                $this->tp()->ensureValid();
-            }],
-        ];
-    }
-
-    /**
-     * Tests ensureValid exceptions.
-     *
-     * @param string   $exceptionMessage
-     *   The expected exception message.
-     *
-     * @param callable $trigger
-     *   A function to trigger the exception.
-     *
-     * @dataProvider dataEnsureValidExceptions
-     * @group stable
-     */
-    public function testEnsureValidExceptions($exceptionMessage, callable $trigger)
-    {
-        $this->setExpectedException('Exception', 'Invalid trade pairs: ' . $exceptionMessage);
-        $trigger();
-    }
-
-    /**
      * Tests isTrading().
      *
      * @group stable
