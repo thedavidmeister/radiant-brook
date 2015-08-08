@@ -11,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class EnsureTest extends WebTestCase
 {
     /**
-     * @covers Ensure::notNull
+     * @covers AppBundle\Ensure::notNull
      *
      * @group stable
      */
@@ -33,7 +33,7 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-     * @covers Ensure::notNull
+     * @covers AppBundle\Ensure::notNull
      *
      * @group stable
      */
@@ -75,7 +75,7 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-     * Test isEmpty().
+     * @covers AppBundle\Ensure::isEmpty
      *
      * @param empty  $empty
      *   Anything empty.
@@ -92,7 +92,7 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-     * Test exceptions from isEmpty().
+     * @covers AppBundle\Ensure::isEmpty
      *
      * @param mixed  $notEmpty
      *   Anything not empty.
@@ -110,7 +110,7 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-     * Test notEmpty().
+     * @covers AppBundle\Ensure::notEmpty
      *
      * @param mixed  $notEmpty
      *   Anything not empty.
@@ -127,7 +127,7 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-     * Test exceptions for notEmpty().
+     * @covers AppBundle\Ensure::notEmpty
      *
      * @param empty  $empty
      *   Anything empty.
@@ -145,7 +145,7 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-     * Test isInt().
+     * @covers AppBundle\Ensure::isInt
      *
      * @group stable
      */
@@ -176,7 +176,7 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-     * Test exceptions for isInt().
+     * @covers AppBundle\Ensure::isInt
      *
      * @param mixed  $notInt
      *   Not an integer.
@@ -194,7 +194,7 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-     * Tests inRange().
+     * @covers AppBundle\Ensure::inRange
      *
      * @group stable
      */
@@ -232,7 +232,7 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-     * Tests exceptions for inRange().
+     * @covers AppBundle\Ensure::inRange
      *
      * @param number $value
      *   A number in range.
@@ -256,10 +256,10 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-   * Tests isInstanceOf().
-   *
-   * @group stable
-   */
+     * @covers AppBundle\Ensure::isInstanceOf
+     *
+     * @group stable
+     */
     public function testIsInstanceOf()
     {
         $tests = [
@@ -286,7 +286,7 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-     * Tests exceptions for isInstanceOf().
+     * @covers AppBundle\Ensure::isInstanceOf
      *
      * @param mixed  $value
      *   The value to check against instance of $class.
@@ -307,10 +307,10 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-   * Tests exceptions thrown by fail().
-   *
-   * group stable
-   */
+     * @covers AppBundle\Ensure::fail
+     *
+     * group stable
+     */
     public function testFail()
     {
         $this->setExpectedException('Exception', '"foo" is "bar", but "bing" too! [], "", 1');
