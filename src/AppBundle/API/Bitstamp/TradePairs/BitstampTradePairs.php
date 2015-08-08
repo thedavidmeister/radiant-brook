@@ -142,18 +142,6 @@ class BitstampTradePairs
     }
 
     /**
-     * Returns the average of the bid and ask price.
-     *
-     * @return Money::USD
-     */
-    public function midprice()
-    {
-        $midpoint = (int) round(($this->bidPrice()->getAmount() + $this->askPrice()->getAmount()) / 2, self::USD_PRECISION);
-
-        return Money::USD($midpoint);
-    }
-
-    /**
      * Execute the suggested trade pairs with Bitstamp.
      *
      * If $this fails validation, the trade pairs will not be executed and an
@@ -162,8 +150,13 @@ class BitstampTradePairs
     public function execute()
     {
         foreach ($this->proposer as $proposition) {
-            print_r($proposition);
+            $volumized = new Volumizer($proposition, $this->fees);
+            print_r($volumized->get());
         }
+    }
+
+    public function validateProposition() {
+
     }
 
     /**

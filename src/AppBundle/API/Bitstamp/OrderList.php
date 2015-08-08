@@ -3,6 +3,7 @@
 namespace AppBundle\API\Bitstamp;
 
 use AppBundle\MoneyStrings;
+use AppBundle\Ensure;
 use Money\Money;
 
 /**
@@ -13,7 +14,7 @@ use Money\Money;
  */
 class OrderList
 {
-    protected $data;
+    protected $data = [];
 
     const USD_PRICE_DATUM_INDEX = 0;
     const USD_KEY = 'usd';
@@ -28,9 +29,10 @@ class OrderList
      *   Order list data from Bitstamp. Either the 'bids' or 'asks' array from
      *   a full order book array.
      */
-    public function __construct($data)
+    public function __construct(array $data)
     {
-        $this->data = [];
+        Ensure::notEmpty($data);
+
         foreach ($data as $datum) {
             $this->data[] = [
                 self::USD_KEY => MoneyStrings::stringToUSD($datum[self::USD_PRICE_DATUM_INDEX]),
@@ -230,6 +232,13 @@ class OrderList
                 $return = $datum[self::USD_KEY]->getAmount();
                 break;
             }
+        }
+
+        // it's possible that because of the ceil() in the index generation, the
+        // index can be 1 larger than the final sum. In this case, set the
+        // percentileCap to the calculated index.
+        if (!isset($return)) {
+            $return = $index->getAmount();
         }
 
         return $return;

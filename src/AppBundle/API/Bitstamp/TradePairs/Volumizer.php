@@ -3,6 +3,8 @@
 namespace AppBundle\API\Bitstamp\TradePairs;
 
 use AppBundle\Secrets;
+use AppBundle\Ensure;
+use AppBundle\MoneyConstants;
 use Money\Money;
 
 /**
@@ -10,9 +12,13 @@ use Money\Money;
  */
 class Volumizer
 {
-    protected $prices;
+    protected $bidUSDPrice;
+
+    protected $askUSDPrice;
 
     const MIN_USD_VOLUME_SECRET = 'BITSTAMP_MIN_USD_VOLUME';
+
+    const MIN_USD_PROFIT_SECRET = 'BITSTAMP_MIN_USD_PROFIT';
 
     /**
      * DI Constructor.
@@ -25,8 +31,12 @@ class Volumizer
     )
     {
         foreach (['bidUSDPrice', 'askUSDPrice'] as $price) {
-            $this->{$price} = isset($prices[$price]) ? $prices[$price] : throw new \Exception('Missing ' . $price);
+            $this->{$price} = Ensure::set($prices[$price]);
+            // $this->{$price} = isset($prices[$price]) ? $prices[$price] : throw new \Exception('Missing ' . $price);
         }
+
+        Ensure::notEmpty($this->bidUSDPrice);
+        Ensure::notEmpty($this->askUSDPrice);
 
         $this->fees = $fees;
         $this->secrets = new Secrets();
@@ -84,7 +94,7 @@ class Volumizer
      */
     public function bidUSDVolumePlusFees()
     {
-        return $this->volumeUSDBid()->add($this->fees->absoluteFeeUSD($this->volumeUSDBid()));
+        return $this->bidUSDVolume()->add($this->fees->absoluteFeeUSD($this->bidUSDVolume()));
     }
 
     /**
@@ -104,10 +114,10 @@ class Volumizer
         // over the limit from Bitstamp's perspective.
         //
         // For this reason we do NOT use something like MoneyStrings.
-        $satoshis = (int) floor(($this->bidUSDVolume()->getAmount() / $this->bidUSDPrice()->getAmount()) * (10 ** self::BTC_PRECISION));
+        $satoshis = (int) floor(($this->bidUSDVolume()->getAmount() / $this->bidUSDPrice()->getAmount()) * (10 ** MoneyConstants::BTC_PRECISION));
 
         // This must never happen.
-        if ($satoshis * $this->bidUSDPrice()->getAmount() / (10 ** self::BTC_PRECISION) > $this->bidUSDVolume()->getAmount()) {
+        if ($satoshis * $this->bidUSDPrice()->getAmount() / (10 ** MoneyConstants::BTC_PRECISION) > $this->bidUSDVolume()->getAmount()) {
             throw new \Exception($satoshis . ' satoshis were attempted to be purchased at ' . $this->bidUSDPrice()->getAmount() . ' per BTC which exceeds allowed volume USD ' . $this->bidUSDVolume()->getAmount());
         }
 
@@ -151,10 +161,10 @@ class Volumizer
     {
         // We have to ceiling our satoshis to guarantee that we meet our minimum
         // ask USD volume, or we risk fees killing our profits.
-        $satoshis = (int) ceil($this->askUSDVolumeCoverFees()->getAmount() / $this->askUSDPrice()->getAmount() * 10 ** self::BTC_PRECISION);
+        $satoshis = (int) ceil($this->askUSDVolumeCoverFees()->getAmount() / $this->askUSDPrice()->getAmount() * 10 ** MoneyConstants::BTC_PRECISION);
 
         // This must never happen.
-        if ($satoshis * $this->askUSDPrice()->getAmount() / (10 ** self::BTC_PRECISION) < $this->askUSDVolumeCoverFees()->getAmount()) {
+        if ($satoshis * $this->askUSDPrice()->getAmount() / (10 ** MoneyConstants::BTC_PRECISION) < $this->askUSDVolumeCoverFees()->getAmount()) {
             throw new \Exception($satoshis . ' satoshis were attempted to be purchased at ' . $this->askUSDPrice()->getAmount() . ' per BTC which does not meet required volume USD ' . $this->askUSDVolumeCoverFees()->getAmount());
         }
 
@@ -168,9 +178,11 @@ class Volumizer
      */
     public function get()
     {
-        return $this->prices += [
-          'bidBTCVolume' => $this->bidBTCVolume(),
-          'askBTCVolume' => $this->askBTCVolume(),
+        return [
+            'bidUSDPrice' => $this->bidUSDPrice(),
+            'bidBTCVolume' => $this->bidBTCVolume(),
+            'askUSDPrice' => $this->askUSDPrice(),
+            'askBTCVolume' => $this->askBTCVolume(),
         ];
     }
 }

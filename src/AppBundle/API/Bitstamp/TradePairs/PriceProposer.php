@@ -18,9 +18,6 @@ class PriceProposer implements \Iterator
 
     const STEP_SIZE_SECRET = 'BITSTAMP_PERCENTILE_STEP';
 
-    // Bitcoin has precision of 8.
-    const BTC_PRECISION = 8;
-
     protected $minPercentile;
 
     protected $maxPercentile;
