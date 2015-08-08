@@ -40,7 +40,7 @@ class EnsureTest extends WebTestCase
     public function testNotNullExceptions()
     {
         $this->setExpectedException('Exception', 'null is not set.');
-        Ensure::set(null);
+        Ensure::notNull(null);
     }
 
     /**
