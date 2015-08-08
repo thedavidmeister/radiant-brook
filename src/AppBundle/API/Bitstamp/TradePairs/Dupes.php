@@ -121,7 +121,8 @@ class Dupes
         return $this->findDupes($price, self::TYPE_SELL);
     }
 
-    public function tradeProposalHasDupes(TradeProposal $tradeProposal) {
+    public function tradeProposalHasDupes(TradeProposal $tradeProposal) 
+    {
         return !empty($this->bids($tradeProposal->bidUSDPrice())) || !empty($this->asks($tradeProposal->askUSDPrice()));
     }
 

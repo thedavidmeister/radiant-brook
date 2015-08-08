@@ -209,7 +209,8 @@ class OrderList
         return $this->percentileFinder($pc, $index_function, $sum_init, $sum_function);
     }
 
-    protected function percentileFinder($pc, callable $index_function, Money $sum_init, callable $sum_function) {
+    protected function percentileFinder($pc, callable $index_function, Money $sum_init, callable $sum_function) 
+    {
         Ensure::inRange($pc, 0, 1);
 
         $index = $index_function($pc);

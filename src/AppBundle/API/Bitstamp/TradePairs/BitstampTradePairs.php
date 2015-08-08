@@ -81,7 +81,7 @@ class BitstampTradePairs
 
         foreach ($this->proposer as $proposition) {
             $tradeProposal = new TradeProposal($proposition, $this->fees);
-            switch($this->validateTradeProposition($tradeProposal)) {
+            switch ($this->validateTradeProposition($tradeProposal)) {
                 case self::PROPOSAL_VALID:
                     // Do trade.
                     // return, loop cannot continue.
@@ -107,7 +107,8 @@ class BitstampTradePairs
         return $report;
     }
 
-    public function validateTradeProposition(TradeProposal $tradeProposal) {
+    public function validateTradeProposition(TradeProposal $tradeProposal) 
+    {
         $state = self::PROPOSAL_VALID;
         $reason = 'Valid trade pair.';
 

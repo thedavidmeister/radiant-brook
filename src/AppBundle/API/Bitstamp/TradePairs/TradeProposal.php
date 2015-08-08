@@ -237,7 +237,8 @@ class TradeProposal
         return Money::BTC((int) $minProfitBTC);
     }
 
-    public function isProfitable() {
+    public function isProfitable() 
+    {
         return $this->profitUSD() >= $this->minProfitUSD() && $this->profitBTC() > $this->minProfitBTC();
     }
 }
