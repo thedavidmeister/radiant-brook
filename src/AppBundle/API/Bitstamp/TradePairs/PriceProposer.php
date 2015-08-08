@@ -10,7 +10,6 @@ use Money\Money;
  */
 class PriceProposer implements \Iterator
 {
-    const MIN_USD_PROFIT_SECRET = 'BITSTAMP_MIN_USD_PROFIT';
 
     const MIN_PERCENTILE_SECRET = 'BITSTAMP_PERCENTILE_MIN';
 

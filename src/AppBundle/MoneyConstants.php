@@ -4,5 +4,9 @@ namespace AppBundle;
 
 class MoneyConstants
 {
-  const BTC_PRECISION = 8;
+    // BTC has precision of 8.
+    const BTC_PRECISION = 8;
+
+    // USD has precision of 2.
+    const USD_PRECISION = 2;
 }

@@ -30,12 +30,13 @@ class BitstampTradePairs
 {
     const IS_TRADING_SECRET = 'BITSTAMP_IS_TRADING';
 
-    const MIN_BTC_PROFIT_SECRET = 'BITSTAMP_MIN_BTC_PROFIT';
-
     const PERCENTILE_SECRET = 'BITSTAMP_PERCENTILE';
 
-    // USD has precision of 2.
-    const USD_PRECISION = 2;
+    const PROPOSAL_VALID = 'valid';
+
+    const PROPOSAL_INVALID = 'invalid';
+
+    const PROPOSAL_PANIC = 'panic';
 
     /**
      * Constructor to store services passed by Symfony.
@@ -67,81 +68,6 @@ class BitstampTradePairs
     }
 
     /**
-     * BIDS
-     */
-
-
-    /**
-     * ASKS
-     */
-
-    /**
-     * How much USD can we keep from our sale, post fees?
-     *
-     * @return Money::USD
-     */
-    public function volumeUSDAskPostFees()
-    {
-        return Money::USD((int) floor($this->volumeUSDAsk()->getAmount() * $this->fees->asksMultiplier()));
-    }
-
-    /**
-     * DIFF
-     */
-
-    /**
-     * Returns the minimum acceptable BTC profit for a valid pair.
-     *
-     * @return Money::BTC
-     */
-    public function minProfitBTC()
-    {
-        $minProfitBTC = $this->secrets->get(self::MIN_BTC_PROFIT_SECRET);
-
-        if (filter_var($minProfitBTC, FILTER_VALIDATE_INT) === false) {
-            throw new \Exception('Minimum BTC profit configuration must be an integer value. data: ' . print_r($minProfitBTC, true));
-        }
-
-        return Money::BTC((int) $minProfitBTC);
-    }
-
-    /**
-     * Returns the BTC profit of the suggested pair.
-     *
-     * @return Money::BTC
-     */
-    public function profitBTC()
-    {
-        return Money::BTC((int) floor($this->bidBTCVolume()->getAmount() - $this->askBTCVolume()->getAmount()));
-    }
-
-    /**
-     * Returns the minimum acceptable USD profit for a valid pair.
-     *
-     * @return Money::USD
-     */
-    public function minProfitUSD()
-    {
-        $minProfitUSD = $this->secrets->get(self::MIN_USD_PROFIT_SECRET);
-
-        if (filter_var($minProfitUSD, FILTER_VALIDATE_INT) === false) {
-            throw new \Exception('Minimum USD profit configuration must be an integer value. data: ' . print_r($minProfitUSD, true));
-        }
-
-        return Money::USD((int) $minProfitUSD);
-    }
-
-    /**
-     * Returns the USD profit of the suggested pair.
-     *
-     * @return Money::USD
-     */
-    public function profitUSD()
-    {
-        return Money::USD((int) floor($this->volumeUSDAskPostFees()->getAmount() - $this->volumeUSDBidPostFees()->getAmount()));
-    }
-
-    /**
      * Execute the suggested trade pairs with Bitstamp.
      *
      * If $this fails validation, the trade pairs will not be executed and an
@@ -150,13 +76,49 @@ class BitstampTradePairs
     public function execute()
     {
         foreach ($this->proposer as $proposition) {
-            $volumized = new Volumizer($proposition, $this->fees);
-            print_r($volumized->get());
+            $tradeProposal = new TradeProposal($proposition, $this->fees);
+            switch($this->validateVolumizedProposition($tradeProposal)) {
+                case self::PROPOSAL_VALID:
+                    // Do trade.
+                    // return, loop cannot continue.
+                    return;
+                case self::PROPOSAL_INVALID:
+                    // Do nothing. Allow loop to continue.
+                    break;
+                case self::PROPOSAL_PANIC:
+                    // Do nothing.
+                    // return, loop cannot continue.
+                    return;
+            }
         }
     }
 
-    public function validateProposition() {
+    public function validateVolumizedProposition(TradeProposal $tradeProposal) {
+        // We should not be trading right now, panic!
+        if (!$this->isTrading()) {
+            return self::PROPOSAL_PANIC;
+        }
 
+        // If we found dupes, we cannot continue trading, panic!
+        if ($this->propositionHasDupes($tradeProposal)) {
+            return self::PROPOSAL_PANIC;
+        }
+
+        // This proposition is not profitable, but others may be.
+        if (!$this->propositionIsProfitable($tradeProposal)) {
+            return self::PROPOSAL_INVALID;
+        }
+
+        // This proposition is valid.
+        return self::PROPOSAL_VALID;
+    }
+
+    public function propositionHasDupes(TradeProposal $tradeProposal) {
+        return !empty($this->dupes->bids($tradeProposal->bidUSDPrice())) || !empty($this->dupes->asks($tradeProposal->askUSDPrice()));
+    }
+
+    public function propositionIsProfitable(TradeProposal $tradeProposal) {
+        return $tradeProposal->profitUSD() >= $tradeProposal->minProfitUSD() && $tradeProposal->profitBTC() > $tradeProposal->minProfitBTC();
     }
 
     /**

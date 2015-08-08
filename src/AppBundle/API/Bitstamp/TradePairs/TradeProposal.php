@@ -8,9 +8,9 @@ use AppBundle\MoneyConstants;
 use Money\Money;
 
 /**
- * AppBundle\API\Bitstamp\TradePairs\Volumizer.
+ * AppBundle\API\Bitstamp\TradePairs\TradeProposal.
  */
-class Volumizer
+class TradeProposal
 {
     protected $bidUSDPrice;
 
@@ -19,6 +19,8 @@ class Volumizer
     const MIN_USD_VOLUME_SECRET = 'BITSTAMP_MIN_USD_VOLUME';
 
     const MIN_USD_PROFIT_SECRET = 'BITSTAMP_MIN_USD_PROFIT';
+
+    const MIN_BTC_PROFIT_SECRET = 'BITSTAMP_MIN_BTC_PROFIT';
 
     /**
      * DI Constructor.
@@ -43,6 +45,10 @@ class Volumizer
     }
 
     /**
+     * BIDS
+     */
+
+    /**
      * Gets $this->bidUSDPrice.
      *
      * @return Money::USD
@@ -50,16 +56,6 @@ class Volumizer
     public function bidUSDPrice()
     {
         return $this->bidUSDPrice;
-    }
-
-    /**
-     * Gets $this->askUSDPrice.
-     *
-     * @return Money::USD
-     */
-    public function askUSDPrice()
-    {
-        return $this->askUSDPrice;
     }
 
     /**
@@ -125,6 +121,20 @@ class Volumizer
     }
 
     /**
+     * ASKS
+     */
+
+    /**
+     * Gets $this->askUSDPrice.
+     *
+     * @return Money::USD
+     */
+    public function askUSDPrice()
+    {
+        return $this->askUSDPrice;
+    }
+
+    /**
      * Returns the USD volume required to cover the bid USD + fees.
      *
      * The volume USD that we get to keep K is:
@@ -150,6 +160,16 @@ class Volumizer
     }
 
     /**
+     * How much USD can we keep from our sale, post fees?
+     *
+     * @return Money::USD
+     */
+    public function askUSDVolumePostFees()
+    {
+        return Money::USD((int) floor($this->askUSDVolumeCoverFees()->getAmount() * $this->fees->asksMultiplier()));
+    }
+
+    /**
      * The asking volume of BTC in the suggested pair.
      *
      * BTC volume is simply the amount of USD we need to sell divided by the
@@ -172,17 +192,58 @@ class Volumizer
     }
 
     /**
-     * Merge the calculated volumes into the prices.
-     *
-     * @return array
+     * PROFIT
      */
-    public function get()
+
+    /**
+     * Returns the BTC profit of the suggested pair.
+     *
+     * @return Money::BTC
+     */
+    public function profitBTC()
     {
-        return [
-            'bidUSDPrice' => $this->bidUSDPrice(),
-            'bidBTCVolume' => $this->bidBTCVolume(),
-            'askUSDPrice' => $this->askUSDPrice(),
-            'askBTCVolume' => $this->askBTCVolume(),
-        ];
+        return Money::BTC((int) floor($this->bidBTCVolume()->getAmount() - $this->askBTCVolume()->getAmount()));
+    }
+
+    /**
+     * Returns the minimum acceptable BTC profit for a valid pair.
+     *
+     * @return Money::BTC
+     */
+    public function minProfitBTC()
+    {
+        $minProfitBTC = $this->secrets->get(self::MIN_BTC_PROFIT_SECRET);
+
+        if (filter_var($minProfitBTC, FILTER_VALIDATE_INT) === false) {
+            throw new \Exception('Minimum BTC profit configuration must be an integer value. data: ' . print_r($minProfitBTC, true));
+        }
+
+        return Money::BTC((int) $minProfitBTC);
+    }
+
+    /**
+     * Returns the USD profit of the suggested pair.
+     *
+     * @return Money::USD
+     */
+    public function profitUSD()
+    {
+        return Money::USD((int) floor($this->askUSDVolumeCoverFees()->getAmount() - $this->bidUSDVolumePlusFees()->getAmount()));
+    }
+
+    /**
+     * Returns the minimum acceptable USD profit for a valid pair.
+     *
+     * @return Money::USD
+     */
+    public function minProfitUSD()
+    {
+        $minProfitUSD = $this->secrets->get(self::MIN_USD_PROFIT_SECRET);
+
+        if (filter_var($minProfitUSD, FILTER_VALIDATE_INT) === false) {
+            throw new \Exception('Minimum USD profit configuration must be an integer value. data: ' . print_r($minProfitUSD, true));
+        }
+
+        return Money::USD((int) $minProfitUSD);
     }
 }
