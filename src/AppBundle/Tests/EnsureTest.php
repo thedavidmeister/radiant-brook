@@ -190,4 +190,48 @@ class EnsureTest extends WebTestCase
     $this->setExpectedException('Exception', $message);
     Ensure::inRange($value, $bound_one, $bound_two);
   }
+
+  /**
+   * Tests isInstanceOf().
+   *
+   * @group stable
+   */
+  public function testIsInstanceOf() {
+    $tests = [
+      [new \DateTime(), '\DateTime'],
+      [new \StdClass(), '\StdClass'],
+    ];
+    array_walk($tests, function($test) {
+      $this->assertSame($test[0], Ensure::isInstanceOf($test[0], $test[1]));
+    });
+  }
+
+  public function dataIsInstanceOfExceptions() {
+    return [
+      [new \StdClass(), '\DateTime', '{} is not an instance of "\\\DateTime".'],
+      [[], '\StdClass', '[] is not an instance of "\\\StdClass".'],
+      [null, '\StdClass', 'null is not an instance of "\\\StdClass".'],
+    ];
+  }
+
+  /**
+   * Tests exceptions for isInstanceOf().
+   *
+   * @dataProvider dataIsInstanceOfExceptions
+   * @group stable
+   */
+  public function testIsInstanceOfExceptions($value, $class, $message) {
+    $this->setExpectedException('Exception', $message);
+    Ensure::isInstanceOf($value, $class);
+  }
+
+  /**
+   * Tests exceptions thrown by fail().
+   *
+   * @group stable
+   */
+  public function testFail() {
+    $this->setExpectedException('Exception', '"foo" is "bar", but "bing" too! [], "", 1');
+    Ensure::fail('%s is %s, but %s too! %s, %s, %s', 'foo', 'bar', 'bing', [], '', 1);
+  }
 }
