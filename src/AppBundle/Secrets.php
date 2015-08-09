@@ -84,8 +84,8 @@ class Secrets
                 // already have what we were looking for in memory.
                 $dotenv = new Dotenv($this->dotEnvPath());
                 $dotenv->load($this->dotEnvPath());
-            }
-            catch (\Exception $e) {
+            } catch (\Exception $e) {
+                // Provide a more useful message than the Dotenv default.
                 throw new \Exception ('Loading .env file failed while attempting to access environment variable ' . $name);
             }
 
