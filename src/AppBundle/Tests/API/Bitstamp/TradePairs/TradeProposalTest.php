@@ -85,13 +85,14 @@ class TradeProposalTest extends WebTestCase
             ['10', 20],
         ];
         array_walk($tests, function($test) {
+            $this->setEnv('BITSTAMP_MIN_USD_VOLUME', $test[0]);
+
             $fees = $this->fees();
             $fees->method('isofeeMaxUSD')->will($this->returnCallback(function(Money $usd) {
                 return $usd->multiply(2);
             }));
 
             $tradeProposal = new TradeProposal($this->randomBidAskPrices(), $fees);
-            $this->setEnv('BITSTAMP_MIN_USD_VOLUME', $test[0]);
             $this->assertEquals(Money::USD($test[1]), $tradeProposal->bidUSDVolume());
         });
     }
@@ -116,6 +117,9 @@ class TradeProposalTest extends WebTestCase
         ];
 
         array_walk($tests, function($test) {
+            // This can be anything.
+            $this->setEnv('BITSTAMP_MIN_USD_VOLUME', mt_rand());
+
             $fees = $this->fees();
             $fees->method('absoluteFeeUSD')->willReturn($test[0]);
             $fees->method('isofeeMaxUSD')->willReturn($test[1]);
