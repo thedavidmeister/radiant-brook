@@ -15,7 +15,8 @@ class EnsureTest extends WebTestCase
      *
      * @return array
      */
-    public function dataIsValidVariableNameExceptions() {
+    public function dataIsValidVariableNameExceptions()
+    {
         return [
             ['1', '"1" is not a valid variable name.'],
             ['-', '"-" is not a valid variable name.'],
