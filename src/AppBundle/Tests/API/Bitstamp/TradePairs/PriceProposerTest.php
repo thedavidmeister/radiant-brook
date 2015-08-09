@@ -95,6 +95,7 @@ class PriceProposerTest extends WebTestCase
             $this->setEnv('BITSTAMP_PERCENTILE_MIN', $test[0]);
             // Exceptions without a max.
             $this->setEnv('BITSTAMP_PERCENTILE_MAX', $test[0] + 0.1);
+            $this->setEnv('BITSTAMP_PERCENTILE_STEP', $test[0] + 0.01);
 
             $pp = new PriceProposer($orderbook);
 
@@ -142,8 +143,9 @@ class PriceProposerTest extends WebTestCase
 
             // New PriceProposers start at BITSTAMP_PERCENTILE_MIN.
             $this->setEnv('BITSTAMP_PERCENTILE_MIN', $test[0]);
-            // Exceptions without a max.
+            // Exceptions without these set.
             $this->setEnv('BITSTAMP_PERCENTILE_MAX', $test[0] + 0.1);
+            $this->setEnv('BITSTAMP_PERCENTILE_STEP', $test[0] + 0.01);
 
             $pp = new PriceProposer($orderbook);
 
