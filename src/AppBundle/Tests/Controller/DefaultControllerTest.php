@@ -75,7 +75,7 @@ class DefaultControllerTest extends WebTestCase
 
         // Help debug 500 errors.
         if (200 !== $authClient->getResponse()->getStatusCode()) {
-            fwrite(STDERR, print_r($authClient->getResponse(), TRUE));
+            fwrite(STDERR, print_r($authClient->getResponse(), true));
         }
 
         $this->assertSame(200, $authClient->getResponse()->getStatusCode());
