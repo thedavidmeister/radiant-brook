@@ -106,6 +106,26 @@ final class Ensure
     }
 
     /**
+     * Ensures that the first value passed is strictly less than the second.
+     *
+     * @param number $small
+     *   The number that must be less than $big.
+     *
+     * @param number $big
+     *   The number that must be greater than $small.
+     *
+     * @param string $message
+     *   The message to throw when $small is not less than $big.
+     *
+     * @return number $small
+     *   The smaller number is returned.
+     */
+    public static function lessThan($small, $big, $message = '%s is not less than %s.')
+    {
+        return ($small < $big) ? $small : self::fail($message, $small, $big);
+    }
+
+    /**
      * Ensures that a numerical value is within a given range.
      *
      * The bounds given can both be either an upper or lower bound, only the
