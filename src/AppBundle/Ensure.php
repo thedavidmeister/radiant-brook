@@ -28,9 +28,9 @@ final class Ensure
      *
      * @return mixed $value
      */
-    public static function notNull($value, $message = '%s is not set.')
+    public static function notNull($value)
     {
-        return (null !== $value) ? $value : self::fail($message, $value);
+        return (null !== $value) ? $value : self::fail('%s is not set.', $value);
     }
 
     /**
@@ -44,9 +44,9 @@ final class Ensure
      *
      * @return mixed  $value
      */
-    public static function isEmpty($value, $message = '%s is not empty.')
+    public static function isEmpty($value)
     {
-        return empty($value) ? $value : self::fail($message, $value);
+        return empty($value) ? $value : self::fail('%s is not empty.', $value);
     }
 
     /**
@@ -60,9 +60,9 @@ final class Ensure
      *
      * @return mixed $value
      */
-    public static function notEmpty($value, $message = '%s is empty.')
+    public static function notEmpty($value)
     {
-        return !empty($value) ? $value : self::fail($message, $value);
+        return !empty($value) ? $value : self::fail('%s is empty.', $value);
     }
 
     /**
@@ -79,10 +79,10 @@ final class Ensure
      *
      * @return int $value
      */
-    public static function isInt($value, $message = '%s is not an int.')
+    public static function toInt($value)
     {
         // Cast the value to an int, if it's int-y.
-        return (filter_var($value, FILTER_VALIDATE_INT) !== false) ? (int) $value : self::fail($message, $value);
+        return (filter_var($value, FILTER_VALIDATE_INT) !== false) ? (int) $value : self::fail('%s is not an int.', $value);
     }
 
     /**
@@ -99,10 +99,15 @@ final class Ensure
      *
      * @return float $value
      */
-    public static function isFloat($value, $message = '%s is not numeric.')
+    public static function toFloat($value)
     {
         // Cast the value to a float, if it's numeric.
-        return is_numeric($value) ? (float) $value : self::fail($message, $value);
+        return (float) self::isNumeric($value);
+    }
+
+    public static function isNumeric($value)
+    {
+        return is_numeric($value) ? $value : self::fail('%s is not numeric', $value);
     }
 
     /**
@@ -120,9 +125,44 @@ final class Ensure
      * @return number $small
      *   The smaller number is returned.
      */
-    public static function lessThan($small, $big, $message = '%s is not less than %s.')
+    public static function lessThan($small, $big)
     {
-        return ($small < $big) ? $small : self::fail($message, $small, $big);
+        return ($small < $big) ? $small : self::fail('%s is not less than %s.', $small, $big);
+    }
+
+    public static function lessThanEqual($small, $big)
+    {
+        return ($small <= $big) ? $small : self::fail('%s is not less than or equal to %s.', $small, $big);
+    }
+
+    public static function equal($thing, $otherThing)
+    {
+        return ($thing == $otherThing) ? $thing : self::fail('%s is not equal to %s.', $thing, $otherThing);
+    }
+
+    public static function identical($thing, $otherThing)
+    {
+        return ($thing === $otherThing) ? $thing : self::fail('%s is not identical to %s.', $thing, $otherThing);
+    }
+
+    public static function greaterThanEqual($big, $small)
+    {
+        return ($big >= $small) ? $big : self::fail('%s is not greater than or equal to %s.', $big, $small);
+    }
+
+    public static function greaterThan($big, $small)
+    {
+        return ($big > $small) ? $big : self::fail('%s is not greater than %s.', $big, $small);
+    }
+
+    /**
+     * Ensures that the first number passed is strictly less than the second.
+     */
+    public static function numberLessThan($small, $big)
+    {
+        self::isNumeric($small);
+        self::isNumeric($big);
+        return self::lessThan($small, $big);
     }
 
     /**
@@ -145,12 +185,12 @@ final class Ensure
      *
      * @return number $value
      */
-    public static function inRange($value, $boundOne, $boundTwo, $message = '%s is not in the range of %s and %s.')
+    public static function inRange($value, $boundOne, $boundTwo)
     {
         $min = min([$boundOne, $boundTwo]);
         $max = max([$boundOne, $boundTwo]);
 
-        return ($min <= $value && $value <= $max) ? $value : self::fail($message, $value, $min, $max);
+        return ($min <= $value && $value <= $max) ? $value : self::fail('%s is not in the range of %s and %s.', $value, $min, $max);
     }
 
     /**
@@ -168,9 +208,9 @@ final class Ensure
      * @return object
      *   $value
      */
-    public static function isInstanceOf($value, $class, $message = '%s is not an instance of %s.')
+    public static function isInstanceOf($value, $class)
     {
-        return ($value instanceof $class) ? $value : self::fail($message, $value, $class);
+        return ($value instanceof $class) ? $value : self::fail('%s is not an instance of %s.', $value, $class);
     }
 
     /**
@@ -184,9 +224,9 @@ final class Ensure
      *
      * @return value
      */
-    public static function isString($value, $message = '%s is not a string.')
+    public static function isString($value)
     {
-        return (is_string($value)) ? $value : self::fail($message, $value);
+        return (is_string($value)) ? $value : self::fail('%s is not a string.', $value);
     }
 
     /**
@@ -200,11 +240,11 @@ final class Ensure
      *
      * @return $value
      */
-    public static function isValidVariableName($value, $message = '%s is not a valid variable name.')
+    public static function isValidVariableName($value)
     {
         $value = self::isString($value);
 
-        return preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $value) ? $value : self::fail($message, $value);
+        return preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $value) ? $value : self::fail('%s is not a valid variable name.', $value);
     }
 
     /**

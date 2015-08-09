@@ -11,6 +11,64 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class EnsureTest extends WebTestCase
 {
     /**
+     * Data provider for testLessThanExceptions
+     */
+    public function dataLessThanExceptions()
+    {
+        return [
+            // ints.
+            [1, 0, '1 is not less than 0.'],
+            [0, -1, '0 is not less than -1.'],
+            [2, 1, '2 is not less than 1.'],
+            [1, -1, '1 is not less than -1.'],
+            // floats.
+            [1.1, 0.1, '1.1 is not less than 0.1.'],
+            [0.1, -1.1, '0.1 is not less than -1.1.'],
+            [2.1, 1.1, '2.1 is not less than 1.1.'],
+            [1.1, -1.1, '1.1 is not less than -1.1.'],
+        ];
+    }
+
+    /**
+     * @covers AppBundle\Ensure::lessThan
+     *
+     * @dataProvider dataLessThanExceptions
+     */
+    public function testLessThanExceptions($small, $big, $message)
+    {
+        $this->setExpectedException('Exception', $message);
+        Ensure::lessThan($small, $big);
+    }
+
+    /**
+     * @covers AppBundle\Ensure::lessThan
+     */
+    public function testLessThan()
+    {
+        $tests = [
+            [1, 2],
+            [0, 1],
+            [-0, 1],
+            [-1, 0],
+            [-1, -0],
+            [-1, 1],
+        ];
+        array_walk($tests, function($test) {
+            // Check that this works for floats and ints.
+            $this->assertSame((int) $test[0], Ensure::lessThan((int) $test[0], (int) $test[1]));
+            $this->assertSame((float) $test[0], Ensure::lessThan((float) $test[0], (float) $test[1]));
+        });
+
+        $fun_stuff = [
+            [null, true],
+            [false, true],
+        ];
+        array_walk($fun_stuff, function($test) {
+            $this->assertSame($test[0], Ensure::lessThan($test[0], $test[1]));
+        });
+    }
+
+    /**
      * Data provider for testIsValidVariableNameExceptions
      *
      * @return array
