@@ -23,9 +23,86 @@ class PriceProposerTest extends WebTestCase
             ->getMock();
     }
 
+    const PERCENTILE_CAP_MULTIPLIER_ASKS = 12345678;
+
+    const PERCENTILE_CAP_MULTIPLIER_BIDS = 10000000;
+
     protected function orderbook()
     {
-        return $this->mock('\AppBundle\API\Bitstamp\PublicAPI\OrderBook');
+        $orderbook = $this->mock('\AppBundle\API\Bitstamp\PublicAPI\OrderBook');
+
+        $orderbook->method('asks')->will($this->returnCallback(function() {
+            $asks = $this
+                ->getMockBuilder('AppBundle\API\Bitstamp\OrderList')
+                ->disableOriginalConstructor()
+                ->getMock();
+
+            $asks->method('percentileCap')->will($this->returnCallback(function($percentile) {
+                return (int) ($percentile * self::PERCENTILE_CAP_MULTIPLIER_ASKS);
+            }));
+
+            return $asks;
+        }));
+
+        $orderbook->method('bids')->will($this->returnCallback(function() {
+            $bids = $this
+                ->getMockBuilder('AppBundle\API\Bitstamp\OrderList')
+                ->disableOriginalConstructor()
+                ->getMock();
+
+            $bids->method('percentileCap')->will($this->returnCallback(function($percentile) {
+                return (int) ($percentile * self::PERCENTILE_CAP_MULTIPLIER_BIDS);
+            }));
+
+            return $bids;
+        }));
+
+        return $orderbook;
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::current
+     * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::key
+     * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::next
+     * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::rewind
+     */
+    public function testIteration()
+    {
+        $minPercentile = 0.01;
+        $this->setEnv('BITSTAMP_PERCENTILE_MIN', $minPercentile);
+
+        $maxPercentile = 0.1;
+        $this->setEnv('BITSTAMP_PERCENTILE_MAX', $maxPercentile);
+
+        $stepSize = 0.005;
+        $this->setEnv('BITSTAMP_PERCENTILE_STEP', $stepSize);
+
+        $pp = new PriceProposer($this->orderbook());
+        $currentPercentile = $minPercentile;
+        foreach ($pp as $key => $value) {
+            // Test key().
+            $this->assertSame($currentPercentile, $key);
+
+            // Test current().
+            $expectedValue = [
+                'bidUSDPrice' => Money::USD((int) ((1 - $key) * self::PERCENTILE_CAP_MULTIPLIER_BIDS)),
+                'askUSDPrice' => Money::USD((int) ($key * self::PERCENTILE_CAP_MULTIPLIER_ASKS)),
+            ];
+            $this->assertEquals($expectedValue, $value);
+
+            // This is what happens inside next() so we are implicitly testing
+            // next by using foreach and tracking against the step size here.
+            $currentPercentile += $stepSize;
+        }
+
+        // Test rewind.
+        $pp->rewind();
+        $this->assertSame($minPercentile, $pp->key());
+        $expectedValue = [
+            'bidUSDPrice' => Money::USD((int) ((1 - $pp->key()) * self::PERCENTILE_CAP_MULTIPLIER_BIDS)),
+            'askUSDPrice' => Money::USD((int) ($pp->key() * self::PERCENTILE_CAP_MULTIPLIER_ASKS)),
+        ];
+        $this->assertEquals($expectedValue, $pp->current());
     }
 
     /**
@@ -75,18 +152,6 @@ class PriceProposerTest extends WebTestCase
         ];
         array_walk($tests, function($test) {
             $orderbook = $this->orderbook();
-            $orderbook->method('asks')->will($this->returnCallback(function() {
-                $asks = $this
-                    ->getMockBuilder('AppBundle\API\Bitstamp\OrderList')
-                    ->disableOriginalConstructor()
-                    ->getMock();
-
-                $asks->method('percentileCap')->will($this->returnCallback(function($percentile) {
-                    return (int) $percentile * 12345678;
-                }));
-
-                return $asks;
-            }));
 
             $expected = Money::USD((int) $test[0] * 12345678);
 
@@ -124,21 +189,9 @@ class PriceProposerTest extends WebTestCase
         array_walk($tests, function($test) {
             // This mocking gets deep...
             $orderbook = $this->orderbook();
-            $orderbook->method('bids')->will($this->returnCallback(function() {
-                $bids = $this
-                    ->getMockBuilder('AppBundle\API\Bitstamp\OrderList')
-                    ->disableOriginalConstructor()
-                    ->getMock();
-
-                $bids->method('percentileCap')->will($this->returnCallback(function($percentile) {
-                    return (int) ($percentile * 1000000);
-                }));
-
-                return $bids;
-            }));
 
             // bidPrice() passes (1 - $percentile) to percentileCap().
-            $expected = Money::USD((int) ((1 - $test[0]) * 1000000));
+            $expected = Money::USD((int) ((1 - $test[0]) * self::PERCENTILE_CAP_MULTIPLIER_BIDS));
 
             // New PriceProposers start at BITSTAMP_PERCENTILE_MIN.
             $this->setEnv('BITSTAMP_PERCENTILE_MIN', $test[0]);
