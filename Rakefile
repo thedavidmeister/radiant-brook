@@ -61,7 +61,7 @@ namespace :phpunit do
 
   desc 'run all phpunit tests in a travis compatible way'
   task :travis do
-    phpunit "--coverage-clover", "build/logs/clover.xml"
+    phpunit "--coverage-clover", "build/logs/clover.xml", "--exclude-group", "requiresAPIKey"
   end
 end
 

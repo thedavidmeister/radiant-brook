@@ -73,12 +73,13 @@ class DefaultControllerTest extends WebTestCase
 
         $crawler = $authClient->request('GET', $uri);
 
-        $this->assertEquals(200, $authClient->getResponse()->getStatusCode());
-
         // Help debug 500 errors.
-        if (500 === $authClient->getResponse()->getStatusCode()) {
-            print_r($authClient->getResponse());
+        if (200 !== $authClient->getResponse()->getStatusCode()) {
+            fwrite(STDERR, print_r($authClient->getResponse(), TRUE));
         }
+
+        $this->assertSame(200, $authClient->getResponse()->getStatusCode());
+
 
         $this->assertNav($crawler);
 
@@ -111,8 +112,8 @@ class DefaultControllerTest extends WebTestCase
      *
      * @covers AppBundle\Controller\DefaultController::tradeAction
      * @group slow
-     * @group functional
-     * @group stable
+     * @group requiresAPIKey
+     * group stable
      */
     public function testTrade()
     {
@@ -150,7 +151,6 @@ class DefaultControllerTest extends WebTestCase
      *
      * @covers AppBundle\Controller\DefaultController::orderBookAction
      * @group slow
-     * @group functional
      * @group stable
      */
     public function testOrderBook()
