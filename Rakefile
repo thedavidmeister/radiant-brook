@@ -20,55 +20,55 @@ end
 desc 'attempts to automatically fix coding standards'
 task :phpcbf do
   cmd = "bin/phpcbf --standard=vendor/leaphub/phpcs-symfony2-standard/leaphub/phpcs/Symfony2/ --extensions=php src/"
-  puts `#{cmd}`
+  exec cmd
 end
 
 desc 'run security checker'
 task :"security-check" do
   cmd = "app/console security:check"
-  puts `#{cmd}`
+  exec cmd
 end
 
 desc 'run phpunit tests for travis'
 task :"phpunit-travis" do
   cmd = "bin/phpunit -c app/ --coverage-clover build/logs/clover.xml"
-  puts `#{cmd}`
+  exec cmd
 end
 
 desc 'run phpunit tests including functional tests'
 task :phpunit do
   cmd = "bin/phpunit -c app/"
-  puts `#{cmd}`
+  exec cmd
 end
 
 desc 'run phpunit unit tests and create coverage report'
 task :"phpunit-coverage" do
   cmd = "bin/phpunit -c app/ --coverage-html coverage"
-  puts `#{cmd}`
+  exec cmd
 end
 
 desc 'run phpunit tests excluding stable tests'
 task :"phpunit-nostable" do
   cmd = "bin/phpunit -c app/ --exclude-group stable --debug"
-  puts `#{cmd}`
+  exec cmd
 end
 
 desc 'run phpunit tests excluding livedata tests'
 task :"phpunit-noslow" do
   cmd = "bin/phpunit -c app/ --exclude-group slow"
-  puts `#{cmd}`
+  exec cmd
 end
 
 desc 'Attempt a trade on bitstamp, from Heroku'
 task :"heroku-trade-bitstamp" do
   cmd = "heroku run 'php app/console trade:bitstamp'"
-  puts `#{cmd}`
+  exec cmd
 end
 
 desc 'Take a snapshot of bitstamp data, from Heroku'
 task :"heroku-snapshot-bitstamp" do
   cmd = "heroku run 'php app/console snapshot:bitstamp'"
-  puts `#{cmd}`
+  exec cmd
 end
 
 namespace :git do
