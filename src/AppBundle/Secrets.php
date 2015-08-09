@@ -91,7 +91,7 @@ class Secrets
 
             // Try once more to find what we're looking for, then give up.
             if (null === $value = $loader->getEnvironmentVariable($name)) {
-                throw new \Exception('Environment variable not found: ' . $name . ' - This probably means you did not set your .env file up properly, you dingus.');
+                throw new \Exception('Loading .env file failed while attempting to access environment variable ' . $name);
             }
         }
 

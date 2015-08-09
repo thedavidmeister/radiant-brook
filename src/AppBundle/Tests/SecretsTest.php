@@ -50,7 +50,7 @@ class SecretsTest extends WebTestCase
      * @covers AppBundle\Secrets::get
      *
      * @expectedException Exception
-     * @expectedExceptionMessage Environment variable not found: NO_MATCH - This probably means you did not set your .env file up properly, you dingus.
+     * @expectedExceptionMessage Loading .env file failed while attempting to access environment variable NO_MATCH
      * @group stable
      */
     public function testSecretsException()
