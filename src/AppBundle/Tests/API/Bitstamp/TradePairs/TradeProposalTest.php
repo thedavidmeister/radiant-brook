@@ -72,6 +72,7 @@ class TradeProposalTest extends WebTestCase
     public function testBidUSDVolume()
     {
         // Check that the isofee is returned.
+        $this->setEnv('BITSTAMP_MIN_USD_VOLUME', mt_rand());
         $fees = $this->fees();
         $isoFeeAmount = mt_rand();
         $fees->method('isofeeMaxUSD')->willReturn(Money::USD($isoFeeAmount));
@@ -153,6 +154,8 @@ class TradeProposalTest extends WebTestCase
             [111, 1000000000, 11],
         ];
         array_walk($tests, function($test) {
+            // This can be set to anything here.
+            $this->setEnv('BITSTAMP_MIN_USD_VOLUME', mt_rand());
             $fees = $this->fees();
             $fees->method('isofeeMaxUSD')->willReturn(Money::USD($test[0]));
             $prices = ['bidUSDPrice' => Money::USD($test[1]), 'askUSDPrice' => Money::USD(mt_rand())];
@@ -210,10 +213,12 @@ class TradeProposalTest extends WebTestCase
         ];
 
         array_walk($tests, function($test) {
+            $this->setEnv('BITSTAMP_MIN_USD_VOLUME', mt_rand());
+            $this->setEnv('BITSTAMP_MIN_USD_PROFIT', $test[2]);
+
             $fees = $this->fees();
             $fees->method('absoluteFeeUSD')->willReturn($test[0]);
             $fees->method('isofeeMaxUSD')->willReturn($test[1]);
-            $this->setEnv('BITSTAMP_MIN_USD_PROFIT', $test[2]);
             $fees->method('asksMultiplier')->willReturn($test[3]);
 
             // The USD volume has nothing to do with the price.
