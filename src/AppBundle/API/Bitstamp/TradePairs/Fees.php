@@ -26,6 +26,7 @@ class Fees
 
     /**
      * Fees as a percentage.
+     *
      * @return float
      *   Fees as a percentage. E.g. 1% = 1
      */
