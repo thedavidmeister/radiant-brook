@@ -86,6 +86,24 @@ final class Ensure
     }
 
     /**
+     * Ensures that a value is a float.
+     *
+     * Value must be numeric. If it is, it will be cast to a float, otherwise,
+     * fail.
+     *
+     * @param number $value
+     *   The value to ensure is a float.
+     *
+     * @param  string  $message [description]
+     * @return boolean          [description]
+     */
+    public static function isFloat($value, $message = '%s is not numeric.')
+    {
+        // Cast the value to a float, if it's numeric.
+        return is_numeric($value) ? (float) $value : self::fail($message, $value);
+    }
+
+    /**
      * Ensures that a numerical value is within a given range.
      *
      * The bounds given can both be either an upper or lower bound, only the

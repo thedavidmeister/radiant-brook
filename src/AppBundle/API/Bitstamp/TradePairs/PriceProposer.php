@@ -3,6 +3,7 @@
 namespace AppBundle\API\Bitstamp\TradePairs;
 
 use AppBundle\Secrets;
+use AppBundle\Ensure;
 use Money\Money;
 
 /**
@@ -44,9 +45,39 @@ class PriceProposer implements \Iterator
         $this->secrets = new Secrets();
 
         // Init.
-        $this->minPercentile = $this->secrets->get(self::MIN_PERCENTILE_SECRET);
-        $this->maxPercentile = $this->secrets->get(self::MAX_PERCENTILE_SECRET);
-        $this->stepSize = $this->secrets->get(self::STEP_SIZE_SECRET);
+        $this->minPercentile = Ensure::isFloat($this->secrets->get(self::MIN_PERCENTILE_SECRET));
+        $this->maxPercentile = Ensure::isFloat($this->secrets->get(self::MAX_PERCENTILE_SECRET));
+        $this->stepSize = Ensure::isFloat($this->secrets->get(self::STEP_SIZE_SECRET));
+    }
+
+    /**
+     * Read-only minPercentile.
+     *
+     * @return float
+     */
+    public function minPercentile()
+    {
+        return $this->minPercentile;
+    }
+
+    /**
+     * Read-only maxPercentile.
+     *
+     * @return float
+     */
+    public function maxPercentile()
+    {
+        return $this->maxPercentile;
+    }
+
+    /**
+     * Read-only stepSize.
+     *
+     * @return float
+     */
+    public function stepSize()
+    {
+        return $this->stepSize;
     }
 
     /**
@@ -143,8 +174,6 @@ class PriceProposer implements \Iterator
     {
         return $this->currentPercentile <= $this->maxPercentile
             && $this->currentPercentile >= $this->minPercentile
-            && is_numeric($this->currentPercentile)
-            && is_numeric($this->minPercentile)
-            && is_numeric($this->maxPercentile);
+            && $this->minPercentile < $this->maxPercentile;
     }
 }

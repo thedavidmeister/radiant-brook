@@ -29,6 +29,31 @@ class PriceProposerTest extends WebTestCase
     }
 
     /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::__construct
+     * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::minPercentile
+     * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::maxPercentile
+     * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::stepSize
+     */
+    public function testInternals()
+    {
+        $orderbook = $this->orderbook();
+
+        $minPercentile = 0.05;
+        $this->setEnv('BITSTAMP_PERCENTILE_MIN', $minPercentile);
+
+        $maxPercentile = 0.1;
+        $this->setEnv('BITSTAMP_PERCENTILE_MAX', $maxPercentile);
+
+        $stepSize = 0.005;
+        $this->setEnv('BITSTAMP_PERCENTILE_STEP', $stepSize);
+
+        $pp = new PriceProposer($orderbook);
+        $this->assertSame($minPercentile, $pp->minPercentile());
+        $this->assertSame($maxPercentile, $pp->maxPercentile());
+        $this->assertSame($stepSize, $pp->stepSize());
+    }
+
+    /**
      * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::askUSDPrice
      *
      * @group stable
