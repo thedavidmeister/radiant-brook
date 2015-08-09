@@ -28,7 +28,7 @@ class Secrets
     /**
      * Sets an environment variable in a Dotenv compatible way.
      *
-     * @param string $key
+     * @param string $name
      *   The environment variable name to set.
      *
      * @param string $value
