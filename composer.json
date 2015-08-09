@@ -28,7 +28,8 @@
         "vlucas/phpdotenv": "^2.0",
         "masterminds/html5": "^2.1",
         "psy/psysh": "@stable",
-        "lstrojny/functional-php": "^1.0"
+        "lstrojny/functional-php": "^1.0",
+        "satooshi/php-coveralls": "^0.6.1"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
