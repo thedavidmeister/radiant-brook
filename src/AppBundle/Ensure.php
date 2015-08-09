@@ -109,11 +109,7 @@ final class Ensure
     {
         $min = min([$boundOne, $boundTwo]);
         $max = max([$boundOne, $boundTwo]);
-        if ($min <= $value && $value <= $max) {
-            return $value;
-        } else {
-            self::fail($message, $value, $min, $max);
-        }
+        return ($min <= $value && $value <= $max) ? $value : self::fail($message, $value, $min, $max);
     }
 
     /**
