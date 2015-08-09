@@ -1,6 +1,6 @@
 desc 'run a server'
 task :serve do
-  system "app/console server:run"
+  console "server:run"
 end
 
 desc 'run a psysh console'
@@ -10,37 +10,12 @@ end
 
 desc 'checks coding standards'
 task :phpcs do
-  system "bin/phpcs --standard=vendor/leaphub/phpcs-symfony2-standard/leaphub/phpcs/Symfony2/ --extensions=php src/"
+  exit 1 unless system "bin/phpcs --standard=vendor/leaphub/phpcs-symfony2-standard/leaphub/phpcs/Symfony2/ --extensions=php src/"
 end
 
 desc 'attempts to automatically fix coding standards'
 task :phpcbf do
   system "bin/phpcbf --standard=vendor/leaphub/phpcs-symfony2-standard/leaphub/phpcs/Symfony2/ --extensions=php src/"
-end
-
-desc 'run phpunit tests for travis'
-task :"phpunit-travis" do
-  system "bin/phpunit -c app/ --coverage-clover build/logs/clover.xml"
-end
-
-desc 'run phpunit tests including functional tests'
-task :phpunit do
-  system "bin/phpunit -c app/"
-end
-
-desc 'run phpunit unit tests and create coverage report'
-task :"phpunit-coverage" do
-  system "bin/phpunit -c app/ --coverage-html coverage"
-end
-
-desc 'run phpunit tests excluding stable tests'
-task :"phpunit-nostable" do
-  system "bin/phpunit -c app/ --exclude-group stable --debug"
-end
-
-desc 'run phpunit tests excluding livedata tests'
-task :"phpunit-noslow" do
-  system "bin/phpunit -c app/ --exclude-group slow"
 end
 
 desc 'Attempt a trade on bitstamp, from Heroku'
@@ -53,10 +28,47 @@ task :"heroku-snapshot-bitstamp" do
   system "heroku run 'php app/console snapshot:bitstamp'"
 end
 
+def console(*args)
+  cmd = args.unshift("app/console").join(" ")
+  exit 1 unless system cmd
+end
+
+def phpunit(*args)
+  cmd = args.unshift("bin/phpunit -c app/").join(" ")
+  exit 1 unless system cmd
+end
+
+namespace :phpunit do
+  desc 'run all phpunit tests'
+  task :all do
+    phpunit
+  end
+
+  desc 'run unstable phpunit tests only'
+  task :unstable do
+    phpunit "--exclude-group" "stable" "--debug"
+  end
+
+  desc 'run all phpunit tests not tagged with slow'
+  task :fast do
+    phpunit "--exclude-group" "slow"
+  end
+
+  desc 'run all phpunit tests with an HTML coverage report'
+  task :coverage do
+    phpunit "--coverage-html coverage"
+  end
+
+  desc 'run all phpunit tests in a travis compatible way'
+  task :travis do
+    phpunit "--coverage-clover" "build/logs/clover.xml"
+  end
+end
+
 namespace :security do
   desc 'Check for known composer package security vulnerabilities'
   task :check do
-    system "app/console security:check"
+    console "security:check"
   end
 end
 
