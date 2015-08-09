@@ -61,6 +61,47 @@ class PriceProposerTest extends WebTestCase
     }
 
     /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::valid
+     */
+    public function testValid()
+    {
+        $minPercentile = 0.0;
+        $this->setEnv('BITSTAMP_PERCENTILE_MIN', $minPercentile);
+
+        $maxPercentile = 0.2;
+        $this->setEnv('BITSTAMP_PERCENTILE_MAX', $maxPercentile);
+
+        $stepSize = 0.1;
+        $this->setEnv('BITSTAMP_PERCENTILE_STEP', $stepSize);
+
+        $pp = new PriceProposer($this->orderbook());
+
+        // $pp should be valid at the start.
+        $this->assertTrue($pp->valid());
+        $this->assertSame($minPercentile, $pp->key());
+
+        // $pp should be valid after one step, so key advances by step.
+        $pp->next();
+        $this->assertSame($minPercentile + $stepSize, $pp->key());
+        $this->assertTrue($pp->valid());
+
+        // $pp is still valid after two steps, so key advances by step.
+        $pp->next();
+        $this->assertSame($minPercentile + $stepSize + $stepSize, $pp->key());
+        $this->assertTrue($pp->valid());
+
+        // $pp is not valid after three steps, so key wraps to start.
+        $pp->next();
+        $this->assertSame($minPercentile + $stepSize + $stepSize + $stepSize, $pp->key());
+        $this->assertFalse($pp->valid());
+
+        // $pp is valid once more after a rewind.
+        $pp->rewind();
+        $this->assertSame($minPercentile, $pp->key());
+        $this->assertTrue($pp->valid());
+    }
+
+    /**
      * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::current
      * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::key
      * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::next
