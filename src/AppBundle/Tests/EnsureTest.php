@@ -32,7 +32,7 @@ class EnsureTest extends WebTestCase
     /**
      * @covers AppBundle\Ensure::isValidVariableName
      *
-     * @param mixed $name
+     * @param mixed  $name
      *   Anything that is not a valid variable name.
      *
      * @param string $message
@@ -65,6 +65,8 @@ class EnsureTest extends WebTestCase
      * Data provider.
      *
      * Things that are not strings.
+     *
+     * @return array
      */
     public function dataIsStringExceptions()
     {
@@ -79,7 +81,7 @@ class EnsureTest extends WebTestCase
     /**
      * @covers AppBundle\Ensure::isString
      *
-     * @param mixed $value
+     * @param mixed  $value
      *   Anything that is not a string.
      *
      * @param string $message
@@ -89,7 +91,8 @@ class EnsureTest extends WebTestCase
      *
      * @group stable
      */
-    public function testIsStringExceptions($value, $message) {
+    public function testIsStringExceptions($value, $message)
+    {
         $this->setExpectedException('Exception', $message);
         Ensure::isString($value);
     }
