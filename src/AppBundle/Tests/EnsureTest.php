@@ -61,13 +61,20 @@ class EnsureTest extends WebTestCase
         return [
             [[], '[] is not a string.'],
             [1, '1 is not a string.'],
-            [NULL, 'null is not a string.'],
+            [null, 'null is not a string.'],
             [new \StdClass(), '{} is not a string.'],
         ];
     }
 
     /**
      * @covers AppBundle\Ensure::isString
+     *
+     * @param mixed $value
+     *   Anything that is not a string.
+     *
+     * @param string $message
+     *   The expected exception message.
+     *
      * @dataProvider dataIsStringExceptions
      *
      * @group stable
