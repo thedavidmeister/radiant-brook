@@ -62,6 +62,8 @@ class PriceProposerTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::valid
+     *
+     * @group stable
      */
     public function testValid()
     {
@@ -106,6 +108,8 @@ class PriceProposerTest extends WebTestCase
      * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::key
      * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::next
      * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::rewind
+     *
+     * @group stable
      */
     public function testIteration()
     {
