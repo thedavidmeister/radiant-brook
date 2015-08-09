@@ -50,7 +50,7 @@ class FeesTest extends WebTestCase
     }
 
     /**
-     * Tests multiplier().
+     * @covers AppBundle\Tests\API\Bitstamp\TradePairs\Fees::multiplier
      *
      * @group stable
      */
@@ -63,7 +63,7 @@ class FeesTest extends WebTestCase
     }
 
     /**
-     * Tests absoluteFeeUSD().
+     * @covers AppBundle\Tests\API\Bitstamp\TradePairs\Fees::absoluteFeeUSD
      *
      * @group stable
      */
