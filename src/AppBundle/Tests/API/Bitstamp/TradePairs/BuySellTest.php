@@ -15,7 +15,7 @@ use GuzzleHttp\Message\Response;
 use GuzzleHttp\Stream\Stream;
 
 /**
- * Tests AppBundle\API\Bitstamp\BuySell
+ * Tests AppBundle\API\Bitstamp\TradePairs\BuySell
  */
 class BuySellTest extends WebTestCase
 {
@@ -42,7 +42,7 @@ class BuySellTest extends WebTestCase
     }
 
     /**
-     * Tests execute() to ensure the right values are being sent to Bitstamp.
+     * @covers AppBundle\API\Bitstamp\TradePairs\BuySell::execute
      *
      * @group stable
      */
@@ -72,7 +72,7 @@ class BuySellTest extends WebTestCase
     }
 
     /**
-     * Exceptions on execute() risks us not trading the other leg of the pair.
+     * @covers AppBundle\API\Bitstamp\TradePairs\BuySell::execute
      *
      * @group stable
      */
