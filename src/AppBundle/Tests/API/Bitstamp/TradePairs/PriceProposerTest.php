@@ -153,7 +153,7 @@ class PriceProposerTest extends WebTestCase
         array_walk($tests, function($test) {
             $orderbook = $this->orderbook();
 
-            $expected = Money::USD((int) $test[0] * 12345678);
+            $expected = Money::USD((int) ($test[0] * 12345678));
 
             // New PriceProposers start at BITSTAMP_PERCENTILE_MIN.
             $this->setEnv('BITSTAMP_PERCENTILE_MIN', $test[0]);
