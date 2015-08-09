@@ -61,6 +61,9 @@ namespace :phpunit do
 
   desc 'run all phpunit tests in a travis compatible way'
   task :travis do
+    # Do a fast run to flush out failing tests before generating the full
+    # coverage report. #failfast ;)
+    phpunit "--exclude-group", "slow", "--exclude-group", "requiresAPIKey"
     phpunit "--coverage-clover", "build/logs/clover.xml", "--exclude-group", "requiresAPIKey"
   end
 end
