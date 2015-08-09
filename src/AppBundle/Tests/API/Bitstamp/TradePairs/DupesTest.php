@@ -11,7 +11,7 @@ use AppBundle\Secrets;
 use Money\Money;
 
 /**
- * Tests AppBundle\API\Bitstamp\Dupes
+ * Tests AppBundle\API\Bitstamp\TradePairs\Dupes
  */
 class DupesTest extends WebTestCase
 {
@@ -32,7 +32,7 @@ class DupesTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\API\Bitstamp\Dupes::rangeMultiplier
+     * @covers AppBundle\API\Bitstamp\TradePairs\Dupes::rangeMultiplier
      *
      * @group stable
      */
@@ -50,7 +50,7 @@ class DupesTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\API\Bitstamp\Dupes::bounds
+     * @covers AppBundle\API\Bitstamp\TradePairs\Dupes::bounds
      *
      * @group stable
      */
@@ -70,8 +70,8 @@ class DupesTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\API\Bitstamp\Dupes::asks
-     * @covers AppBundle\API\Bitstamp\Dupes::bids
+     * @covers AppBundle\API\Bitstamp\TradePairs\Dupes::asks
+     * @covers AppBundle\API\Bitstamp\TradePairs\Dupes::bids
      *
      * Given:
      *   - OO price = X
