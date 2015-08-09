@@ -75,6 +75,11 @@ class DefaultControllerTest extends WebTestCase
 
         $this->assertEquals(200, $authClient->getResponse()->getStatusCode());
 
+        // Help debug 500 errors.
+        if (500 === $authClient->getResponse()->getStatusCode()) {
+            print_r($authClient->getResponse());
+        }
+
         $this->assertNav($crawler);
 
         foreach ($expecteds as $expected) {
