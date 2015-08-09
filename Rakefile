@@ -29,13 +29,13 @@ task :"heroku-snapshot-bitstamp" do
 end
 
 def console(*args)
-  cmd = args.unshift("app/console").join(" ")
-  exit 1 unless system cmd
+  base = "app/console"
+  exit 1 unless system args.unshift(base).join(" ")
 end
 
 def phpunit(*args)
-  cmd = args.unshift("bin/phpunit -c app/").join(" ")
-  exit 1 unless system cmd
+  base = "bin/phpunit -c app/"
+  exit 1 unless system args.unshift(base).join(" ")
 end
 
 namespace :phpunit do
@@ -46,22 +46,22 @@ namespace :phpunit do
 
   desc 'run unstable phpunit tests only'
   task :unstable do
-    phpunit "--exclude-group" "stable" "--debug"
+    phpunit "--exclude-group", "stable", "--debug"
   end
 
   desc 'run all phpunit tests not tagged with slow'
   task :fast do
-    phpunit "--exclude-group" "slow"
+    phpunit "--exclude-group", "slow"
   end
 
   desc 'run all phpunit tests with an HTML coverage report'
   task :coverage do
-    phpunit "--coverage-html coverage"
+    phpunit "--coverage-html", "coverage"
   end
 
   desc 'run all phpunit tests in a travis compatible way'
   task :travis do
-    phpunit "--coverage-clover" "build/logs/clover.xml"
+    phpunit "--coverage-clover", "build/logs/clover.xml"
   end
 end
 
@@ -83,7 +83,7 @@ desc 'run all tests'
 task :tests => [:phpcs, :phpunit, :"security-check"]
 
 desc 'run all travis tests'
-task :travis => [:phpcs, :"security:check", :"phpunit-travis"]
+task :travis => [:phpcs, :"security:check", :"phpunit:travis"]
 
 task :default => :help
 
