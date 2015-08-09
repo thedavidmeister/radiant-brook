@@ -9,7 +9,7 @@ before_script:
 
 script:
  - mkdir -p build/logs
- - rake phpunit-travis
+ - rake travis
 
 after_script:
  - vendor/bin/coveralls -v
