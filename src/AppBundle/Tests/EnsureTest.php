@@ -23,9 +23,9 @@ class EnsureTest extends WebTestCase
             ['@', '"@" is not a valid variable name.'],
             ['1o', '"1o" is not a valid variable name.'],
             ['foo-bar', '"foo-bar" is not a valid variable name.'],
-            [1, '1 is not a valid variable name.'],
-            [[], '[] is not a valid variable name.'],
-            [null, 'null is not a valid variable name.'],
+            [1, '1 is not a string.'],
+            [[], '[] is not a string.'],
+            [null, 'null is not a string.'],
         ];
     }
 
