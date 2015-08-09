@@ -128,6 +128,37 @@ class TradeProposalTest extends WebTestCase
     }
 
     /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::bidBTCVolume
+     *
+     * @group stable
+     */
+    public function testBidBTCVolume()
+    {
+        // bidUSDVolume amount, bidUSDPrice amount, expected satoshis amount.
+        // The amounts are converted to Money in the test for convenience.
+        $tests = [
+            // Basic tests.
+            [100, 50, 2 * 10 ** 8],
+            [2, 1, 2 * 10 ** 8],
+            [1, 2, 5 * 10 ** 7],
+            // 999 / 100000000 * 10 ** 8 = 999.0 => will floor to 998
+            [999, 100000000, 998],
+            // 99 / 100000000 * 10 ** 8 = 99.0 => will floor to 99
+            [999, 1000000000, 99],
+            [111, 100000000, 111],
+            [111, 1000000000, 11],
+        ];
+        array_walk($tests, function($test) {
+            $fees = $this->fees();
+            $fees->method('isofeeMaxUSD')->willReturn(Money::USD($test[0]));
+            $prices = ['bidUSDPrice' => Money::USD($test[1]), 'askUSDPrice' => Money::USD(mt_rand())];
+
+            $tradeProposal = new TradeProposal($prices, $fees);
+            $this->assertEquals(Money::BTC($test[2]), $tradeProposal->bidBTCVolume());
+        });
+    }
+
+    /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::minProfitBTC
      *
      * @group stable
