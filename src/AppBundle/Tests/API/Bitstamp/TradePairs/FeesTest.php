@@ -50,16 +50,25 @@ class FeesTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\API\Bitstamp\TradePairs\Fees::multiplier
+     * @covers AppBundle\API\Bitstamp\TradePairs\Fees::asksMultiplier
      *
      * @group stable
      */
-    public function testMultiplier()
+    public function testAsksMultiplier()
+    {
+        $this->assertSame(0.9975, $this->fees()->asksMultiplier());
+        $this->assertSame(0.9976, $this->fees2()->asksMultiplier());
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\Fees::bidsMultiplier
+     *
+     * @group stable
+     */
+    public function testBidsMultiplier()
     {
         $this->assertSame(0.0025, $this->fees()->bidsMultiplier());
-        $this->assertSame(0.9975, $this->fees()->asksMultiplier());
         $this->assertSame(0.0024, $this->fees2()->bidsMultiplier());
-        $this->assertSame(0.9976, $this->fees2()->asksMultiplier());
     }
 
     /**
