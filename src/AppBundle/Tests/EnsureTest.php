@@ -22,11 +22,20 @@ class EnsureTest extends WebTestCase
             ['@', '"@" is not a valid variable name.'],
             ['1o', '"1o" is not a valid variable name.'],
             ['foo-bar', '"foo-bar" is not a valid variable name.'],
+            [1, '1 is not a valid variable name.'],
+            [[], '[] is not a valid variable name.'],
+            [null, 'null is not a valid variable name.'],
         ];
     }
 
     /**
      * @covers AppBundle\Ensure::isValidVariableName
+     *
+     * @param mixed $name
+     *   Anything that is not a valid variable name.
+     *
+     * @param string $message
+     *   The expected exception message.
      *
      * @dataProvider dataIsValidVariableNameExceptions
      *
