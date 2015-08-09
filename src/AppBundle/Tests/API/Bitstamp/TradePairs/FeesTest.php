@@ -39,7 +39,7 @@ class FeesTest extends WebTestCase
 
 
     /**
-     * Tests percent().
+     * @covers AppBundle\Tests\API\Bitstamp\TradePairs\Fees::percent
      *
      * @group stable
      */
