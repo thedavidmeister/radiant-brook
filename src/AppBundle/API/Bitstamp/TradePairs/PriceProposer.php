@@ -48,6 +48,9 @@ class PriceProposer implements \Iterator
         $this->minPercentile = Ensure::isFloat($this->secrets->get(self::MIN_PERCENTILE_SECRET));
         $this->maxPercentile = Ensure::isFloat($this->secrets->get(self::MAX_PERCENTILE_SECRET));
         $this->stepSize = Ensure::isFloat($this->secrets->get(self::STEP_SIZE_SECRET));
+
+        // Start at the start.
+        $this->rewind();
     }
 
     /**
@@ -68,6 +71,16 @@ class PriceProposer implements \Iterator
     public function maxPercentile()
     {
         return $this->maxPercentile;
+    }
+
+    /**
+     * Read-only currentPercentile.
+     *
+     * @return float
+     */
+    public function currentPercentile()
+    {
+        return $this->currentPercentile;
     }
 
     /**

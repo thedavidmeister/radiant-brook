@@ -33,6 +33,7 @@ class PriceProposerTest extends WebTestCase
      * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::minPercentile
      * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::maxPercentile
      * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::stepSize
+     * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::currentPercentile
      *
      * @group stable
      */
@@ -53,6 +54,7 @@ class PriceProposerTest extends WebTestCase
         $this->assertSame($minPercentile, $pp->minPercentile());
         $this->assertSame($maxPercentile, $pp->maxPercentile());
         $this->assertSame($stepSize, $pp->stepSize());
+        $this->assertSame($minPercentile, $pp->currentPercentile());
     }
 
     /**
@@ -62,14 +64,14 @@ class PriceProposerTest extends WebTestCase
      *
      * @return null
      */
-    public function testAskPrice()
+    public function testAskUSDPrice()
     {
         // percentile.
         $tests = [
             ['0.05'],
             ['0.01'],
             ['0.5'],
-            // foo ['1'],
+            ['1'],
             ['0'],
         ];
         array_walk($tests, function($test) {
@@ -107,15 +109,15 @@ class PriceProposerTest extends WebTestCase
      *
      * @return null
      */
-    public function testBidPrice()
+    public function testBidUSDPrice()
     {
         // percentile.
         $tests = [
-            // foo ['0.05'],
-            // foo ['0.01'],
-            // foo ['0.5'],
-            // foo ['1'],
-            // foo ['0'],
+            ['0.05'],
+            ['0.01'],
+            ['0.5'],
+            ['1'],
+            ['0'],
         ];
         array_walk($tests, function($test) {
             // This mocking gets deep...
@@ -127,13 +129,14 @@ class PriceProposerTest extends WebTestCase
                     ->getMock();
 
                 $bids->method('percentileCap')->will($this->returnCallback(function($percentile) {
-                    return (int) $percentile * 1000000;
+                    return (int) ($percentile * 1000000);
                 }));
 
                 return $bids;
             }));
+
             // bidPrice() passes (1 - $percentile) to percentileCap().
-            $expected = Money::USD((int) (1 - $test[0]) * 1000000);
+            $expected = Money::USD((int) ((1 - $test[0]) * 1000000));
 
             // New PriceProposers start at BITSTAMP_PERCENTILE_MIN.
             $this->setEnv('BITSTAMP_PERCENTILE_MIN', $test[0]);
