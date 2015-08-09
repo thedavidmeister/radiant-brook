@@ -16,9 +16,7 @@ class SecretsTest extends WebTestCase
     }
 
     /**
-     * Tests that secrets can find variables set by putenv().
-     *
-     * @covers Secrets::set
+     * @covers AppBundle\Secrets::set
      *
      * @group stable
      *
@@ -49,9 +47,7 @@ class SecretsTest extends WebTestCase
     }
 
     /**
-     * Tests exceptions thrown when secrets are not found.
-     *
-     * @covers Secrets::get
+     * @covers AppBundle\Secrets::get
      *
      * @expectedException Exception
      * @expectedExceptionMessage Environment variable not found: no match - This probably means you did not set your .env file up properly, you dingus.
