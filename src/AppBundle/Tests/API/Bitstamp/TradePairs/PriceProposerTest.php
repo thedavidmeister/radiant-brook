@@ -33,6 +33,8 @@ class PriceProposerTest extends WebTestCase
      * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::minPercentile
      * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::maxPercentile
      * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::stepSize
+     *
+     * @group stable
      */
     public function testInternals()
     {
