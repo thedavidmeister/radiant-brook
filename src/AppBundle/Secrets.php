@@ -79,10 +79,15 @@ class Secrets
         // If the environment variable is already set, don't try to use Dotenv
         // as an exception will be thrown if a .env file cannot be found.
         if (null === $value = $loader->getEnvironmentVariable($name)) {
-            // Attempt to load environment variables from .env if we didn't
-            // already have what we were looking for in memory.
-            $dotenv = new Dotenv($this->dotEnvPath());
-            $dotenv->load($this->dotEnvPath());
+            try {
+                // Attempt to load environment variables from .env if we didn't
+                // already have what we were looking for in memory.
+                $dotenv = new Dotenv($this->dotEnvPath());
+                $dotenv->load($this->dotEnvPath());
+            }
+            catch (\Exception $e) {
+                throw new \Exception ('Loading .env file failed while attempting to access environment variable ' . $name);
+            }
 
             // Try once more to find what we're looking for, then give up.
             if (null === $value = $loader->getEnvironmentVariable($name)) {
