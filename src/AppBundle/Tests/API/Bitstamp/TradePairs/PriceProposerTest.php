@@ -31,6 +31,8 @@ class PriceProposerTest extends WebTestCase
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::askUSDPrice
      *
+     * @group stable
+     *
      * @return null
      */
     public function testAskPrice()
@@ -74,7 +76,7 @@ class PriceProposerTest extends WebTestCase
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::bidUSDPrice
      *
-     * group stable
+     * @group stable
      *
      * @return null
      */

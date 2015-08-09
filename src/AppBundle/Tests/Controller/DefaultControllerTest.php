@@ -113,7 +113,7 @@ class DefaultControllerTest extends WebTestCase
      * @covers AppBundle\Controller\DefaultController::tradeAction
      * @group slow
      * @group requiresAPIKey
-     * group stable
+     * @group stable
      */
     public function testTrade()
     {

@@ -11,6 +11,43 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class EnsureTest extends WebTestCase
 {
     /**
+     * Data provider.
+     *
+     * Things that are not strings.
+     */
+    public function dataIsStringExceptions()
+    {
+        return [
+            [[], '[] is not a string.'],
+            [1, '1 is not a string.'],
+            [NULL, 'null is not a string.'],
+            [new \StdClass(), '{} is not a string.'],
+        ];
+    }
+
+    /**
+     * @covers AppBundle\Ensure::isString
+     * @dataProvider dataIsStringExceptions
+     *
+     * @group stable
+     */
+    public function testIsStringExceptions($value, $message) {
+        $this->setExpectedException('Exception', $message);
+        Ensure::isString($value);
+    }
+    /**
+     * @covers AppBundle\Ensure::isString
+     *
+     * @group stable
+     */
+    public function testIsString()
+    {
+        $tests = ['', '1', 'foo', (string) mt_rand()];
+        array_walk($tests, function($test) {
+            $this->assertSame($test, Ensure::isString($test));
+        });
+    }
+    /**
      * @covers AppBundle\Ensure::notNull
      *
      * @group stable
@@ -309,7 +346,7 @@ class EnsureTest extends WebTestCase
     /**
      * @covers AppBundle\Ensure::fail
      *
-     * group stable
+     * @group stable
      */
     public function testFail()
     {
