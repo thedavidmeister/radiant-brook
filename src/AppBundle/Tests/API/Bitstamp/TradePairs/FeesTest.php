@@ -39,7 +39,7 @@ class FeesTest extends WebTestCase
 
 
     /**
-     * @covers AppBundle\Tests\API\Bitstamp\TradePairs\Fees::percent
+     * @covers AppBundle\API\Bitstamp\TradePairs\Fees::percent
      *
      * @group stable
      */
@@ -50,7 +50,7 @@ class FeesTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\Tests\API\Bitstamp\TradePairs\Fees::multiplier
+     * @covers AppBundle\API\Bitstamp\TradePairs\Fees::multiplier
      *
      * @group stable
      */
@@ -63,7 +63,7 @@ class FeesTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\Tests\API\Bitstamp\TradePairs\Fees::absoluteFeeUSD
+     * @covers AppBundle\API\Bitstamp\TradePairs\Fees::absoluteFeeUSD
      *
      * @group stable
      */
@@ -101,7 +101,7 @@ class FeesTest extends WebTestCase
     }
 
     /**
-     * Tests absoluteFeeUSD exceptions.
+     * @covers AppBundle\API\Bitstamp\TradePairs\Fees::absoluteFeeUSD
      *
      * @expectedException Exception
      * @expectedExceptionMessage Cannot calculate fees for negative amounts
@@ -113,7 +113,7 @@ class FeesTest extends WebTestCase
     }
 
     /**
-     * Tests the calculation of the Max USD on the isofee.
+     * @covers AppBundle\API\Bitstamp\TradePairs\Fees::isofeeMaxUSD
      *
      * @group stable
      */
