@@ -33,7 +33,6 @@ class PriceProposerTest extends WebTestCase
      * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::minPercentile
      * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::maxPercentile
      * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::stepSize
-     * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::currentPercentile
      *
      * @group stable
      */
@@ -54,7 +53,7 @@ class PriceProposerTest extends WebTestCase
         $this->assertSame($minPercentile, $pp->minPercentile());
         $this->assertSame($maxPercentile, $pp->maxPercentile());
         $this->assertSame($stepSize, $pp->stepSize());
-        $this->assertSame($minPercentile, $pp->currentPercentile());
+        $this->assertSame($minPercentile, $pp->key());
     }
 
     /**

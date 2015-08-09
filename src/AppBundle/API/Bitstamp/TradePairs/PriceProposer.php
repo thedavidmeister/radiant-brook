@@ -74,16 +74,6 @@ class PriceProposer implements \Iterator
     }
 
     /**
-     * Read-only currentPercentile.
-     *
-     * @return float
-     */
-    public function currentPercentile()
-    {
-        return $this->currentPercentile;
-    }
-
-    /**
      * Read-only stepSize.
      *
      * @return float
