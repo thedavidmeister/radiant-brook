@@ -77,6 +77,11 @@ class DefaultController extends Controller
      *
      * @Route("trade/trade", name="trade")
      *
+     * We have to ignore code coverage because all this requires an API key to
+     * function.
+     *
+     * @codeCoverageIgnore
+     *
      * @param Request $request Symfony request
      *
      * @return Response
