@@ -52,7 +52,6 @@ class PriceProposerTest extends WebTestCase
                     ->getMock();
 
                 $asks->method('percentileCap')->will($this->returnCallback(function($percentile) {
-                  // print_r($percentile);
                     return (int) $percentile * 12345678;
                 }));
 
