@@ -86,7 +86,7 @@ desc 'run all tests'
 task :tests => [:phpcs, :phpunit, :"security-check"]
 
 desc 'run all travis tests'
-task :travis => [:phpcs, :"security:check", :"phpunit:travis"]
+task :travis => [:phpcs, :"phpunit:travis", :"security:check"]
 
 task :default => :help
 
