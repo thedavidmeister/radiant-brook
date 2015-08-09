@@ -40,7 +40,7 @@ class SecretsTest extends WebTestCase
         ];
         array_walk($tests, function (callable $setFunc) {
             // Generate a unique tuple that will not collide with previous sets.
-            $tuple = [uniqid(), uniqid()];
+            $tuple = [uniqid('a'), uniqid('a')];
             $setFunc($tuple);
             $this->assertSame($tuple[1], $this->secrets()->get($tuple[0]));
         });
@@ -50,11 +50,11 @@ class SecretsTest extends WebTestCase
      * @covers AppBundle\Secrets::get
      *
      * @expectedException Exception
-     * @expectedExceptionMessage Environment variable not found: no match - This probably means you did not set your .env file up properly, you dingus.
+     * @expectedExceptionMessage Environment variable not found: NO_MATCH - This probably means you did not set your .env file up properly, you dingus.
      * @group stable
      */
     public function testSecretsException()
     {
-        $this->secrets()->get('no match');
+        $this->secrets()->get('NO_MATCH');
     }
 }

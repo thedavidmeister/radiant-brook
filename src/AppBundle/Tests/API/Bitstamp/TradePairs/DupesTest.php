@@ -64,7 +64,7 @@ class DupesTest extends WebTestCase
             ['0.01', Money::USD(23750), Money::USD(238), Money::USD(23988), Money::USD(23512)],
         ];
         foreach ($tests as $test) {
-            $this->setRangeMultiplier($test[0]);
+            $this->setEnv('DUPES_RANGE_MULTIPLIER', $test[0]);
             $this->assertEquals(['range' => $test[2], 'upper' => $test[3], 'lower' => $test[4]], $this->dupes()->bounds($test[1]));
         }
     }
@@ -160,7 +160,7 @@ class DupesTest extends WebTestCase
         ];
 
         foreach ($askTests as $test) {
-            $this->setRangeMultiplier($test[0]);
+            $this->setEnv('DUPES_RANGE_MULTIPLIER', $test[0]);
             $this->assertEquals($test[3], $this->dupes()->$test[1]($test[2]));
         }
     }

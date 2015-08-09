@@ -28,7 +28,7 @@ trait EnvironmentTestTrait
         $this->overriddenEnv = array_unique($this->overriddenEnv);
 
         $secrets = new Secrets();
-        $secrets->set($key, $value);
+        $secrets->set($key, (string) $value);
     }
 
     protected function clearEnv($key)

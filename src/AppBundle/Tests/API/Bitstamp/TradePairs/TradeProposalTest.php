@@ -81,8 +81,8 @@ class TradeProposalTest extends WebTestCase
         // Check that the volume for a known isofee is returned. We mock
         // isofee to just return 2x the base value.
         $tests = [
-            [5, 10],
-            [10, 20],
+            ['5', 10],
+            ['10', 20],
         ];
         array_walk($tests, function($test) {
             $fees = $this->fees();
@@ -167,11 +167,9 @@ class TradeProposalTest extends WebTestCase
     {
         // sets, expects.
         $scenarios = [
-        [0, Money::BTC(0)],
-        ['0', Money::BTC(0)],
-        ['1', Money::BTC(1)],
-        ['100', Money::BTC(100)],
-        [1, Money::BTC(1)],
+            ['0', Money::BTC(0)],
+            ['1', Money::BTC(1)],
+            ['100', Money::BTC(100)],
         ];
         $test = function($scenario) {
             $this->setEnv('BITSTAMP_MIN_BTC_PROFIT', $scenario[0]);
@@ -198,13 +196,13 @@ class TradeProposalTest extends WebTestCase
         // expected.
         $tests = [
         // Simple cases.
-        [Money::USD(0), Money::USD(0), 0, 1, Money::USD(0)],
-        [Money::USD(1), Money::USD(1), 1, 3, Money::USD(1)],
-        [Money::USD(2), Money::USD(2), 2, 3, Money::USD(2)],
+        [Money::USD(0), Money::USD(0), '0', 1, Money::USD(0)],
+        [Money::USD(1), Money::USD(1), '1', 3, Money::USD(1)],
+        [Money::USD(2), Money::USD(2), '2', 3, Money::USD(2)],
         // Flush out failures to handle min USD profit setting.
-        [Money::USD(100), Money::USD(200), 300, 0.5, Money::USD(1200)],
+        [Money::USD(100), Money::USD(200), '300', 0.5, Money::USD(1200)],
         // Test for something where ceiling will matter.
-        [Money::USD(123), Money::USD(234), 345, 0.456, Money::USD(1540)],
+        [Money::USD(123), Money::USD(234), '345', 0.456, Money::USD(1540)],
         ];
 
         array_walk($tests, function($test) {
@@ -230,11 +228,10 @@ class TradeProposalTest extends WebTestCase
     {
         // sets, expects.
         $scenarios = [
-          [0, Money::USD(0)],
           ['0', Money::USD(0)],
           ['1', Money::USD(1)],
+          ['10', Money::USD(10)],
           ['100', Money::USD(100)],
-          [1, Money::USD(1)],
         ];
         $test = function($scenario) {
             $this->setEnv('BITSTAMP_MIN_USD_PROFIT', $scenario[0]);
