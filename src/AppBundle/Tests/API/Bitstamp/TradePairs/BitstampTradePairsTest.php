@@ -76,7 +76,7 @@ class BitstampTradePairsTest extends WebTestCase
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::isTrading
      *
-     * group stable
+     * @group stable
      */
     public function testIsTrading()
     {
@@ -87,11 +87,8 @@ class BitstampTradePairsTest extends WebTestCase
             ['TRUE', true],
             ['1', true],
             ['yes', true],
-            [1, true],
-            [true, true],
-            // Other things.
+            // Other strings.
             ['', false],
-            [null, false],
             ['no', false],
             ['one', false],
             ['foo', false],
