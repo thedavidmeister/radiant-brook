@@ -40,7 +40,7 @@ class PriceProposerTest extends WebTestCase
             ['0.05'],
             ['0.01'],
             ['0.5'],
-            // ['1'],
+            // foo ['1'],
             ['0'],
         ];
         array_walk($tests, function($test) {
@@ -83,11 +83,11 @@ class PriceProposerTest extends WebTestCase
     {
         // percentile.
         $tests = [
-            // ['0.05'],
-            // ['0.01'],
-            // ['0.5'],
-            // ['1'],
-            // ['0'],
+            // foo ['0.05'],
+            // foo ['0.01'],
+            // foo ['0.5'],
+            // foo ['1'],
+            // foo ['0'],
         ];
         array_walk($tests, function($test) {
             // This mocking gets deep...
