@@ -12,7 +12,5 @@ script:
  - rake travis
 
 after_script:
- - php bin/coveralls -v
-
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+- php bin/coveralls -v
+- bash <(curl -s https://codecov.io/bash)
