@@ -29,6 +29,12 @@ task :"security-check" do
   puts `#{cmd}`
 end
 
+desc 'run phpunit tests for travis'
+task :"phpunit-travis" do
+  cmd = "bin/phpunit -c app/ --coverage-clover build/logs/clover.xml"
+  puts `#{cmd}`
+end
+
 desc 'run phpunit tests including functional tests'
 task :phpunit do
   cmd = "bin/phpunit -c app/"
