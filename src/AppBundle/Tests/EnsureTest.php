@@ -11,6 +11,47 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class EnsureTest extends WebTestCase
 {
     /**
+     * Data provider for testIsValidVariableNameExceptions
+     *
+     * @return array
+     */
+    public function dataIsValidVariableNameExceptions() {
+        return [
+            ['1', '"1" is not a valid variable name.'],
+            ['-', '"-" is not a valid variable name.'],
+            ['@', '"@" is not a valid variable name.'],
+            ['1o', '"1o" is not a valid variable name.'],
+            ['foo-bar', '"foo-bar" is not a valid variable name.'],
+        ];
+    }
+
+    /**
+     * @covers AppBundle\Ensure::isValidVariableName
+     *
+     * @dataProvider dataIsValidVariableNameExceptions
+     *
+     * @group stable
+     */
+    public function testIsValidVariableNameExceptions($name, $message)
+    {
+        $this->setExpectedException('Exception', $message);
+        Ensure::isValidVariableName($name);
+    }
+
+    /**
+     * @covers AppBundle\Ensure::isValidVariableName
+     *
+     * @group stable
+     */
+    public function testIsValidVariableName()
+    {
+        $tests = [uniqid('a'), 'with_underscore', 'one1', 'a' . md5(uniqid())];
+        array_walk($tests, function($test) {
+            $this->assertSame($test, Ensure::isValidVariableName($test));
+        });
+    }
+
+    /**
      * Data provider.
      *
      * Things that are not strings.
