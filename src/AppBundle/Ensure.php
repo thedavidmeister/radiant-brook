@@ -94,8 +94,10 @@ final class Ensure
      * @param number $value
      *   The value to ensure is a float.
      *
-     * @param  string  $message [description]
-     * @return boolean          [description]
+     * @param string $message
+     *   The exception message to throw if value is not numeric.
+     *
+     * @return float $value
      */
     public static function isFloat($value, $message = '%s is not numeric.')
     {
