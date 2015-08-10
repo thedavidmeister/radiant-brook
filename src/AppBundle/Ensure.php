@@ -39,9 +39,6 @@ final class Ensure
      * @param  mixed  $value
      *   The value to ensure is empty.
      *
-     * @param  string $message
-     *   The exception message to throw when value is not empty.
-     *
      * @return mixed  $value
      */
     public static function isEmpty($value)
@@ -54,9 +51,6 @@ final class Ensure
      *
      * @param mixed  $value
      *   The value to ensure is not empty.
-     *
-     * @param string $message
-     *   The exception message to throw when value is empty.
      *
      * @return mixed $value
      */
@@ -74,9 +68,6 @@ final class Ensure
      * @param mixed  $value
      *   The value to ensure is an integer.
      *
-     * @param string $message
-     *   The exception message to throw if value is not an integer.
-     *
      * @return int $value
      */
     public static function toInt($value)
@@ -93,9 +84,6 @@ final class Ensure
      *
      * @param number $value
      *   The value to ensure is a float.
-     *
-     * @param string $message
-     *   The exception message to throw if value is not numeric.
      *
      * @return float $value
      */
@@ -118,9 +106,6 @@ final class Ensure
      *
      * @param number $big
      *   The number that must be greater than $small.
-     *
-     * @param string $message
-     *   The message to throw when $small is not less than $big.
      *
      * @return number $small
      *   The smaller number is returned.
@@ -180,9 +165,6 @@ final class Ensure
      * @param  number $boundTwo
      *   The second bound on the range.
      *
-     * @param  string $message
-     *   The message to throw when $value is out of bounds.
-     *
      * @return number $value
      */
     public static function inRange($value, $boundOne, $boundTwo)
@@ -202,9 +184,6 @@ final class Ensure
      * @param string $class
      *   The expected class of the object.
      *
-     * @param string $message
-     *   The message to throw when $value is not an instance of $class.
-     *
      * @return object
      *   $value
      */
@@ -219,9 +198,6 @@ final class Ensure
      * @param string $value
      *   The value to ensure is a string.
      *
-     * @param string $message
-     *   The message to throw when $value is not a string.
-     *
      * @return value
      */
     public static function isString($value)
@@ -234,9 +210,6 @@ final class Ensure
      *
      * @param string $value
      *   The string to check.
-     *
-     * @param string $message
-     *   The message to throw when $value is not a valid variable name.
      *
      * @return $value
      */
