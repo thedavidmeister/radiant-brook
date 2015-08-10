@@ -312,27 +312,27 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\Ensure::isInt
+     * @covers AppBundle\Ensure::toInt
      *
      * @group stable
      */
-    public function testIsInt()
+    public function testToInt()
     {
         $i = -5;
         while ($i <= 5) {
-            $this->assertSame($i, Ensure::isInt($i));
-            $this->assertSame($i, Ensure::isInt((string) $i));
+            $this->assertSame($i, Ensure::toInt($i));
+            $this->assertSame($i, Ensure::toInt((string) $i));
             $i++;
         }
-        $this->assertSame(PHP_INT_MAX, Ensure::isInt(PHP_INT_MAX));
+        $this->assertSame(PHP_INT_MAX, Ensure::toInt(PHP_INT_MAX));
     }
 
     /**
-     * Data provider for dataIsIntExceptions
+     * Data provider for dataToIntExceptions
      *
      * @return array
      */
-    public function dataIsIntExceptions()
+    public function dataToIntExceptions()
     {
         return [
         [1.1, '1.1 is not an int.'],
@@ -343,7 +343,7 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\Ensure::isInt
+     * @covers AppBundle\Ensure::toInt
      *
      * @param mixed  $notInt
      *   Not an integer.
@@ -351,13 +351,13 @@ class EnsureTest extends WebTestCase
      * @param string $message
      *   The message to expect in the exception.
      *
-     * @dataProvider dataIsIntExceptions
+     * @dataProvider dataToIntExceptions
      * @group stable
      */
-    public function testIsIntExceptions($notInt, $message)
+    public function testToIntExceptions($notInt, $message)
     {
         $this->setExpectedException('Exception', $message);
-        Ensure::isInt($notInt);
+        Ensure::toInt($notInt);
     }
 
     /**
