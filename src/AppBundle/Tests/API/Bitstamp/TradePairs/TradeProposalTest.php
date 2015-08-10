@@ -182,26 +182,6 @@ class TradeProposalTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::minProfitBTC
-     *
-     * @group stable
-     */
-    public function testMinProfitBTC()
-    {
-        // sets, expects.
-        $scenarios = [
-            ['0', Money::BTC(0)],
-            ['1', Money::BTC(1)],
-            ['100', Money::BTC(100)],
-        ];
-        $test = function($scenario) {
-            $this->setEnv('BITSTAMP_MIN_BTC_PROFIT', $scenario[0]);
-            $this->assertEquals($scenario[1], $this->tradeProposal()->minProfitBTC());
-        };
-        array_walk($scenarios, $test);
-    }
-
-    /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::askUSDVolumeCoverFees
      *
      * @group stable
@@ -242,6 +222,26 @@ class TradeProposalTest extends WebTestCase
 
             $this->assertEquals($test[4], $tradeProposal->askUSDVolumeCoverFees());
         });
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::minProfitBTC
+     *
+     * @group stable
+     */
+    public function testMinProfitBTC()
+    {
+        // sets, expects.
+        $scenarios = [
+            ['0', Money::BTC(0)],
+            ['1', Money::BTC(1)],
+            ['100', Money::BTC(100)],
+        ];
+        $test = function($scenario) {
+            $this->setEnv('BITSTAMP_MIN_BTC_PROFIT', $scenario[0]);
+            $this->assertEquals($scenario[1], $this->tradeProposal()->minProfitBTC());
+        };
+        array_walk($scenarios, $test);
     }
 
     /**
