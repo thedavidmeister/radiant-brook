@@ -32,12 +32,6 @@ class BitstampTradePairs
 
     const PERCENTILE_SECRET = 'BITSTAMP_PERCENTILE';
 
-    const PROPOSAL_VALID = 'valid';
-
-    const PROPOSAL_INVALID = 'invalid';
-
-    const PROPOSAL_PANIC = 'panic';
-
     /**
      * Constructor to store services passed by Symfony.
      *
@@ -130,22 +124,17 @@ class BitstampTradePairs
      */
     public function validateTradeProposition(TradeProposal $tradeProposal)
     {
-        $state = self::PROPOSAL_VALID;
-        $reason = 'Valid trade pair.';
+        // This proposition is not profitable, but others may be.
+        if (!$tradeProposal->isProfitable()) {
+            $tradeProposal->invalidate('Not a profitable trade proposition.');
+        }
 
         // If we found dupes, we cannot continue trading, panic!
         if ($this->dupes->tradeProposalHasDupes($tradeProposal)) {
-            $state = self::PROPOSAL_PANIC;
-            $reason = 'Duplicate trade pairs found.';
+            $tradeProposal->panic('Duplicate trade pairs found.');
         }
 
-        // This proposition is not profitable, but others may be.
-        if (!$tradeProposal->isProfitable()) {
-            $state = self::PROPOSAL_INVALID;
-            $reason = 'Not a profitable trade proposition.';
-        }
-
-        return ['state' => $state, 'reason' => $reason];
+        return ['state' => $tradeProposal->state(), 'reason' => $tradeProposal->reason()];
     }
 
     /**

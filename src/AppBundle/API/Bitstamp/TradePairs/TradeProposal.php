@@ -16,11 +16,21 @@ class TradeProposal
 
     protected $askUSDPrice;
 
+    protected $state;
+
+    protected $stateReason = 'Valid trade pair.';
+
     const MIN_USD_VOLUME_SECRET = 'BITSTAMP_MIN_USD_VOLUME';
 
     const MIN_USD_PROFIT_SECRET = 'BITSTAMP_MIN_USD_PROFIT';
 
     const MIN_BTC_PROFIT_SECRET = 'BITSTAMP_MIN_BTC_PROFIT';
+
+    const STATE_VALID = 0;
+
+    const STATE_INVALID = 1;
+
+    const STATE_PANIC = 2;
 
     /**
      * DI Constructor.
@@ -38,7 +48,42 @@ class TradeProposal
         }
 
         $this->fees = $fees;
+        $this->state = self::STATE_VALID;
+        $this->
         $this->secrets = new Secrets();
+    }
+
+    /**
+     * STATE
+     */
+
+    public function invalidate($reason)
+    {
+        $this->setState(self::STATE_INVALID, $reason);
+    }
+
+    public function panic($reason)
+    {
+        $this->setState(self::STATE_PANIC);
+    }
+
+    public function state()
+    {
+        return $this->state;
+    }
+
+    public function reason()
+    {
+        return $this->stateReason;
+    }
+
+    protected function setState($state, $reason)
+    {
+        // States can only increase over time (get worse).
+        if ($state > $this->state) {
+            $this->state = $state;
+            $this->stateReason = $reason;
+        }
     }
 
     /**
