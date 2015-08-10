@@ -188,7 +188,11 @@ class TradeProposal
 
         // This must never happen.
         if ($satoshis * $this->askUSDPrice()->getAmount() / (10 ** MoneyConstants::BTC_PRECISION) < $this->askUSDVolumeCoverFees()->getAmount()) {
+            // @codeCoverageIgnoreStart
+            // This can only happen if the code in this function is broken. ie.
+            // We cannot test it.
             throw new \Exception($satoshis . ' satoshis were attempted to be purchased at ' . $this->askUSDPrice()->getAmount() . ' per BTC which does not meet required volume USD ' . $this->askUSDVolumeCoverFees()->getAmount());
+            // @codeCoverageIgnoreEnd
         }
 
         return Money::BTC($satoshis);
