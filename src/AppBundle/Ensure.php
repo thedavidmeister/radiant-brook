@@ -115,48 +115,89 @@ final class Ensure
         return ($small < $big) ? $small : self::fail('%s is not less than %s.', $small, $big);
     }
 
+    /**
+     * Ensures that the first value passed is less or equal to the second.
+     *
+     * @param number $small
+     *   The number that must be less than or equal to $big.
+     *
+     * @param number $big
+     *   The number that must be greater than or equal to $small.
+     *
+     * @return number $small
+     *   The smaller number is returned.
+     */
     public static function lessThanEqual($small, $big)
     {
         return ($small <= $big) ? $small : self::fail('%s is not less than or equal to %s.', $small, $big);
     }
 
-    public static function equal($thing, $otherThing)
+    /**
+     * Ensures that the first value passed is equal to the second.
+     *
+     * Checks equality with ==.
+     *
+     * @param mixed $left
+     *
+     * @param mixed $right
+     *
+     * @return mixed $left
+     *   Returns the first argument.
+     */
+    public static function equal($left, $right)
     {
-        return ($thing == $otherThing) ? $thing : self::fail('%s is not equal to %s.', $thing, $otherThing);
+        return ($left == $right) ? $left : self::fail('%s is not equal to %s.', $left, $right);
     }
 
-    public static function identical($thing, $otherThing)
+    /**
+     * Ensures that the first value passed is identical to the second.
+     *
+     * Checks equality with ===.
+     *
+     * @param mixed $left
+     *
+     * @param mixed $right
+     *
+     * @return mixed $left
+     *   Returns the first argument.
+     */
+    public static function identical($left, $right)
     {
-        return ($thing === $otherThing) ? $thing : self::fail('%s is not identical to %s.', $thing, $otherThing);
+        return ($left === $right) ? $left : self::fail('%s is not identical to %s.', $left, $right);
     }
 
+    /**
+     * Ensures that the first value is greater than or equal to the second.
+     *
+     * @param number $big
+     *   The number that must be greater than or equal to $small.
+     *
+     * @param number $small
+     *   The number that must be less than or equal to $big.
+     *
+     * @return number $big
+     *   The larger number is returned.
+     */
     public static function greaterThanEqual($big, $small)
     {
         return ($big >= $small) ? $big : self::fail('%s is not greater than or equal to %s.', $big, $small);
     }
 
+    /**
+     * Ensures that the first value passed is strictly greater than the second.
+     *
+     * @param number $big
+     *   The number that must be greater than $small.
+     *
+     * @param number $small
+     *   The number that must be less than $big.
+     *
+     * @return number $big
+     *   The larger number is returned.
+     */
     public static function greaterThan($big, $small)
     {
         return ($big > $small) ? $big : self::fail('%s is not greater than %s.', $big, $small);
-    }
-
-    /**
-     * Ensures that the first number passed is strictly less than the second.
-     *
-     * @param number $small
-     *   The number that must be smaller than $big.
-     *
-     * @param number $big
-     *   The number that must be bigger than $small.
-     *
-     * @return number $small
-     */
-    public static function numberLessThan($small, $big)
-    {
-        self::isNumeric($small);
-        self::isNumeric($big);
-
-        return self::lessThan($small, $big);
     }
 
     /**

@@ -49,7 +49,9 @@ class PriceProposer implements \Iterator
         $this->maxPercentile = Ensure::toFloat($this->secrets->get(self::MAX_PERCENTILE_SECRET));
         $this->stepSize = Ensure::toFloat($this->secrets->get(self::STEP_SIZE_SECRET));
 
-        Ensure::numberLessThan($this->minPercentile, $this->maxPercentile);
+        Ensure::isNumeric($this->minPercentile);
+        Ensure::isNumeric($this->maxPercentile);
+        Ensure::lessThan($this->minPercentile, $this->maxPercentile);
 
         // Start at the start. Auto rewind! Reconsider this if setting
         // percentiles and step sizes rather than using environment variables.
