@@ -142,11 +142,20 @@ final class Ensure
 
     /**
      * Ensures that the first number passed is strictly less than the second.
+     *
+     * @param number $small
+     *   The number that must be smaller than $big.
+     *
+     * @param number $big
+     *   The number that must be bigger than $small.
+     *
+     * @return number $small
      */
     public static function numberLessThan($small, $big)
     {
         self::isNumeric($small);
         self::isNumeric($big);
+
         return self::lessThan($small, $big);
     }
 
