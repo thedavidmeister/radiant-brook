@@ -21,7 +21,7 @@ final class Ensure
     /**
      * Ensure that a value is not null.
      *
-     * @param mixed  $value
+     * @param mixed $value
      *   Any value that may or may not be null.
      *
      * @return mixed $value
@@ -34,7 +34,7 @@ final class Ensure
     /**
      * Ensures that a value is empty.
      *
-     * @param mixed  $value
+     * @param mixed $value
      *   The value to ensure is empty.
      *
      * @return mixed $value
