@@ -62,7 +62,7 @@ class TradeProposal
      */
     public function bidUSDVolumeBase()
     {
-        $minUSDVolumeAmount = Ensure::isInt($this->secrets->get(self::MIN_USD_VOLUME_SECRET));
+        $minUSDVolumeAmount = Ensure::toInt($this->secrets->get(self::MIN_USD_VOLUME_SECRET));
 
         return Money::USD((int) $minUSDVolumeAmount);
     }
@@ -221,7 +221,7 @@ class TradeProposal
      */
     public function minProfitUSD()
     {
-        $minProfitUSD = Ensure::isInt($this->secrets->get(self::MIN_USD_PROFIT_SECRET));
+        $minProfitUSD = Ensure::toInt($this->secrets->get(self::MIN_USD_PROFIT_SECRET));
 
         return Money::USD((int) $minProfitUSD);
     }
@@ -233,7 +233,7 @@ class TradeProposal
      */
     public function minProfitBTC()
     {
-        $minProfitBTC = Ensure::isInt($this->secrets->get(self::MIN_BTC_PROFIT_SECRET));
+        $minProfitBTC = Ensure::toInt($this->secrets->get(self::MIN_BTC_PROFIT_SECRET));
 
         return Money::BTC((int) $minProfitBTC);
     }
