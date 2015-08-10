@@ -59,11 +59,11 @@ class EnsureTest extends WebTestCase
             $this->assertSame((float) $test[0], Ensure::lessThan((float) $test[0], (float) $test[1]));
         });
 
-        $fun_stuff = [
+        $funStuff = [
             [null, true],
             [false, true],
         ];
-        array_walk($fun_stuff, function($test) {
+        array_walk($funStuff, function($test) {
             $this->assertSame($test[0], Ensure::lessThan($test[0], $test[1]));
         });
     }
