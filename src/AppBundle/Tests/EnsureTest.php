@@ -12,6 +12,8 @@ class EnsureTest extends WebTestCase
 {
     /**
      * Data provider for testLessThanExceptions
+     *
+     * @return array
      */
     public function dataLessThanExceptions()
     {
