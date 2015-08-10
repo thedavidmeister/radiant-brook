@@ -32,6 +32,15 @@ class EnsureTest extends WebTestCase
     /**
      * @covers AppBundle\Ensure::lessThan
      *
+     * @param number $small
+     *   Not a small number.
+     *
+     * @param number $big
+     *   Not a big number.
+     *
+     * @param string $message
+     *   Expected exception message.
+     *
      * @dataProvider dataLessThanExceptions
      */
     public function testLessThanExceptions($small, $big, $message)
