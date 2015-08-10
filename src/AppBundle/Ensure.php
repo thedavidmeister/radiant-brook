@@ -24,8 +24,6 @@ final class Ensure
      * @param mixed  $value
      *   Any value that may or may not be null.
      *
-     * @param string $message
-     *
      * @return mixed $value
      */
     public static function notNull($value)
@@ -36,10 +34,10 @@ final class Ensure
     /**
      * Ensures that a value is empty.
      *
-     * @param  mixed  $value
+     * @param mixed  $value
      *   The value to ensure is empty.
      *
-     * @return mixed  $value
+     * @return mixed $value
      */
     public static function isEmpty($value)
     {
@@ -49,7 +47,7 @@ final class Ensure
     /**
      * Ensures that a value is not empty.
      *
-     * @param mixed  $value
+     * @param mixed $value
      *   The value to ensure is not empty.
      *
      * @return mixed $value
@@ -65,7 +63,7 @@ final class Ensure
      * FILTER_VALIDATE_INT is used. If the value is an integer string, it will
      * be cast to an integer primitive.
      *
-     * @param mixed  $value
+     * @param mixed $value
      *   The value to ensure is an integer.
      *
      * @return int $value
@@ -93,6 +91,14 @@ final class Ensure
         return (float) self::isNumeric($value);
     }
 
+    /**
+     * Ensures that a value is numeric.
+     *
+     * @param number $value
+     *   The number to check.
+     *
+     * @return boolean
+     */
     public static function isNumeric($value)
     {
         return is_numeric($value) ? $value : self::fail('%s is not numeric', $value);
