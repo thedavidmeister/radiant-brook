@@ -13,6 +13,8 @@ class EnsureTest extends WebTestCase
     /**
      * Data provider for testLessThanExceptions
      *
+     * @group stable
+     *
      * @return array
      */
     public function dataLessThanExceptions()
@@ -43,6 +45,8 @@ class EnsureTest extends WebTestCase
      * @param string $message
      *   Expected exception message.
      *
+     * @group stable
+     *
      * @dataProvider dataLessThanExceptions
      */
     public function testLessThanExceptions($small, $big, $message)
@@ -53,6 +57,8 @@ class EnsureTest extends WebTestCase
 
     /**
      * @covers AppBundle\Ensure::lessThan
+     *
+     * @group stable
      */
     public function testLessThan()
     {
@@ -81,6 +87,8 @@ class EnsureTest extends WebTestCase
 
     /**
      * Data provider for testIsValidVariableNameExceptions
+     *
+     * @group stable
      *
      * @return array
      */

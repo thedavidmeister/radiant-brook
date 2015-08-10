@@ -166,6 +166,22 @@ class TradeProposalTest extends WebTestCase
     }
 
     /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::askUSDPrice
+     *
+     * @group stable
+     */
+    public function testAskUSDPrice()
+    {
+        $askUSDPrice = Money::USD(mt_rand());
+        $prices = [
+            'bidUSDPrice' => Money::USD(mt_rand()),
+            'askUSDPrice' => $askUSDPrice,
+        ];
+        $tp = new TradeProposal($prices, $this->fees());
+        $this->assertEquals($askUSDPrice, $tp->askUSDPrice());
+    }
+
+    /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::minProfitBTC
      *
      * @group stable
