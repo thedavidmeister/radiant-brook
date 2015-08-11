@@ -11,6 +11,7 @@ use AppBundle\Ensure;
  */
 class Secrets
 {
+    const MISSING_ENV_EXCEPTION_MESSAGE = 'Loading .env file failed while attempting to access environment variable ';
     /**
     * Returns the path that Dotenv should scan for a .env file.
     *
@@ -86,12 +87,12 @@ class Secrets
                 $dotenv->load($this->dotEnvPath());
             } catch (\Exception $e) {
                 // Provide a more useful message than the Dotenv default.
-                throw new \Exception('Loading .env file failed while attempting to access environment variable ' . $name);
+                throw new \Exception(self::MISSING_ENV_EXCEPTION_MESSAGE . $name);
             }
 
             // Try once more to find what we're looking for, then give up.
             if (null === $value = $loader->getEnvironmentVariable($name)) {
-                throw new \Exception('Loading .env file failed while attempting to access environment variable ' . $name);
+                throw new \Exception(self::MISSING_ENV_EXCEPTION_MESSAGE . $name);
             }
         }
 
