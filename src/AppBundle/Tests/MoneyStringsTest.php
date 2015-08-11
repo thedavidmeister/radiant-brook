@@ -33,7 +33,7 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
-     * Tests that exceptions are thrown when stringToBTC does not get a string.
+     * @covers AppBundle\MoneyStrings::stringToBTC
      *
      * @dataProvider dataStringToXTypeExceptions
      * @expectedException Exception
@@ -48,7 +48,7 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
-     * Tests that exceptions are thrown when stringToBTC gets null.
+     * @covers AppBundle\MoneyStrings::stringToBTC
      *
      * @expectedException Exception
      * @expectedExceptionMessage The parameter passed to stringToBTC must be a string
@@ -60,7 +60,7 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
-     * Tests that exceptions are thrown when stringToUSD does not get a string.
+     * @covers AppBundle\MoneyStrings::stringToUSD
      *
      * @dataProvider dataStringToXTypeExceptions
      * @expectedException Exception
@@ -76,7 +76,7 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
-     * Tests that exceptions are thrown when stringToUSD gets null.
+     * @covers AppBundle\MoneyStrings::stringToUSD
      *
      * @expectedException Exception
      * @expectedExceptionMessage The parameter passed to stringToUSD must be a string
@@ -88,7 +88,7 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
-     * Tests MoneyString::BTCToString().
+     * @covers AppBundle\MoneyStrings::BTCToString
      *
      * @group stable
      */
@@ -114,7 +114,7 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
-     * Tests MoneyStrings::USDToString().
+     * @covers AppBundle\MoneyStrings::USDToString
      *
      * @group stable
      */
@@ -134,7 +134,7 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
-     * Tests MoneyStrings::stringToUSD().
+     * @covers AppBundle\MoneyStrings::stringToUSD
      *
      * @group stable
      */
@@ -175,7 +175,7 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
-     * Tests stringToUSD exceptions.
+     * @covers AppBundle\MoneyStrings::stringToUSD
      *
      * @dataProvider dataStringToUSDExceptions
      * @expectedException Exception
@@ -191,7 +191,7 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
-     * Tests MoneyStrings::stringToBTC().
+     * @covers AppBundle\MoneyStrings::stringToBTC
      *
      * @group stable
      */
@@ -237,7 +237,7 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
-     * Tests exceptions thrown by stringToBTC().
+     * @covers AppBundle\MoneyStrings::stringToBTC
      *
      * @dataProvider dataStringToBTCExceptions
      * @expectedException Exception
