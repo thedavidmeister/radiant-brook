@@ -11,6 +11,87 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class EnsureTest extends WebTestCase
 {
     /**
+     * Data provider for isNumeric.
+     *
+     * @return array
+     */
+    public function dataIsNumericExceptions()
+    {
+        return [
+            ['foo', '"foo" is not numeric'],
+            [null, 'null is not numeric'],
+            [[], '[] is not numeric'],
+            [new \StdClass(), '{} is not numeric'],
+            ['', '"" is not numeric'],
+        ];
+    }
+
+    /**
+     * @covers AppBundle\Ensure::isNumeric
+     *
+     * @param mixed $value
+     *   Not a number.
+     *
+     * @param string $message
+     *   The exception message.
+     *
+     * @group stable
+     *
+     * @dataProvider dataIsNumericExceptions
+     */
+    public function testIsNumericExceptions($value, $message)
+    {
+        $this->setExpectedException('Exception', $message);
+        Ensure::isNumeric($value);
+    }
+
+    /**
+     * @covers AppBundle\Ensure::toFloat
+     *
+     * @param mixed $value
+     *   Not a number.
+     *
+     * @param string $message
+     *   The exception message.
+     *
+     * @dataProvider dataIsNumericExceptions
+     *
+     * @group stable
+     */
+    public function testToFloatExceptions($value, $message)
+    {
+        $this->setExpectedException('Exception', $message);
+        Ensure::toFloat($value);
+    }
+
+    /**
+     * @covers AppBundle\Ensure::toFloat
+     * @covers AppBundle\Ensure::isNumeric
+     *
+     * @group stable
+     */
+    public function testToFloatAndIsNumeric()
+    {
+        $tests = [
+        // Int.
+        mt_rand(),
+        // Float.
+        1.5,
+        0.1,
+        -5.0,
+        // Numeric string.
+        '1',
+        '1.5',
+        '-5.0',
+        '-5',
+        ];
+        array_walk($tests, function($test) {
+            $this->assertSame((float) $test, Ensure::toFloat($test));
+            $this->assertSame($test, Ensure::isNumeric($test));
+        });
+    }
+
+    /**
      * Data provider for testLessThanExceptions
      *
      * @group stable
