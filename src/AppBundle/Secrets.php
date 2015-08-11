@@ -20,7 +20,7 @@ class Secrets
     * @return string
     *   Path to the directory containing .env.
     */
-    protected function dotEnvPath()
+    public function dotEnvPath()
     {
         return __DIR__;
     }

@@ -16,6 +16,16 @@ class SecretsTest extends WebTestCase
     }
 
     /**
+     * @covers AppBundle\Secrets::dotEnvPath
+     */
+    public function testDotEnvPath()
+    {
+        // We expect the Secrets class to be just above this directory.
+        $expected = str_replace('/Tests', '', __DIR__);
+        $this->assertSame($expected, $this->secrets()->dotEnvPath());
+    }
+
+    /**
      * @covers AppBundle\Secrets::set
      *
      * @group stable
