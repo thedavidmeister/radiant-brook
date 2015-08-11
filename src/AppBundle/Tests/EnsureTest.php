@@ -29,7 +29,7 @@ class EnsureTest extends WebTestCase
     /**
      * @covers AppBundle\Ensure::isNumeric
      *
-     * @param mixed $value
+     * @param mixed  $value
      *   Not a number.
      *
      * @param string $message
@@ -48,7 +48,7 @@ class EnsureTest extends WebTestCase
     /**
      * @covers AppBundle\Ensure::toFloat
      *
-     * @param mixed $value
+     * @param mixed  $value
      *   Not a number.
      *
      * @param string $message
