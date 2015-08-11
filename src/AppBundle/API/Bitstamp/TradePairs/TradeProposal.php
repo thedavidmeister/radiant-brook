@@ -49,7 +49,6 @@ class TradeProposal
 
         $this->fees = $fees;
         $this->state = self::STATE_VALID;
-        $this->
         $this->secrets = new Secrets();
     }
 
@@ -57,29 +56,79 @@ class TradeProposal
      * STATE
      */
 
+    /**
+     * Set this TradeProposal to invalid.
+     *
+     * Invalid TradeProposals should not be executed.
+     *
+     * @param string $reason
+     *   The reason this TradeProposal was invalidated.
+     */
     public function invalidate($reason)
     {
         $this->setState(self::STATE_INVALID, $reason);
     }
 
+    /**
+     * Set this TradeProposal to panic.
+     *
+     * Panic TradeProposals should not be executed AND no further attempts to
+     * execute any Proposals should be attempted.
+     *
+     * @param string $reason
+     *   The reason for this TradeProposal to panic.
+     */
     public function panic($reason)
     {
         $this->setState(self::STATE_PANIC);
     }
 
+    /**
+     * Get the current state of the TradeProposal as read-only.
+     *
+     * Anything other than a 0 is a fail. Higher numbers indicate more extreme
+     * failure.
+     *
+     * @return int
+     *   The current state of the TradeProposal.
+     */
     public function state()
     {
         return $this->state;
     }
 
+    /**
+     * Get the reason for the current state as read-only.
+     *
+     * @return string
+     *   The reason for the current state.
+     */
     public function reason()
     {
         return $this->stateReason;
     }
 
+    /**
+     * Sets the current state.
+     *
+     * Requires a non-empty reason. States can only be increased in severity as
+     * a previous, more severe failure state takes preference over the current,
+     * less (or equally) severe state.
+     *
+     * @param int $state
+     *   The new state to attempt.
+     *
+     * @param string $reason
+     *   The reason for the new state.
+     */
     protected function setState($state, $reason)
     {
+        // We need a reason to consider a state change.
+        Ensure::notEmpty($reason);
+        Ensure::isString($reason);
+
         // States can only increase over time (get worse).
+        Ensure::isInt($state);
         if ($state > $this->state) {
             $this->state = $state;
             $this->stateReason = $reason;
