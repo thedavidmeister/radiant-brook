@@ -29,6 +29,8 @@ class SecretsTest extends WebTestCase
      * @covers AppBundle\Secrets::clear
      *
      * @see testSet()
+     *
+     * @group stable
      */
     public function testClear()
     {
