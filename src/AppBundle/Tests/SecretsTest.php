@@ -97,7 +97,7 @@ class SecretsTest extends WebTestCase
      * @expectedExceptionMessage Loading .env file failed while attempting to access environment variable NO_MATCH
      * @group stable
      */
-    public function testSecretsException()
+    public function testGetException()
     {
         $this->secrets()->get('NO_MATCH');
     }
