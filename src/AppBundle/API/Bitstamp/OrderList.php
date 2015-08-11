@@ -230,10 +230,11 @@ class OrderList
             }
         }
 
-        // it's possible that because of the ceil() in the index generation, the
+        // It's possible that because of the ceil() in the index generation, the
         // index can be 1 larger than the final sum. In this case, set the
         // percentileCap to the highest data value.
         if (!isset($return)) {
+            throw new \Exception('fooo');
             $return = end($this->data)[self::USD_KEY]->getAmount();
         }
 

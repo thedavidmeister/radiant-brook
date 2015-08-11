@@ -43,6 +43,8 @@ class OrderListTest extends WebTestCase
     /**
      * Test that pair methods return arrays and aggregates return scalars.
      *
+     * @coversNothing
+     *
      * @group stable
      */
     public function testReturnFormats()
@@ -69,7 +71,7 @@ class OrderListTest extends WebTestCase
     }
 
     /**
-     * Tests max() method.
+     * @covers AppBundle\API\Bitstamp\OrderList::max
      *
      * @group stable
      */
@@ -80,7 +82,7 @@ class OrderListTest extends WebTestCase
     }
 
     /**
-     * Tests min() method.
+     * @covers AppBundle\API\Bitstamp\OrderList::min
      *
      * @group stable
      */
@@ -91,7 +93,7 @@ class OrderListTest extends WebTestCase
     }
 
     /**
-     * Tests totalVolume() method.
+     * @covers AppBundle\API\Bitstamp\OrderList::totalVolume
      *
      * @group stable
      */
@@ -103,7 +105,7 @@ class OrderListTest extends WebTestCase
     }
 
     /**
-     * Tests totalCap() method.
+     * @covers AppBundle\API\Bitstamp\OrderList::totalCap
      *
      * @group stable
      */
@@ -116,7 +118,7 @@ class OrderListTest extends WebTestCase
     }
 
     /**
-     * Test percentile() calculations.
+     * @covers AppBundle\API\Bitstamp\OrderList::percentile
      *
      * @group stable
      */
@@ -159,7 +161,7 @@ class OrderListTest extends WebTestCase
     }
 
     /**
-     * Tests percentileCap() calculations.
+     * @covers AppBundle\API\Bitstamp\OrderList::percentileCap
      *
      * @group stable
      */
