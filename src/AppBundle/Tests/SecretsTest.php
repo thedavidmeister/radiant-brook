@@ -61,6 +61,7 @@ class SecretsTest extends WebTestCase
 
     /**
      * @covers AppBundle\Secrets::set
+     * @covers AppBundle\Secrets::get
      *
      * @group stable
      *
