@@ -234,7 +234,6 @@ class OrderList
         // index can be 1 larger than the final sum. In this case, set the
         // percentileCap to the highest data value.
         if (!isset($return)) {
-            throw new \Exception('fooo');
             $return = end($this->data)[self::USD_KEY]->getAmount();
         }
 

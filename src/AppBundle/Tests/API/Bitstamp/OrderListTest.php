@@ -221,6 +221,6 @@ class OrderListTest extends WebTestCase
         ];
 
         $orderList = new OrderList($edgeCase);
-        $orderList->percentileCap(1);
+        $this->assertSame(92751, $orderList->percentileCap(1));
     }
 }
