@@ -49,6 +49,11 @@ namespace :phpunit do
     phpunit "--exclude-group", "stable", "--debug"
   end
 
+  desc 'get the unstable coverage report'
+  task :"unstable-coverage" do
+    phpunit "--exclude-group", "stable", "--debug", "--coverage-html", "coverage"
+  end
+
   desc 'run all phpunit tests not tagged with slow'
   task :fast do
     phpunit "--exclude-group", "slow"
