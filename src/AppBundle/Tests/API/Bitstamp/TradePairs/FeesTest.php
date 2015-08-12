@@ -41,6 +41,7 @@ class FeesTest extends WebTestCase
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\Fees::percent
      * @covers AppBundle\API\Bitstamp\TradePairs\Fees::raw
+     * @covers AppBundle\API\Bitstamp\TradePairs\Fees::__construct
      *
      * @group stable
      */
