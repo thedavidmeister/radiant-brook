@@ -45,6 +45,7 @@ class BuySellTest extends WebTestCase
      * @covers AppBundle\API\Bitstamp\TradePairs\BuySell::execute
      * @covers AppBundle\API\Bitstamp\TradePairs\BuySell::doBuy
      * @covers AppBundle\API\Bitstamp\TradePairs\BuySell::doSell
+     * @covers AppBundle\API\Bitstamp\TradePairs\BuySell::__construct
      *
      * @group stable
      */
