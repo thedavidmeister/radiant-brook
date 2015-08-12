@@ -9,6 +9,8 @@ use Money\Money;
  */
 class Fees
 {
+    protected $balance;
+
     /**
      * DI constructor.
      *

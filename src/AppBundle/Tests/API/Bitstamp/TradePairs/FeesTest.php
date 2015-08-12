@@ -125,6 +125,7 @@ class FeesTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\Fees::isofeeMaxUSD
+     * @covers AppBundle\API\Bitstamp\TradePairs\Fees::absoluteFeeUSDNoRounding
      *
      * @group stable
      */
