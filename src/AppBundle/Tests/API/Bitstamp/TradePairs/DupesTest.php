@@ -73,6 +73,7 @@ class DupesTest extends WebTestCase
      * @covers AppBundle\API\Bitstamp\TradePairs\Dupes::asks
      * @covers AppBundle\API\Bitstamp\TradePairs\Dupes::bids
      * @covers AppBundle\API\Bitstamp\TradePairs\Dupes::findDupes
+     * @covers AppBundle\API\Bitstamp\TradePairs\Dupes::__construct
      *
      * Given:
      *   - OO price = X
