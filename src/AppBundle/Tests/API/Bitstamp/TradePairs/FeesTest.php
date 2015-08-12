@@ -40,6 +40,7 @@ class FeesTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\Fees::percent
+     * @covers AppBundle\API\Bitstamp\TradePairs\Fees::raw
      *
      * @group stable
      */
@@ -73,6 +74,7 @@ class FeesTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\Fees::absoluteFeeUSD
+     * @covers AppBundle\API\Bitstamp\TradePairs\Fees::absoluteFeeUSDNoRounding
      *
      * @group stable
      */
