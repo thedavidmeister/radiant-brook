@@ -4,6 +4,7 @@ namespace AppBundle\API\Bitstamp\TradePairs;
 
 use AppBundle\Secrets;
 use AppBundle\Ensure;
+use AppBundle\Cast;
 use Money\Money;
 
 /**
@@ -45,12 +46,10 @@ class PriceProposer implements \Iterator
         $this->secrets = new Secrets();
 
         // Init.
-        $this->minPercentile = Ensure::toFloat($this->secrets->get(self::MIN_PERCENTILE_SECRET));
-        $this->maxPercentile = Ensure::toFloat($this->secrets->get(self::MAX_PERCENTILE_SECRET));
-        $this->stepSize = Ensure::toFloat($this->secrets->get(self::STEP_SIZE_SECRET));
+        $this->minPercentile = Cast::toFloat($this->secrets->get(self::MIN_PERCENTILE_SECRET));
+        $this->maxPercentile = Cast::toFloat($this->secrets->get(self::MAX_PERCENTILE_SECRET));
+        $this->stepSize = Cast::toFloat($this->secrets->get(self::STEP_SIZE_SECRET));
 
-        Ensure::isNumeric($this->minPercentile);
-        Ensure::isNumeric($this->maxPercentile);
         Ensure::lessThan($this->minPercentile, $this->maxPercentile);
 
         // Start at the start. Auto rewind! Reconsider this if setting

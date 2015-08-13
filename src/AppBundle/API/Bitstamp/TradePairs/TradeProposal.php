@@ -4,6 +4,7 @@ namespace AppBundle\API\Bitstamp\TradePairs;
 
 use AppBundle\Secrets;
 use AppBundle\Ensure;
+use AppBundle\Cast;
 use AppBundle\MoneyConstants;
 use Money\Money;
 
@@ -129,6 +130,7 @@ class TradeProposal
 
         // States can only increase over time (get worse).
         Ensure::isInt($state);
+
         if ($state > $this->state) {
             $this->state = $state;
             $this->stateReason = $reason;
@@ -156,7 +158,7 @@ class TradeProposal
      */
     public function bidUSDVolumeBase()
     {
-        $minUSDVolumeAmount = Ensure::toInt($this->secrets->get(self::MIN_USD_VOLUME_SECRET));
+        $minUSDVolumeAmount = Cast::toInt($this->secrets->get(self::MIN_USD_VOLUME_SECRET));
 
         return Money::USD((int) $minUSDVolumeAmount);
     }
@@ -323,9 +325,9 @@ class TradeProposal
      */
     public function minProfitUSD()
     {
-        $minProfitUSD = Ensure::toInt($this->secrets->get(self::MIN_USD_PROFIT_SECRET));
+        $minProfitUSD = Cast::toInt($this->secrets->get(self::MIN_USD_PROFIT_SECRET));
 
-        return Money::USD((int) $minProfitUSD);
+        return Money::USD($minProfitUSD);
     }
 
     /**
@@ -335,9 +337,9 @@ class TradeProposal
      */
     public function minProfitBTC()
     {
-        $minProfitBTC = Ensure::toInt($this->secrets->get(self::MIN_BTC_PROFIT_SECRET));
+        $minProfitBTC = Cast::toInt($this->secrets->get(self::MIN_BTC_PROFIT_SECRET));
 
-        return Money::BTC((int) $minProfitBTC);
+        return Money::BTC($minProfitBTC);
     }
 
     /**
@@ -347,6 +349,7 @@ class TradeProposal
      */
     public function isProfitable()
     {
-        return $this->profitUSD() >= $this->minProfitUSD() && $this->profitBTC() > $this->minProfitBTC();
+        return $this->profitUSD()->getAmount() >= $this->minProfitUSD()->getAmount()
+            && $this->profitBTC()->getAmount() >= $this->minProfitBTC()->getAmount();
     }
 }

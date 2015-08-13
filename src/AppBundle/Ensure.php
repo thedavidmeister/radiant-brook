@@ -58,40 +58,6 @@ final class Ensure
     }
 
     /**
-     * Ensures that a value is an integer.
-     *
-     * FILTER_VALIDATE_INT is used. If the value is an integer string, it will
-     * be cast to an integer primitive.
-     *
-     * @param mixed $value
-     *   The value to ensure is an integer.
-     *
-     * @return int $value
-     */
-    public static function toInt($value)
-    {
-        // Cast the value to an int, if it's int-y.
-        return (filter_var($value, FILTER_VALIDATE_INT) !== false) ? (int) $value : self::fail('%s is not an int.', $value);
-    }
-
-    /**
-     * Ensures that a value is a float.
-     *
-     * Value must be numeric. If it is, it will be cast to a float, otherwise,
-     * fail.
-     *
-     * @param number $value
-     *   The value to ensure is a float.
-     *
-     * @return float $value
-     */
-    public static function toFloat($value)
-    {
-        // Cast the value to a float, if it's numeric.
-        return (float) self::isNumeric($value);
-    }
-
-    /**
      * Ensures that a value is numeric.
      *
      * @param number $value
@@ -102,6 +68,11 @@ final class Ensure
     public static function isNumeric($value)
     {
         return is_numeric($value) ? $value : self::fail('%s is not numeric', $value);
+    }
+
+    public static function isInt($value)
+    {
+        return (filter_var($value, FILTER_VALIDATE_INT) !== false) ? $value : self::fail('%s is not an int.', $value);
     }
 
     /**
