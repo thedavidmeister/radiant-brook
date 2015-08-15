@@ -47,25 +47,6 @@ class EnsureTest extends WebTestCase
 
     /**
      * @covers AppBundle\Ensure::toFloat
-     *
-     * @param mixed  $value
-     *   Not a number.
-     *
-     * @param string $message
-     *   The exception message.
-     *
-     * @dataProvider dataIsNumericExceptions
-     *
-     * @group stable
-     */
-    public function testToFloatExceptions($value, $message)
-    {
-        $this->setExpectedException('Exception', $message);
-        Cast::toFloat($value);
-    }
-
-    /**
-     * @covers AppBundle\Ensure::toFloat
      * @covers AppBundle\Ensure::isNumeric
      *
      * @group stable

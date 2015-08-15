@@ -44,4 +44,23 @@ class CastTest extends WebTestCase
         $this->setExpectedException('Exception', $message);
         Cast::toInt($notInt);
     }
+
+    /**
+     * @covers AppBundle\Ensure::toFloat
+     *
+     * @param mixed  $value
+     *   Not a number.
+     *
+     * @param string $message
+     *   The exception message.
+     *
+     * @dataProvider dataIsNumericExceptions
+     *
+     * @group stable
+     */
+    public function testToFloatExceptions($value, $message)
+    {
+        $this->setExpectedException('Exception', $message);
+        Cast::toFloat($value);
+    }
 }
