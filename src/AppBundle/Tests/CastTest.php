@@ -28,7 +28,7 @@ class CastTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\Ensure::toInt
+     * @covers AppBundle\Cast::toInt
      *
      * @param mixed  $notInt
      *   Not an integer.
@@ -46,7 +46,7 @@ class CastTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\Ensure::toFloat
+     * @covers AppBundle\Cast::toFloat
      *
      * @param mixed  $value
      *   Not a number.
@@ -62,5 +62,30 @@ class CastTest extends WebTestCase
     {
         $this->setExpectedException('Exception', $message);
         Cast::toFloat($value);
+    }
+
+    /**
+     * @covers AppBundle\Cast::toFloat
+     *
+     * @group stable
+     */
+    public function testToFloat()
+    {
+        $tests = [
+        // Int.
+        mt_rand(),
+        // Float.
+        1.5,
+        0.1,
+        -5.0,
+        // Numeric string.
+        '1',
+        '1.5',
+        '-5.0',
+        '-5',
+        ];
+        array_walk($tests, function($test) {
+            $this->assertSame((float) $test, Ensure::toFloat($test));
+        });
     }
 }

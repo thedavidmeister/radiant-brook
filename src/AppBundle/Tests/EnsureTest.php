@@ -46,12 +46,11 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\Ensure::toFloat
      * @covers AppBundle\Ensure::isNumeric
      *
      * @group stable
      */
-    public function testToFloatAndIsNumeric()
+    public function testIsNumeric()
     {
         $tests = [
         // Int.
@@ -67,7 +66,6 @@ class EnsureTest extends WebTestCase
         '-5',
         ];
         array_walk($tests, function($test) {
-            $this->assertSame((float) $test, Ensure::toFloat($test));
             $this->assertSame($test, Ensure::isNumeric($test));
         });
     }
