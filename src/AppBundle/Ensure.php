@@ -70,9 +70,31 @@ final class Ensure
         return is_numeric($value) ? $value : self::fail('%s is not numeric', $value);
     }
 
+    /**
+     * Ensures that a value is int-y.
+     *
+     * Uses filter_var and is_numeric under the hood.
+     *
+     * Things that are int-y:
+     *   - Strings like '1'
+     *   - Floats like 1.0
+     *   - Numbers like 1
+     *
+     * Things that are not int-y:
+     *   - Booleans
+     *   - Strings like 1.1
+     *   - Floats like 1.1
+     *   - Other data
+     *
+     * @param inty $value
+     *   Some inty value. An exception is thrown for non-inty values.
+     *
+     * @return inty $value
+     *   The value if it is inty.
+     */
     public static function isInt($value)
     {
-        return (filter_var($value, FILTER_VALIDATE_INT) !== false) ? $value : self::fail('%s is not an int.', $value);
+        return (is_numeric($value) && filter_var($value, FILTER_VALIDATE_INT) !== false) ? $value : self::fail('%s is not an int.', $value);
     }
 
     /**
