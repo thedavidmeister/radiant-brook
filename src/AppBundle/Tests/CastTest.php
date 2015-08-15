@@ -40,7 +40,7 @@ class CastTest extends WebTestCase
      *   The message to expect in the exception.
      *
      * @dataProvider dataToIntExceptions
-     * group stable
+     * @group stable
      */
     public function testToIntExceptions($notInt, $message)
     {
@@ -51,7 +51,7 @@ class CastTest extends WebTestCase
     /**
      * @covers AppBundle\Cast::toInt
      *
-     * group stable
+     * @group stable
      */
     public function testToInt()
     {
