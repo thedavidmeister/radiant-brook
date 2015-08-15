@@ -4,6 +4,11 @@ namespace AppBundle;
 
 use AppBundle\Ensure;
 
+/**
+ * Casts variables to another data type, if it makes sense and is not lossy.
+ *
+ * Lossy or unsafe cast attempts throw exceptions.
+ */
 class Cast {
     /**
      * Ensures that a value is an integer.
