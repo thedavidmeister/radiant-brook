@@ -97,7 +97,6 @@ class CastTest extends WebTestCase
         array_walk($tests, function($test) {
             $this->assertTrue(is_int(Cast::toInt($test[1])));
             $this->assertSame($test[0], Cast::toInt($test[1]));
-            // $this->assertTrue(is_int(Cast::toInt((string) $test)));
         });
     }
 

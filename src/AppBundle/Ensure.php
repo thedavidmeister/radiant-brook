@@ -106,10 +106,11 @@ final class Ensure
             // If filter_var thinks this is an int, then it is.
             if (filter_var($value, FILTER_VALIDATE_INT) !== false) {
                 return $value;
-            }
-            // If it doesn't, it may well be a string in exponential notation.
-            else {
-                // If we examine the value as a string we can test certain patterns.
+            } else {
+                // If it doesn't, it may well be a string in exponential
+                // notation.
+                // If we examine the value as a string we can test certain
+                // patterns.
                 $stringValue = (string) $value;
 
                 // Positive exponents in scientific notation are always an integer.
@@ -117,13 +118,11 @@ final class Ensure
                 // e-0, e-00, etc... will all be normalized by (string).
                 if (stripos($stringValue, 'e') !== false) {
                     return (stripos($stringValue, 'e-') === false) ? $value : self::fail($message, $value);
-                }
-                else {
+                } else {
                     self::fail($message, $value);
                 }
             }
-        }
-        else {
+        } else {
             self::fail($message, $value);
         }
     }
