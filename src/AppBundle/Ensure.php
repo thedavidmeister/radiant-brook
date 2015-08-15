@@ -67,7 +67,7 @@ final class Ensure
      */
     public static function isNumeric($value)
     {
-        return is_numeric($value) ? $value : self::fail('%s is not numeric', $value);
+        return is_numeric($value) ? $value : self::fail('%s is not numeric.', $value);
     }
 
     /**

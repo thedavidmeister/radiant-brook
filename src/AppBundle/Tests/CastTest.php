@@ -111,10 +111,10 @@ class CastTest extends WebTestCase
             [true, 'true is not numeric.'],
             [false, 'false is not numeric.'],
             ['foo', '"foo" is not numeric'],
-            [null, 'null is not numeric'],
-            [[], '[] is not numeric'],
-            [new \StdClass(), '{} is not numeric'],
-            ['', '"" is not numeric'],
+            [null, 'null is not numeric.'],
+            [[], '[] is not numeric.'],
+            [new \StdClass(), '{} is not numeric.'],
+            ['', '"" is not numeric.'],
         ];
     }
 
