@@ -9,7 +9,8 @@ use AppBundle\Ensure;
  *
  * Lossy or unsafe cast attempts throw exceptions.
  */
-class Cast {
+final class Cast
+{
     /**
      * Ensures that a value is an integer.
      *
