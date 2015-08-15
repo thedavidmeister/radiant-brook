@@ -127,7 +127,7 @@ class CastTest extends WebTestCase
      * @param string $message
      *   The exception message.
      *
-     * @dataProvider dataIsNumericExceptions
+     * @dataProvider dataToFloatExceptions
      *
      * @group stable
      */
