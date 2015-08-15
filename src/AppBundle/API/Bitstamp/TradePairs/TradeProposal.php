@@ -17,10 +17,6 @@ class TradeProposal
 
     protected $askUSDPrice;
 
-    protected $state;
-
-    protected $stateReason = 'Valid trade pair.';
-
     const MIN_USD_VOLUME_SECRET = 'BITSTAMP_MIN_USD_VOLUME';
 
     const MIN_USD_PROFIT_SECRET = 'BITSTAMP_MIN_USD_PROFIT';
@@ -28,6 +24,8 @@ class TradeProposal
     const MIN_BTC_PROFIT_SECRET = 'BITSTAMP_MIN_BTC_PROFIT';
 
     const STATE_VALID = 0;
+
+    const STATE_VALID_REASON = 'Valid trade pair.';
 
     const STATE_INVALID = 1;
 
@@ -49,7 +47,10 @@ class TradeProposal
         }
 
         $this->fees = $fees;
+
         $this->state = self::STATE_VALID;
+        $this->stateReason = self::STATE_VALID_REASON;
+
         $this->secrets = new Secrets();
     }
 
@@ -97,6 +98,7 @@ class TradeProposal
     {
         return $this->state;
     }
+    protected $state;
 
     /**
      * Get the reason for the current state as read-only.
@@ -108,6 +110,7 @@ class TradeProposal
     {
         return $this->stateReason;
     }
+    protected $stateReason;
 
     /**
      * Sets the current state.

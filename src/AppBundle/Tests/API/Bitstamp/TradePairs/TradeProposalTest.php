@@ -38,6 +38,21 @@ class TradeProposalTest extends WebTestCase
     }
 
     /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::state
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::reason
+     */
+    public function testStateReason()
+    {
+        // Test that a brand new TradeProposal is in the valid state/reason.
+        // These methods are read-only from the public API.
+        $tp = new TradeProposal($this->randomBidAskPrices(), $this->fees());
+        $this->assertSame(TradeProposal::STATE_VALID, $tp->state());
+        $this->assertSame(0, $tp->state());
+        $this->assertSame(TradeProposal::STATE_VALID_REASON, $tp->reason());
+        $this->assertSame('Valid trade pair.', $tp->reason());
+    }
+
+    /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::bidUSDPrice
      *
      * @group stable
