@@ -53,10 +53,13 @@ class CastTest extends WebTestCase
     public function dataToFloatExceptions()
     {
         return [
-            [true, 'true is not a number.'],
-            [false, 'false is not a number.'],
-            [[], '[] is not a number.'],
-            [\StdClass(), '{} is not a number.'],
+            [true, 'true is not numeric.'],
+            [false, 'false is not numeric.'],
+            ['foo', '"foo" is not numeric'],
+            [null, 'null is not numeric'],
+            [[], '[] is not numeric'],
+            [new \StdClass(), '{} is not numeric'],
+            ['', '"" is not numeric'],
         ];
     }
 
