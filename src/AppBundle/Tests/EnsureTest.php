@@ -61,7 +61,7 @@ class EnsureTest extends WebTestCase
     public function testToFloatExceptions($value, $message)
     {
         $this->setExpectedException('Exception', $message);
-        Ensure::toFloat($value);
+        Cast::toFloat($value);
     }
 
     /**
@@ -414,39 +414,6 @@ class EnsureTest extends WebTestCase
             $i++;
         }
         $this->assertSame(PHP_INT_MAX, Ensure::toInt(PHP_INT_MAX));
-    }
-
-    /**
-     * Data provider for dataToIntExceptions
-     *
-     * @return array
-     */
-    public function dataToIntExceptions()
-    {
-        return [
-        [1.1, '1.1 is not an int.'],
-        ['foo', '"foo" is not an int.'],
-        [null, 'null is not an int.'],
-        [[], '[] is not an int.'],
-        ];
-    }
-
-    /**
-     * @covers AppBundle\Ensure::toInt
-     *
-     * @param mixed  $notInt
-     *   Not an integer.
-     *
-     * @param string $message
-     *   The message to expect in the exception.
-     *
-     * @dataProvider dataToIntExceptions
-     * @group stable
-     */
-    public function testToIntExceptions($notInt, $message)
-    {
-        $this->setExpectedException('Exception', $message);
-        Ensure::toInt($notInt);
     }
 
     /**
