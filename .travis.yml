@@ -5,7 +5,7 @@ php:
 
 env:
   - TASK=travis
-  - TASK=clover
+  - TASK=phpunit:clover
 
 before_script:
  - wget http://getcomposer.org/composer.phar
