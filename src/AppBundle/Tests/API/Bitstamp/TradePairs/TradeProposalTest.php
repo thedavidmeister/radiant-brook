@@ -40,6 +40,7 @@ class TradeProposalTest extends WebTestCase
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::state
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::reason
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::__construct
      *
      * @group stable
      */
@@ -113,6 +114,7 @@ class TradeProposalTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::bidUSDPrice
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::__construct
      *
      * @group stable
      */
@@ -241,6 +243,7 @@ class TradeProposalTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::askUSDPrice
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::__construct
      *
      * @group stable
      */
