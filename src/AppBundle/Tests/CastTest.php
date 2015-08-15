@@ -46,6 +46,21 @@ class CastTest extends WebTestCase
     }
 
     /**
+     * @covers AppBundle\Cast::toInt
+     *
+     * @group stable
+     */
+    public function testToInt()
+    {
+        $tests = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, PHP_INT_MAX];
+        array_walk($tests, function($test) {
+            $this->assertSame((int) $test, Cast::toInt($test));
+            $this->assertSame((int) $test, Cast::toInt((string) $test));
+            $this->assertSame((int) $test, Cast::toInt((float) $test));
+        });
+    }
+
+    /**
      * Data provider for testToFloatExceptions.
      *
      * @return array

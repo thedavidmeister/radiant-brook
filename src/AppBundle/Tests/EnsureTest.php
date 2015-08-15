@@ -380,22 +380,6 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\Ensure::toInt
-     *
-     * @group stable
-     */
-    public function testToInt()
-    {
-        $i = -5;
-        while ($i <= 5) {
-            $this->assertSame($i, Ensure::toInt($i));
-            $this->assertSame($i, Ensure::toInt((string) $i));
-            $i++;
-        }
-        $this->assertSame(PHP_INT_MAX, Ensure::toInt(PHP_INT_MAX));
-    }
-
-    /**
      * @covers AppBundle\Ensure::inRange
      *
      * @group stable
