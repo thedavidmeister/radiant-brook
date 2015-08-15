@@ -22,8 +22,11 @@ class CastTest extends WebTestCase
             ['foo', '"foo" is not an int.'],
             [null, 'null is not an int.'],
             [[], '[] is not an int.'],
-            [true, 'true is not a number.'],
-            [false, 'false is not a number.'],
+            [true, 'true is not an int.'],
+            [false, 'false is not an int.'],
+            // Negative scientific notation is not an int.
+            [1e-1, '0.1 is not an int.'],
+            [1e-2, '0.01 is not an int.'],
         ];
     }
 
@@ -37,7 +40,7 @@ class CastTest extends WebTestCase
      *   The message to expect in the exception.
      *
      * @dataProvider dataToIntExceptions
-     * @group stable
+     * group stable
      */
     public function testToIntExceptions($notInt, $message)
     {
@@ -48,15 +51,53 @@ class CastTest extends WebTestCase
     /**
      * @covers AppBundle\Cast::toInt
      *
-     * @group stable
+     * group stable
      */
     public function testToInt()
     {
-        $tests = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, PHP_INT_MAX];
+        // expected, test.
+        $tests = [
+            // Basics.
+            [-2, -2],
+            [-2, (float) -2],
+            [-2, (string) -2],
+            [-1, -1],
+            [-1, (float) -1],
+            [-1, (string) -1],
+            [0, -0],
+            [0, (float) -0],
+            [0, (string) -0],
+            [0, 0],
+            [0, (float) 0],
+            [1, 1],
+            [1, (float) 1],
+            [2, 2],
+            [2, (float) 2],
+            [2, (string) 2],
+            // Get some scientific notation happening.
+            [1, 1e0],
+            [10, 1e1],
+            [10, 10e0],
+            [100, 10e1],
+            [1, 1e-0],
+            [10, 10e-0],
+            [1, 1e-00],
+            [10, 10e-00],
+            [1000, 10e2],
+            // Extremes. PHP does weird shit out of bounds.
+            // @todo [-PHP_INT_MAX - 1, (string) (-PHP_INT_MAX - 2)],
+            // and all other string weirdness.
+            [-PHP_INT_MAX - 1, -PHP_INT_MAX - 2],
+            [-PHP_INT_MAX - 1, -PHP_INT_MAX - 1],
+            [-PHP_INT_MAX, -PHP_INT_MAX],
+            [-PHP_INT_MAX + 1, -PHP_INT_MAX + 1],
+            [PHP_INT_MAX - 1, PHP_INT_MAX - 1],
+            [PHP_INT_MAX, PHP_INT_MAX],
+        ];
         array_walk($tests, function($test) {
-            $this->assertSame((int) $test, Cast::toInt($test));
-            $this->assertSame((int) $test, Cast::toInt((string) $test));
-            $this->assertSame((int) $test, Cast::toInt((float) $test));
+            $this->assertTrue(is_int(Cast::toInt($test[1])));
+            $this->assertSame($test[0], Cast::toInt($test[1]));
+            // $this->assertTrue(is_int(Cast::toInt((string) $test)));
         });
     }
 

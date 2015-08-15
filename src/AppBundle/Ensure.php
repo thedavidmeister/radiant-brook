@@ -76,9 +76,9 @@ final class Ensure
      * Uses filter_var and is_numeric under the hood.
      *
      * Things that are int-y:
-     *   - Strings like '1'
-     *   - Floats like 1.0
-     *   - Numbers like 1
+     *   - Strings like '1' and '-1'
+     *   - Floats like 1.0 and -1.0
+     *   - Numbers like 1 and -1
      *
      * Things that are not int-y:
      *   - Booleans
@@ -94,7 +94,38 @@ final class Ensure
      */
     public static function isInt($value)
     {
-        return (is_numeric($value) && filter_var($value, FILTER_VALIDATE_INT) !== false) ? $value : self::fail('%s is not an int.', $value);
+        $message = '%s is not an int.';
+
+        // Early return obvious integers.
+        if (is_int($value)) {
+            return $value;
+        }
+
+        // At the least, $value must be numeric.
+        if (is_numeric($value)) {
+            // If filter_var thinks this is an int, then it is.
+            if (filter_var($value, FILTER_VALIDATE_INT) !== false) {
+                return $value;
+            }
+            // If it doesn't, it may well be a string in exponential notation.
+            else {
+                // If we examine the value as a string we can test certain patterns.
+                $stringValue = (string) $value;
+
+                // Positive exponents in scientific notation are always an integer.
+                // Negative exponents in scientific notation are never an integer.
+                // e-0, e-00, etc... will all be normalized by (string).
+                if (stripos($stringValue, 'e') !== false) {
+                    return (stripos($stringValue, 'e-') === false) ? $value : self::fail($message, $value);
+                }
+                else {
+                    self::fail($message, $value);
+                }
+            }
+        }
+        else {
+            self::fail($message, $value);
+        }
     }
 
     /**
