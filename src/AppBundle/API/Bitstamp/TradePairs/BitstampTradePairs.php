@@ -110,7 +110,7 @@ class BitstampTradePairs
      *   - state
      *   - reason
      */
-    public function validateTradeProposition(TradeProposal $tradeProposal)
+    public function validateTradeProposal(TradeProposal $tradeProposal)
     {
         // This proposition is not profitable, but others may be.
         if (!$tradeProposal->isProfitable()) {
@@ -122,7 +122,7 @@ class BitstampTradePairs
             $tradeProposal->panic('Duplicate trade pairs found.');
         }
 
-        return ['state' => $tradeProposal->state(), 'reason' => $tradeProposal->reason()];
+        return $tradeProposal;
     }
 
     /**

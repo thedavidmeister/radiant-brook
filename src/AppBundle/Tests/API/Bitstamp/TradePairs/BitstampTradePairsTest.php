@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\API\Bitstamp\Fees;
 use AppBundle\API\Bitstamp\PrivateAPI\Balance;
 use AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs;
+use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
 use AppBundle\Tests\GuzzleTestTrait;
 use AppBundle\Tests\EnvironmentTestTrait;
 use AppBundle\API\Bitstamp\Dupes;
@@ -61,6 +62,49 @@ class BitstampTradePairsTest extends WebTestCase
     protected function tp()
     {
         return new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $this->proposer());
+    }
+
+    protected function tradeProposal()
+    {
+        return $this->mock('\AppBundle\API\Bitstamp\TradePairs\TradeProposal');
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::validateTradeProposal
+     */
+    public function testValidateTradeProposalProfitable()
+    {
+        $tradeProposal = $this->tradeProposal();
+        $tradeProposal->method('isProfitable')->willReturn(true);
+
+        // A profitable TradeProposal must not have invalidate called.
+        // Profit is not a panic test.
+        $tradeProposal->expects($spyIsProfitable = $this->any())->method('isProfitable');
+        $tradeProposal->expects($spyInvalidate = $this->any())->method('invalidate');
+        $tradeProposal->expects($spyPanic = $this->any())->method('panic');
+        $this->tp()->validateTradeProposal($tradeProposal);
+        $this->assertSame(1, count($spyIsProfitable->getInvocations()));
+        $this->assertSame(0, count($spyInvalidate->getInvocations()));
+        $this->assertSame(0, count($spyPanic->getInvocations()));
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::validateTradeProposal
+     */
+    public function testValidateTradeProposalNotProfitable()
+    {
+        $tradeProposal = $this->tradeProposal();
+        $tradeProposal->method('isProfitable')->willReturn(false);
+
+        // An unprofitable TradeProposal must have invalidate called.
+        // Profit is not a panic test.
+        $tradeProposal->expects($spyIsProfitable = $this->any())->method('isProfitable');
+        $tradeProposal->expects($spyInvalidate = $this->any())->method('invalidate');
+        $tradeProposal->expects($spyPanic = $this->any())->method('panic');
+        $this->tp()->validateTradeProposal($tradeProposal);
+        $this->assertSame(1, count($spyIsProfitable->getInvocations()));
+        $this->assertSame(1, count($spyInvalidate->getInvocations()));
+        $this->assertSame(0, count($spyPanic->getInvocations()));
     }
 
     /**
