@@ -53,6 +53,59 @@ class TradeProposalTest extends WebTestCase
     }
 
     /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::invalidate
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::setState
+     */
+    public function testStateInvalidate()
+    {
+        $tp = new TradeProposal($this->randomBidAskPrices(), $this->fees());
+        $reason = uniqid();
+        $tp->invalidate($reason);
+        $this->assertSame(TradeProposal::STATE_INVALID, $tp->state());
+        $this->assertSame(1, $tp->state());
+        $this->assertSame($reason, $tp->reason());
+
+        // Need an exception if we invalidate with no good reason.
+        $this->setExpectedException('Exception');
+        $tp->invalidate('');
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::panic
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::setState
+     */
+    public function testStatePanic()
+    {
+        // Test moving through invalid to panic.
+        $tp = new TradeProposal($this->randomBidAskPrices(), $this->fees());
+        $invalidateReason = uniqid();
+        $panicReason = uniqid();
+        $tp->invalidate($invalidateReason);
+        $tp->panic($panicReason);
+
+        $this->assertSame(TradeProposal::STATE_PANIC, $tp->state());
+        $this->assertSame(2, $tp->state());
+        $this->assertSame($panicReason, $tp->reason());
+
+        // We cannot move backwards.
+        $anotherInvalidateReason = uniqid();
+        $tp->invalidate($anotherInvalidateReason);
+
+        $this->assertSame(TradeProposal::STATE_PANIC, $tp->state());
+        $this->assertSame(2, $tp->state());
+        $this->assertSame($panicReason, $tp->reason());
+
+        // Jump straight to panic from a valid state.
+        $tp2 = new TradeProposal($this->randomBidAskPrices(), $this->fees());
+        $panicReason2 = uniqid();
+        $tp2->panic($panicReason2);
+
+        $this->assertSame(TradeProposal::STATE_PANIC, $tp2->state());
+        $this->assertSame(2, $tp2->state());
+        $this->assertSame($panicReason2, $tp2->reason());
+    }
+
+    /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::bidUSDPrice
      *
      * @group stable

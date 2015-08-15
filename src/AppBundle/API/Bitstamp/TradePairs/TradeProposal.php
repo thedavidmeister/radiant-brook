@@ -82,7 +82,7 @@ class TradeProposal
      */
     public function panic($reason)
     {
-        $this->setState(self::STATE_PANIC);
+        $this->setState(self::STATE_PANIC, $reason);
     }
 
     /**
