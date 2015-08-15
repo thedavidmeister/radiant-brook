@@ -69,6 +69,10 @@ namespace :phpunit do
     # Do a fast run to flush out failing tests before generating the full
     # coverage report. #failfast ;)
     phpunit "--exclude-group", "slow", "--exclude-group", "requiresAPIKey"
+  end
+
+  desc 'run all phpunit tests and generage clover coverage'
+  task :clover do
     phpunit "--coverage-clover", "build/logs/clover.xml", "--exclude-group", "requiresAPIKey"
   end
 end
