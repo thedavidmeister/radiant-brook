@@ -76,19 +76,6 @@ class BitstampTradePairs
         foreach ($this->proposer as $proposition) {
             $tradeProposal = new TradeProposal($proposition, $this->fees);
             $this->validateTradeProposition($tradeProposal);
-            // switch ($this->validateTradeProposition($tradeProposal)) {
-            //     case self::PROPOSAL_VALID:
-            //         // Do trade.
-            //         // return, loop cannot continue.
-            //         return;
-            //     case self::PROPOSAL_INVALID:
-            //         // Do nothing. Allow loop to continue.
-            //         break;
-            //     case self::PROPOSAL_PANIC:
-            //         // Do nothing.
-            //         // return, loop cannot continue.
-            //         return;
-            // }
         }
     }
 
