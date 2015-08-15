@@ -46,6 +46,21 @@ class CastTest extends WebTestCase
     }
 
     /**
+     * Data provider for testToFloatExceptions.
+     *
+     * @return array
+     */
+    public function dataToFloatExceptions()
+    {
+        return [
+            [true, 'true is not a number.'],
+            [false, 'false is not a number.'],
+            [[], '[] is not a number.'],
+            [\StdClass(), '{} is not a number.'],
+        ];
+    }
+
+    /**
      * @covers AppBundle\Cast::toFloat
      *
      * @param mixed  $value
@@ -85,7 +100,7 @@ class CastTest extends WebTestCase
         '-5',
         ];
         array_walk($tests, function($test) {
-            $this->assertSame((float) $test, Ensure::toFloat($test));
+            $this->assertSame((float) $test, Cast::toFloat($test));
         });
     }
 }
