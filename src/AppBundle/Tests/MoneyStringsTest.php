@@ -50,7 +50,7 @@ class MoneyStringsTest extends WebTestCase
      * @covers AppBundle\MoneyStrings::stringToBTC
      *
      * @expectedException Exception
-     * @expectedExceptionMessage The parameter passed to stringToBTC must be a string
+     * @expectedExceptionMessage null is not a string.
      * @group stable
      */
     public function testStringToBTCNullException()
@@ -62,15 +62,14 @@ class MoneyStringsTest extends WebTestCase
      * @covers AppBundle\MoneyStrings::stringToUSD
      *
      * @dataProvider dataStringToXTypeExceptions
-     * @expectedException Exception
-     * @expectedExceptionMessage The parameter passed to stringToUSD must be a string
      * @group stable
      *
      * @param mixed $notString
      *   Thing that is not a string.
      */
-    public function testStringToUSDTypeExceptions($notString)
+    public function testStringToUSDTypeExceptions($notString, $message)
     {
+        $this->setExpectedException('Exception', $message);
         MoneyStrings::stringToUSD($notString);
     }
 
