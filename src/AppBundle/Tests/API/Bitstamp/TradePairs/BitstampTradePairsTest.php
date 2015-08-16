@@ -78,6 +78,8 @@ class BitstampTradePairsTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::reduceReportToActionableTradeProposal
+     *
+     * @group stable
      */
     public function testReduceReportToActionableTradeProposalNoValid()
     {
@@ -102,6 +104,8 @@ class BitstampTradePairsTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::reduceReportToActionableTradeProposal
+     *
+     * @group stable
      */
     public function testReduceReportToActionableTradeProposal()
     {
