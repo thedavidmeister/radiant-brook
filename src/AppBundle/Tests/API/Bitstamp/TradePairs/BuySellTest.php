@@ -108,6 +108,8 @@ class BuySellTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\BuySell::execute
+     *
+     * @group stable
      */
     public function testExecuteInvalidTradeProposalException()
     {
