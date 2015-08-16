@@ -164,6 +164,13 @@ class MoneyStringsTest extends WebTestCase
         }
     }
 
+    /**
+     * Data provider for testStringToUSD() and base of others.
+     *
+     * @see dataStringToBTCExceptions()
+     *
+     * @return array
+     */
     public function dataStringToXExceptions()
     {
         return [
@@ -240,6 +247,9 @@ class MoneyStringsTest extends WebTestCase
      *
      * @param string $string
      *   The string to test.
+     *
+     * @param string $message
+     *   The expected exception message.
      */
     public function testStringToBTCExceptions($string, $message)
     {
