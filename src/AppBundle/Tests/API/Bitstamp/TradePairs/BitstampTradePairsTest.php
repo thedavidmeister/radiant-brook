@@ -85,7 +85,7 @@ class BitstampTradePairsTest extends WebTestCase
      */
     public function testReduceReportToActionableTradeProposalNoValid()
     {
-        // [], [1], [1, 1], [1, 1, 1], ...
+        // Sequence to test: [], [1], [1, 1], [1, 1, 1], ...
         $tests = array_map(function($arrayLength) {
             return array_fill(0, $arrayLength, TradeProposal::STATE_INVALID);
         }, range(0, 5));
