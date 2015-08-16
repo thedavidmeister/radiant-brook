@@ -92,7 +92,7 @@ class BitstampTradePairs
         $report = [];
         foreach ($this->proposer as $proposition) {
             $tradeProposal = new TradeProposal($proposition, $this->fees);
-            $report[] = ['proposition' => $tradeProposal] + $this->validateTradeProposition($tradeProposal);
+            $report[] = $this->validateTradeProposition($tradeProposal);
         }
 
         return $report;
@@ -122,6 +122,8 @@ class BitstampTradePairs
             $tradeProposal->panic('Duplicate trade pairs found.');
         }
 
+        // Validate the $tradeProposal so that it has a state.
+        $tradeProposal->validate();
         return $tradeProposal;
     }
 

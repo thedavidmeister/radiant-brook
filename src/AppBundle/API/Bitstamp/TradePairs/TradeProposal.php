@@ -48,15 +48,25 @@ class TradeProposal
 
         $this->fees = $fees;
 
-        $this->state = self::STATE_VALID;
-        $this->stateReason = self::STATE_VALID_REASON;
-
         $this->secrets = new Secrets();
     }
 
     /**
      * STATE
      */
+
+    /**
+     * Set this TradeProposal to valid.
+     *
+     * Valid TradeProposals should be executed.
+     *
+     * There is no need to pass a reason to validate because there is only one
+     * possible reason that something is valid.
+     */
+    public function validate()
+    {
+        $this->setState(self::STATE_VALID, self::STATE_VALID_REASON);
+    }
 
     /**
      * Set this TradeProposal to invalid.
@@ -96,7 +106,11 @@ class TradeProposal
      */
     public function state()
     {
-        return $this->state;
+        if (isset($this->state)) {
+            return $this->state;
+        } else {
+            throw new \Exception('No state has been set for this TradeProposal.');
+        }
     }
     protected $state;
 
@@ -108,7 +122,11 @@ class TradeProposal
      */
     public function reason()
     {
-        return $this->stateReason;
+        if(isset($this->stateReason)) {
+            return $this->stateReason;
+        } else {
+            throw new Exception('No state reason has been set for this TradeProposal.');
+        }
     }
     protected $stateReason;
 
