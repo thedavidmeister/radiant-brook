@@ -80,8 +80,7 @@ class BitstampTradePairs
         if (isset($proposalToAction)) {
             if ($proposalToAction->state() === TradeProposal::STATE_VALID) {
                 $this->buySell->execute($proposalToAction);
-            }
-            else {
+            } else {
                 throw new \Exception('Proposal action is not valid. State: ' . $proposalToAction->state() . ', reason: ' . $proposalToAction->reason());
             }
         } else {
@@ -89,6 +88,15 @@ class BitstampTradePairs
         }
     }
 
+    /**
+     * Parse an action plan report into a single actionable proposal.
+     *
+     * @param  array  $report
+     *   A report of TradeProposal objects, as provided by report().
+     *
+     * @return TradeProposal
+     *   A TradeProposal that can be actioned.
+     */
     public function reduceReportToActionableTradeProposal(array $report)
     {
         $actionable = null;
