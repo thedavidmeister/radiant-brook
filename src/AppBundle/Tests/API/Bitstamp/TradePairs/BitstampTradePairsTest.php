@@ -80,12 +80,14 @@ class BitstampTradePairsTest extends WebTestCase
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::reduceReportToActionableTradeProposal
      *
      * @group stable
+     *
+     * @return void
      */
     public function testReduceReportToActionableTradeProposalNoValid()
     {
         // [], [1], [1, 1], [1, 1, 1], ...
-        $tests = array_map(function($array_length) {
-            return array_fill(0, $array_length, TradeProposal::STATE_INVALID);
+        $tests = array_map(function($arrayLength) {
+            return array_fill(0, $arrayLength, TradeProposal::STATE_INVALID);
         }, range(0, 5));
 
         // For each sequence of invalids, ensure that we get a null actionable
@@ -106,6 +108,8 @@ class BitstampTradePairsTest extends WebTestCase
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::reduceReportToActionableTradeProposal
      *
      * @group stable
+     *
+     * @return void
      */
     public function testReduceReportToActionableTradeProposal()
     {
