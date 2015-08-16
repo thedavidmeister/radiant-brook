@@ -83,6 +83,7 @@ class BitstampTradePairsTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::validateTradeProposal
+     * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::__construct
      *
      * @group stable
      */
@@ -144,6 +145,7 @@ class BitstampTradePairsTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::isTrading
+     * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::__construct
      *
      * @group stable
      */
