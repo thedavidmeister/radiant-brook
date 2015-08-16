@@ -94,11 +94,11 @@ class Secrets
             // It is not possible to test this on infrastructure with .env
             // missing and it is not possible to test the above exception where
             // it is set. We have to ignore this for code coverage reports.
-            // @codeCoverageIgnoreStart
             if (null === $value = $loader->getEnvironmentVariable($name)) {
+                // @codeCoverageIgnoreStart
                 throw new \Exception(self::MISSING_ENV_EXCEPTION_MESSAGE . $name);
+                // @codeCoverageIgnoreEnd
             }
-            // @codeCoverageIgnoreEnd
         }
 
         return $value;
