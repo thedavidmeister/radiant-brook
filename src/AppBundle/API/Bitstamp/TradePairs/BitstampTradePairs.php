@@ -91,7 +91,7 @@ class BitstampTradePairs
     /**
      * Parse an action plan report into a single actionable proposal.
      *
-     * @param  array  $report
+     * @param array $report
      *   A report of TradeProposal objects, as provided by report().
      *
      * @return TradeProposal
