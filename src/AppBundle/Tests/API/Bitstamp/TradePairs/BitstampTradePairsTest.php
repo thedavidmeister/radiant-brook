@@ -84,7 +84,7 @@ class BitstampTradePairsTest extends WebTestCase
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::validateTradeProposal
      *
-     * @group stable
+     * group stable
      */
     public function testValidateTradeProposal()
     {
@@ -131,6 +131,10 @@ class BitstampTradePairsTest extends WebTestCase
             } else {
                 $tradeProposalProphet->panic(Argument::any())->shouldNotBeCalled();
             }
+
+            // We expect validate() to be called unconditionally as it is always
+            // overridden by a higher state anyway.
+            $tradeProposalProphet->validate()->shouldBeCalled();
 
             // Attempt validation.
             $tp = new BitstampTradePairs($this->fees(), $dupesProphet->reveal(), $this->buysell(), $this->proposer());
