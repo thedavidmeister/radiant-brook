@@ -73,10 +73,7 @@ class BitstampTradePairs
             throw new \Exception('Bitstamp trading is disabled at this time.');
         }
 
-        foreach ($this->proposer as $proposition) {
-            $tradeProposal = new TradeProposal($proposition, $this->fees);
-            $this->validateTradeProposition($tradeProposal);
-        }
+        $report = $this->report();
     }
 
     /**
@@ -92,7 +89,7 @@ class BitstampTradePairs
         $report = [];
         foreach ($this->proposer as $proposition) {
             $tradeProposal = new TradeProposal($proposition, $this->fees);
-            $report[] = $this->validateTradeProposition($tradeProposal);
+            $report[] = $this->validateTradeProposal($tradeProposal);
         }
 
         return $report;
@@ -106,9 +103,8 @@ class BitstampTradePairs
      *
      * @param  TradeProposal $tradeProposal
      *
-     * @return array
-     *   - state
-     *   - reason
+     * @return TradeProposal
+     *   A validated TradeProposal
      */
     public function validateTradeProposal(TradeProposal $tradeProposal)
     {
@@ -124,6 +120,7 @@ class BitstampTradePairs
 
         // Validate the $tradeProposal so that it has a state.
         $tradeProposal->validate();
+
         return $tradeProposal;
     }
 

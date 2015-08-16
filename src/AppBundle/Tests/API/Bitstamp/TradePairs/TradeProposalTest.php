@@ -55,6 +55,11 @@ class TradeProposalTest extends WebTestCase
         $this->assertSame('Valid trade pair.', $tp->reason());
     }
 
+    /**
+     * Tests exception thrown when state is not set.
+     *
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::state
+     */
     public function testStateNotSetException()
     {
       $tp = $this->tradeProposal();
@@ -62,6 +67,11 @@ class TradeProposalTest extends WebTestCase
       $tp->state();
     }
 
+    /**
+     * Tests exception thrown when reason is not set.
+     *
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::reason
+     */
     public function testStateReasonNotSetException()
     {
       $tp = $this->tradeProposal();

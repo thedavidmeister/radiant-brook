@@ -122,7 +122,7 @@ class TradeProposal
      */
     public function reason()
     {
-        if(isset($this->stateReason)) {
+        if (isset($this->stateReason)) {
             return $this->stateReason;
         } else {
             throw new \Exception('No state reason has been set for this TradeProposal, it has not been validated correctly.');

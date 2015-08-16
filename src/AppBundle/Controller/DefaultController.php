@@ -119,12 +119,12 @@ class DefaultController extends Controller
                 'minProfitUSD',
             ];
             foreach ($methods as $method) {
-                $stats[$name . ' ' . $method] = $item['proposition']->{$method}()->getAmount();
+                $stats[$name . ' ' . $method] = $item->{$method}()->getAmount();
             }
 
-            $stats[$name . ' isProfitable'] = $item['proposition']->isProfitable() ? 'Yes' : 'No';
-            $stats[$name . ' state'] = $item['state'];
-            $stats[$name . ' reason'] = $item['reason'];
+            $stats[$name . ' isProfitable'] = $item->isProfitable() ? 'Yes' : 'No';
+            $stats[$name . ' state'] = $item->state();
+            $stats[$name . ' reason'] = $item->reason();
 
         }
 
