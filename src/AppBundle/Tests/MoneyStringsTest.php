@@ -38,7 +38,11 @@ class MoneyStringsTest extends WebTestCase
      * @dataProvider dataStringToXTypeExceptions
      * @group stable
      *
-     * @param mixed $notString
+     * @param mixed  $notString
+     *   Thing that is not a string.
+     *
+     * @param string $message
+     *   The expected exception.
      */
     public function testStringToBTCTypeExceptions($notString, $message)
     {
@@ -64,8 +68,11 @@ class MoneyStringsTest extends WebTestCase
      * @dataProvider dataStringToXTypeExceptions
      * @group stable
      *
-     * @param mixed $notString
+     * @param mixed  $notString
      *   Thing that is not a string.
+     *
+     * @param string $message
+     *   The expected exception message.
      */
     public function testStringToUSDTypeExceptions($notString, $message)
     {
