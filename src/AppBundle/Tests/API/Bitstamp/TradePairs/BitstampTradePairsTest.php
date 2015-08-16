@@ -109,6 +109,7 @@ class BitstampTradePairsTest extends WebTestCase
         $valid = TradeProposal::STATE_VALID;
         $invalid = TradeProposal::STATE_INVALID;
         $panic = TradeProposal::STATE_PANIC;
+
         $tests = [
             // Single valid.
             [$valid, [$valid], 0],
@@ -165,12 +166,11 @@ class BitstampTradePairsTest extends WebTestCase
         ];
 
         array_walk($tests, function($test) {
-            $report = [];
-            foreach ($test[1] as $state) {
+            $report = array_map(function ($state) {
                 $tradeProposal = $this->prophet->prophesize('\AppBundle\API\Bitstamp\TradePairs\TradeProposal');
                 $tradeProposal->state()->willReturn($state);
-                $report[] = $tradeProposal->reveal();
-            }
+                return $tradeProposal->reveal();
+            }, $test[1]);
 
             $action = $this->tp()->reduceReportToActionableTradeProposal($report);
             $this->assertSame($test[0], $action->state());
