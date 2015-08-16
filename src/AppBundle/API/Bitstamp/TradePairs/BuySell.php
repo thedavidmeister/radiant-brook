@@ -57,27 +57,23 @@ class BuySell
      *
      * Basic handling of logging when trade pairs are placed.
      *
-     * @param Money::USD $bidPrice
-     *   The bid price to place, in USD Money.
-     *
-     * @param Money::BTC $bidVolume
-     *   The ask price to place, in BTC Money.
-     *
-     * @param Money::USD $askPrice
-     *   The ask price to place, in USD Money.
-     *
-     * @param Money::BTC $askVolume
-     *   The ask volume to place, in BTC Money.
+     * @param TradeProposal $tradeProposal
+     *   The proposal to execute on the market.
      */
-    public function execute(Money $bidPrice, Money $bidVolume, Money $askPrice, Money $askVolume)
+    public function execute(TradeProposal $tradeProposal)
     {
+        // Only execute valid TradeProposals.
+        if ($tradeProposal->state()) {
+            throw new \Exception('Attempted to place invalid trade with state: ' . $tradeProposal->state() . ' and reason: ' . $tradeProposal->reason());
+        }
+
         try {
-            $this->doBuy($bidPrice, $bidVolume);
+            $this->doBuy($tradeProposal->bidUSDPrice(), $tradeProposal->bidBTCVolume());
         } catch (\Exception $e) {
             // Even if the buy failed, we want to continue to the sell.
         }
 
-        $this->doSell($askPrice, $askVolume);
+        $this->doSell($tradeProposal->askUSDPrice(), $tradeProposal->askBTCVolume());
 
         $this->logger->info('Trade pairs executed.');
     }

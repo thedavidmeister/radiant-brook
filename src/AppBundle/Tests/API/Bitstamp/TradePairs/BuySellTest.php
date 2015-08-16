@@ -22,6 +22,16 @@ class BuySellTest extends WebTestCase
 
     use GuzzleTestTrait;
 
+    protected function setup()
+    {
+        $this->prophet = new \Prophecy\Prophet;
+    }
+
+    protected function tearDown()
+    {
+        $this->prophet->checkPredictions();
+    }
+
     // @todo - replace with real data sample.
     protected $sample = '{"foo": "bar"}';
     protected $sample2 = '{"bing": "baz"}';
@@ -39,6 +49,18 @@ class BuySellTest extends WebTestCase
     protected function buySell()
     {
         return new BuySell($this->buy(), $this->sell(), $this->mockLogger());
+    }
+
+    protected function tradeProposal($bidUSDPrice, $bidBTCVolume, $askUSDPrice, $askBTCVolume)
+    {
+        $tradeProposal = $this->prophet->prophesize('\AppBundle\API\Bitstamp\TradePairs\TradeProposal');
+
+        $tradeProposal->bidUSDPrice()->willReturn($bidUSDPrice)->shouldBeCalled();
+        $tradeProposal->bidBTCVolume()->willReturn($bidBTCVolume)->shouldBeCalled();
+        $tradeProposal->askUSDPrice()->willReturn($askUSDPrice)->shouldBeCalled();
+        $tradeProposal->askBTCVolume()->willReturn($askBTCVolume)->shouldBeCalled();
+
+        return $tradeProposal;
     }
 
     /**
@@ -60,9 +82,13 @@ class BuySellTest extends WebTestCase
             [Money::USD(123), Money::BTC(123), Money::USD(20), Money::BTC(20), '1.23', '0.00000123', '0.20', '0.00000020'],
         ];
 
-        foreach ($tests as $test) {
+        array_walk($tests, function($test){
             $buySell = $this->buySell();
-            $buySell->execute($test[0], $test[1], $test[2], $test[3]);
+
+            $tradeProposal = $this->tradeProposal($test[0], $test[1], $test[2], $test[3]);
+            $tradeProposal->state()->willReturn(0)->shouldBeCalled();
+
+            $buySell->execute($tradeProposal->reveal());
             $buyRequest = $buySell->buy->client->history->getLastRequest();
             $sellRequest = $buySell->sell->client->history->getLastRequest();
 
@@ -71,7 +97,7 @@ class BuySellTest extends WebTestCase
 
             $this->assertSame($test[6], $sellRequest->getBody()->getField('price'));
             $this->assertSame($test[7], $sellRequest->getBody()->getField('amount'));
-        }
+        });
     }
 
     /**
@@ -95,7 +121,11 @@ class BuySellTest extends WebTestCase
         $client->getEmitter()->attach($client->history);
 
         $buyfail = new BuySell(new Buy($client, $this->mockLogger(), $this->mockAuthenticator()), $this->sell(), $this->mockLogger());
-        $buyfail->execute(Money::USD(1), Money::BTC(1), Money::USD(1), Money::BTC(1));
+
+        $tradeProposal = $this->tradeProposal(Money::USD(1), Money::BTC(1), Money::USD(1), Money::BTC(1));
+        $tradeProposal->state()->willReturn(0)->shouldBeCalled();
+
+        $buyfail->execute($tradeProposal->reveal());
 
         $this->assertNotEmpty($buyfail->buy->client->history->getLastRequest());
         $this->assertNotEmpty($buyfail->sell->client->history->getLastRequest());

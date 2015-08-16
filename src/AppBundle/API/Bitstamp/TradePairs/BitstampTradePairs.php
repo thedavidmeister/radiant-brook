@@ -74,6 +74,39 @@ class BitstampTradePairs
         }
 
         $report = $this->report();
+
+        $proposalToAction = $this->reduceReportToActionableTradeProposal($report);
+
+        if (isset($proposalToAction)) {
+            if ($proposalToAction->state() === TradeProposal::STATE_VALID) {
+                $this->buySell->execute($proposalToAction);
+            }
+            else {
+                throw new \Exception('Proposal action is not valid. State: ' . $proposalToAction->state() . ', reason: ' . $proposalToAction->reason());
+            }
+        } else {
+            throw new \Exception('No valid trade proposals at this time.');
+        }
+    }
+
+    public function reduceReportToActionableTradeProposal(array $report)
+    {
+        $actionable = null;
+
+        foreach ($report as $tradeProposal) {
+            Ensure::isInstanceOf($tradeProposal, 'AppBundle\API\Bitstamp\TradePairs\TradeProposal');
+
+            if ($tradeProposal->state() === TradeProposal::STATE_PANIC) {
+                $actionable = $tradeProposal;
+                break;
+            }
+
+            if ($tradeProposal->state() === TradeProposal::STATE_VALID) {
+                $actionable = !isset($actionable) ? $tradeProposal : $actionable;
+            }
+        }
+
+        return $actionable;
     }
 
     /**
