@@ -117,8 +117,10 @@ class BitstampTradePairs
             $tradeProposal->invalidate('Not a profitable trade proposition.');
         }
 
+        \Psy\Shell::debug(get_defined_vars(), $this);
         // If we found dupes, we cannot continue trading, panic!
         if ($this->dupes->tradeProposalHasDupes($tradeProposal)) {
+            throw new \Exception('zoo');
             $tradeProposal->panic('Duplicate trade pairs found.');
         }
 
