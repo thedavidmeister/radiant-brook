@@ -81,6 +81,27 @@ class BitstampTradePairsTest extends WebTestCase
         return $this->mock('\AppBundle\API\Bitstamp\TradePairs\TradeProposal');
     }
 
+    public function dateReduceReportToActionableTradeProposalNoValidException()
+    {
+        $return = [];
+        $generator = function() {
+            for ($i = 0; $i <= 5; $i++) {
+                yield array_fill(0, $i, TradeProposal::STATE_INVALID);
+            }
+        };
+
+        foreach ($generator() as $example) {
+            $return[] = $example;
+        }
+
+        return $return;
+    }
+
+    public function testReduceReportToActionableTradeProposalNoValidException()
+    {
+        \Psy\Shell::debug(get_defined_vars(), $this);
+    }
+
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::reduceReportToActionableTradeProposal
      */
