@@ -19,16 +19,16 @@ class MoneyStringsTest extends WebTestCase
     public function dataStringToXTypeExceptions()
     {
         return [
-            [1],
-            [0],
-            [true],
-            [false],
-            [[]],
-            [1.00],
-            [123],
-            [100],
-            [0.1],
-            [05.00],
+            [1, '1 is not a string.'],
+            [0, '0 is not a string.'],
+            [true, 'true is not a string.'],
+            [false, 'false is not a string.'],
+            [[], '[] is not a string.'],
+            [1.00, '1 is not a string.'],
+            [123, '123 is not a string.'],
+            [100, '100 is not a string.'],
+            [0.1, '0.1 is not a string.'],
+            [05.00, '5 is not a string.'],
         ];
     }
 
@@ -36,14 +36,13 @@ class MoneyStringsTest extends WebTestCase
      * @covers AppBundle\MoneyStrings::stringToBTC
      *
      * @dataProvider dataStringToXTypeExceptions
-     * @expectedException Exception
-     * @expectedExceptionMessage The parameter passed to stringToBTC must be a string
      * @group stable
      *
      * @param mixed $notString
      */
-    public function testStringToBTCTypeExceptions($notString)
+    public function testStringToBTCTypeExceptions($notString, $message)
     {
+        $this->setExpectedException('Exception', $message);
         MoneyStrings::stringToBTC($notString);
     }
 
