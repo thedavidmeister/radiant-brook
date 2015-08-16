@@ -165,6 +165,7 @@ class BitstampTradePairsTest extends WebTestCase
             ['foo', false],
             ['false', false],
             ['FALSE', false],
+            ['0', false],
             // filter_var() doesn't recognise y/n.
             ['y', false],
             ['n', false],
@@ -173,5 +174,17 @@ class BitstampTradePairsTest extends WebTestCase
             $this->setIsTrading($test[0]);
             $this->assertEquals($test[1], $this->tp()->isTrading());
         });
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::execute
+     *
+     * @group stable
+     */
+    public function testExecuteExceptionNotTrading()
+    {
+        $this->setIsTrading('0');
+        $this->setExpectedException('Exception', 'Bitstamp trading is disabled at this time.');
+        $this->tp()->execute();
     }
 }
