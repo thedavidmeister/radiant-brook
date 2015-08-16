@@ -60,6 +60,8 @@ class TradeProposalTest extends WebTestCase
      * Tests exception thrown when state is not set.
      *
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::state
+     *
+     * @group stable
      */
     public function testStateNotSetException()
     {
@@ -72,6 +74,8 @@ class TradeProposalTest extends WebTestCase
      * Tests exception thrown when reason is not set.
      *
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::reason
+     *
+     * @group stable
      */
     public function testStateReasonNotSetException()
     {
