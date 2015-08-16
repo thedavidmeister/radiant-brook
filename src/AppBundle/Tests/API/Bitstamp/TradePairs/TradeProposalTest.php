@@ -40,7 +40,6 @@ class TradeProposalTest extends WebTestCase
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::state
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::reason
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::__construct
      *
      * @group stable
      */
@@ -48,11 +47,26 @@ class TradeProposalTest extends WebTestCase
     {
         // Test that a brand new TradeProposal is in the valid state/reason.
         // These methods are read-only from the public API.
-        $tp = new TradeProposal($this->randomBidAskPrices(), $this->fees());
+        $tp = $this->tradeProposal();
+        $tp->validate();
         $this->assertSame(TradeProposal::STATE_VALID, $tp->state());
         $this->assertSame(0, $tp->state());
         $this->assertSame(TradeProposal::STATE_VALID_REASON, $tp->reason());
         $this->assertSame('Valid trade pair.', $tp->reason());
+    }
+
+    public function testStateNotSetException()
+    {
+      $tp = $this->tradeProposal();
+      $this->setExpectedException('Exception', 'No state has been set for this TradeProposal, it has not been validated correctly.');
+      $tp->state();
+    }
+
+    public function testStateReasonNotSetException()
+    {
+      $tp = $this->tradeProposal();
+      $this->setExpectedException('Exception', 'No state reason has been set for this TradeProposal, it has not been validated correctly.');
+      $tp->reason();
     }
 
     /**
@@ -63,9 +77,11 @@ class TradeProposalTest extends WebTestCase
      */
     public function testStateInvalidate()
     {
-        $tp = new TradeProposal($this->randomBidAskPrices(), $this->fees());
+        $tp = $this->tradeProposal();
         $reason = uniqid();
         $tp->invalidate($reason);
+        // Validate should not do anything after an invalidate.
+        $tp->validate();
         $this->assertSame(TradeProposal::STATE_INVALID, $tp->state());
         $this->assertSame(1, $tp->state());
         $this->assertSame($reason, $tp->reason());
@@ -84,11 +100,13 @@ class TradeProposalTest extends WebTestCase
     public function testStatePanic()
     {
         // Test moving through invalid to panic.
-        $tp = new TradeProposal($this->randomBidAskPrices(), $this->fees());
+        $tp = $this->tradeProposal();
         $invalidateReason = uniqid();
         $panicReason = uniqid();
         $tp->invalidate($invalidateReason);
         $tp->panic($panicReason);
+        // Validate should not do anything at this point.
+        $tp->validate();
 
         $this->assertSame(TradeProposal::STATE_PANIC, $tp->state());
         $this->assertSame(2, $tp->state());
@@ -103,9 +121,11 @@ class TradeProposalTest extends WebTestCase
         $this->assertSame($panicReason, $tp->reason());
 
         // Jump straight to panic from a valid state.
-        $tp2 = new TradeProposal($this->randomBidAskPrices(), $this->fees());
+        $tp2 = $this->tradeProposal();
         $panicReason2 = uniqid();
         $tp2->panic($panicReason2);
+        // Validate should not do anything at this point.
+        $tp2->validate();
 
         $this->assertSame(TradeProposal::STATE_PANIC, $tp2->state());
         $this->assertSame(2, $tp2->state());

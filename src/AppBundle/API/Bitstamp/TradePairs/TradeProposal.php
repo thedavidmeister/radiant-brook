@@ -109,7 +109,7 @@ class TradeProposal
         if (isset($this->state)) {
             return $this->state;
         } else {
-            throw new \Exception('No state has been set for this TradeProposal.');
+            throw new \Exception('No state has been set for this TradeProposal, it has not been validated correctly.');
         }
     }
     protected $state;
@@ -125,7 +125,7 @@ class TradeProposal
         if(isset($this->stateReason)) {
             return $this->stateReason;
         } else {
-            throw new Exception('No state reason has been set for this TradeProposal.');
+            throw new \Exception('No state reason has been set for this TradeProposal, it has not been validated correctly.');
         }
     }
     protected $stateReason;
@@ -152,7 +152,7 @@ class TradeProposal
         // States can only increase over time (get worse).
         Ensure::isInt($state);
 
-        if ($state > $this->state) {
+        if ($state > $this->state || !isset($this->state)) {
             $this->state = $state;
             $this->stateReason = $reason;
         }
