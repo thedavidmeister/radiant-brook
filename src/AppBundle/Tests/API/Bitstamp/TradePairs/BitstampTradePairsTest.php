@@ -82,6 +82,82 @@ class BitstampTradePairsTest extends WebTestCase
     }
 
     /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::reduceReportToActionableTradeProposal
+     */
+    public function testReduceReportToActionableTradeProposal()
+    {
+        // expected, sequence.
+        $valid = TradeProposal::STATE_VALID;
+        $invalid = TradeProposal::STATE_INVALID;
+        $panic = TradeProposal::STATE_PANIC;
+        $tests = [
+            // Single valid.
+            [$valid, [$valid]],
+            // One valid, one invalid.
+            [$valid, [$invalid, $valid]],
+            [$valid, [$valid, $invalid]],
+            // Double valid/invalid combos.
+            [$valid, [$invalid, $invalid, $valid]],
+            [$valid, [$invalid, $valid, $invalid]],
+            [$valid, [$valid, $invalid, $invalid]],
+            [$valid, [$invalid, $valid, $valid]],
+            [$valid, [$valid, $valid, $invalid]],
+            [$valid, [$valid, $invalid, $valid]],
+            [$valid, [$valid, $valid, $valid]],
+            // Single panic.
+            [$panic, [$panic]],
+            // Panic, valid, invalid combos.
+            [$panic, [$valid, $panic]],
+            [$panic, [$panic, $valid]],
+            [$panic, [$invalid, $panic]],
+            [$panic, [$panic, $invalid]],
+            // Double panic combos.
+            [$panic, [$panic, $invalid, $panic]],
+            [$panic, [$invalid, $invalid, $panic]],
+            [$panic, [$invalid, $panic, $invalid]],
+            [$panic, [$panic, $invalid, $invalid]],
+            [$panic, [$invalid, $panic, $panic]],
+            [$panic, [$panic, $panic, $invalid]],
+            [$panic, [$panic, $invalid, $panic]],
+            [$panic, [$panic, $panic, $panic]],
+            [$panic, [$panic, $invalid, $panic]],
+            // Double valid combos.
+            [$panic, [$valid, $valid, $panic]],
+            [$panic, [$valid, $panic, $valid]],
+            [$panic, [$panic, $valid, $valid]],
+            [$panic, [$valid, $panic, $panic]],
+            [$panic, [$panic, $panic, $valid]],
+            [$panic, [$panic, $valid, $panic]],
+            [$panic, [$panic, $panic, $panic]],
+            // Mixed combos.
+            [$panic, [$valid, $invalid, $panic]],
+            [$panic, [$invalid, $valid, $panic]],
+            [$panic, [$valid, $panic, $invalid]],
+            [$panic, [$invalid, $panic, $valid]],
+            [$panic, [$panic, $valid, $invalid]],
+            [$panic, [$panic, $invalid, $valid]],
+            [$panic, [$valid, $panic, $panic]],
+            [$panic, [$invalid, $panic, $panic]],
+            [$panic, [$panic, $panic, $valid]],
+            [$panic, [$panic, $panic, $invalid]],
+            [$panic, [$panic, $valid, $panic]],
+            [$panic, [$panic, $invalid, $panic]],
+            [$panic, [$panic, $panic, $panic]],
+        ];
+
+        array_walk($tests, function($test) {
+            $report = [];
+            foreach ($test[1] as $state) {
+                $tradeProposal = $this->prophet->prophesize('\AppBundle\API\Bitstamp\TradePairs\TradeProposal');
+                $tradeProposal->state()->willReturn($state);
+                $report[] = $tradeProposal->reveal();
+            }
+
+            $this->assertSame($test[0], $this->tp()->reduceReportToActionableTradeProposal($report)->state());
+        });
+    }
+
+    /**
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::validateTradeProposal
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::__construct
      *
