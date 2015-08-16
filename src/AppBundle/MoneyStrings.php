@@ -3,6 +3,7 @@
 namespace AppBundle;
 
 use Money\Money;
+use AppBundle\Ensure;
 
 /**
  * Converts strings to Money and vice-versa.
@@ -23,16 +24,12 @@ class MoneyStrings
      */
     public static function stringToUSD($string)
     {
-        if (!is_string($string)) {
-            throw new \Exception('The parameter passed to stringToUSD must be a string');
-        }
+        Ensure::isString($string);
 
         // @see http://stackoverflow.com/questions/14169820/regular-expression-to-match-all-currency-symbols
         $string = preg_replace('@\p{Sc}*@', '', $string);
 
-        if (!is_numeric($string)) {
-            throw new \Exception('Could not parse Money::USD from string: ' . $string);
-        }
+        Ensure::isNumeric($string);
 
         return Money::USD((int) round($string * (10 ** self::USD_PRECISION)));
     }
@@ -47,13 +44,8 @@ class MoneyStrings
      */
     public static function stringToBTC($string)
     {
-        if (!is_string($string)) {
-            throw new \Exception('The parameter passed to stringToBTC must be a string');
-        }
-
-        if (!is_numeric($string)) {
-            throw new \Exception('Could not parse Money::BTC from string: ' . $string);
-        }
+        Ensure::isString($string);
+        Ensure::isNumeric($string);
 
         return Money::BTC((int) round($string * (10 ** self::BTC_PRECISION)));
     }
