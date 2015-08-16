@@ -89,17 +89,17 @@ class Secrets
                 // Provide a more useful message than the Dotenv default.
                 throw new \Exception(self::MISSING_ENV_EXCEPTION_MESSAGE . $name);
             }
-
-            // Try once more to find what we're looking for, then give up.
-            // It is not possible to test this on infrastructure with .env
-            // missing and it is not possible to test the above exception where
-            // it is set. We have to ignore this for code coverage reports.
-            if (null === $value = $loader->getEnvironmentVariable($name)) {
-                // @codeCoverageIgnoreStart
-                throw new \Exception(self::MISSING_ENV_EXCEPTION_MESSAGE . $name);
-                // @codeCoverageIgnoreEnd
-            }
         }
+
+        // Try once more to find what we're looking for before giving up.
+        // It is not possible to test this on infrastructure with .env
+        // missing and it is not possible to test the above exception where
+        // it is set. We have to ignore this for code coverage reports.
+        // @codeCoverageIgnoreStart
+        if (null === $value && null === $value = $loader->getEnvironmentVariable($name)) {
+            throw new \Exception(self::MISSING_ENV_EXCEPTION_MESSAGE . $name);
+        }
+        // @codeCoverageIgnoreEnd
 
         return $value;
     }
