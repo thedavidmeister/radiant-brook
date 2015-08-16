@@ -76,30 +76,28 @@ class BitstampTradePairsTest extends WebTestCase
         return new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $this->proposer());
     }
 
-    protected function tradeProposal()
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::reduceReportToActionableTradeProposal
+     */
+    public function testReduceReportToActionableTradeProposalNoValid()
     {
-        return $this->mock('\AppBundle\API\Bitstamp\TradePairs\TradeProposal');
-    }
+        // [], [1], [1, 1], [1, 1, 1], ...
+        $tests = array_map(function($array_length) {
+            return array_fill(0, $array_length, TradeProposal::STATE_INVALID);
+        }, range(0, 5));
 
-    public function dateReduceReportToActionableTradeProposalNoValidException()
-    {
-        $return = [];
-        $generator = function() {
-            for ($i = 0; $i <= 5; $i++) {
-                yield array_fill(0, $i, TradeProposal::STATE_INVALID);
-            }
-        };
+        // For each sequence of invalids, ensure that we get a null actionable
+        // proposal back.
+        array_walk($tests, function($sequence) {
+            $report = array_map(function($state) {
+                $tradeProposal = $this->prophet->prophesize('\AppBundle\API\Bitstamp\TradePairs\TradeProposal');
+                $tradeProposal->state()->willReturn($state);
+                return $tradeProposal->reveal();
+            }, $sequence);
 
-        foreach ($generator() as $example) {
-            $return[] = $example;
-        }
-
-        return $return;
-    }
-
-    public function testReduceReportToActionableTradeProposalNoValidException()
-    {
-        \Psy\Shell::debug(get_defined_vars(), $this);
+            $actionable = $this->tp()->reduceReportToActionableTradeProposal($report);
+            $this->assertNull($actionable);
+        });
     }
 
     /**
