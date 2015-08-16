@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\API\Bitstamp\PrivateAPI\Buy;
 use AppBundle\API\Bitstamp\PrivateAPI\Sell;
 use AppBundle\API\Bitstamp\TradePairs\BuySell;
+use AppBundle\Ensure;
 use Money\Money;
 use AppBundle\Tests\GuzzleTestTrait;
 use GuzzleHttp\Client;
@@ -51,8 +52,13 @@ class BuySellTest extends WebTestCase
         return new BuySell($this->buy(), $this->sell(), $this->mockLogger());
     }
 
-    protected function tradeProposal($bidUSDPrice, $bidBTCVolume, $askUSDPrice, $askBTCVolume)
+    protected function tradeProposal($bidUSDPrice = null, $bidBTCVolume = null, $askUSDPrice = null, $askBTCVolume = null)
     {
+        $bidUSDPrice = isset($bidUSDPrice) ? Ensure::isInstanceOf($bidUSDPrice, 'Money\Money') : Money::USD(1);
+        $bidBTCVolume = isset($bidBTCVolume) ? Ensure::isInstanceOf($bidBTCVolume, 'Money\Money') : Money::BTC(1);
+        $askUSDPrice = isset($askUSDPrice) ? Ensure::isInstanceOf($askUSDPrice, 'Money\Money') : Money::USD(1);
+        $askBTCVolume = isset($askBTCVolume) ? Ensure::isInstanceOf($askBTCVolume, 'Money\Money') : Money::BTC(1);
+
         $tradeProposal = $this->prophet->prophesize('\AppBundle\API\Bitstamp\TradePairs\TradeProposal');
 
         $tradeProposal->bidUSDPrice()->willReturn($bidUSDPrice)->shouldBeCalled();
@@ -102,6 +108,29 @@ class BuySellTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\BuySell::execute
+     */
+    public function testExecuteInvalidTradeProposalException()
+    {
+        $tradeProposal = $this->prophet->prophesize('\AppBundle\API\Bitstamp\TradePairs\TradeProposal');
+
+        // Any state other than 0 is a fail. We expect buySell to ask for a
+        // state and reason when generating the exception.
+        $state = mt_rand(1, mt_getrandmax());
+        $reason = uniqid();
+        $tradeProposal->state()->willReturn($state)->shouldBeCalled();
+        $tradeProposal->reason()->willReturn($reason)->shouldBeCalled();
+
+        $tradeProposal->bidUSDPrice()->shouldNotBeCalled();
+        $tradeProposal->bidBTCVolume()->shouldNotBeCalled();
+        $tradeProposal->askUSDPrice()->shouldNotBeCalled();
+        $tradeProposal->askBTCVolume()->shouldNotBeCalled();
+
+        $this->setExpectedException('Exception', 'Attempted to place invalid trade with state: ' . $state . ' and reason: ' . $reason);
+        $this->buySell()->execute($tradeProposal->reveal());
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\BuySell::execute
      *
      * @group stable
      */
@@ -122,7 +151,7 @@ class BuySellTest extends WebTestCase
 
         $buyfail = new BuySell(new Buy($client, $this->mockLogger(), $this->mockAuthenticator()), $this->sell(), $this->mockLogger());
 
-        $tradeProposal = $this->tradeProposal(Money::USD(1), Money::BTC(1), Money::USD(1), Money::BTC(1));
+        $tradeProposal = $this->tradeProposal();
         $tradeProposal->state()->willReturn(0)->shouldBeCalled();
 
         $buyfail->execute($tradeProposal->reveal());
