@@ -96,6 +96,7 @@ class BitstampTradePairsTest extends WebTestCase
             $report = array_map(function($state) {
                 $tradeProposal = $this->prophet->prophesize('\AppBundle\API\Bitstamp\TradePairs\TradeProposal');
                 $tradeProposal->state()->willReturn($state);
+
                 return $tradeProposal->reveal();
             }, $sequence);
 
@@ -121,9 +122,11 @@ class BitstampTradePairsTest extends WebTestCase
         $tests = [
             // Single valid.
             [$valid, [$valid], 0],
+
             // One valid, one invalid.
             [$valid, [$invalid, $valid], 1],
             [$valid, [$valid, $invalid], 0],
+
             // Double valid/invalid combos.
             [$valid, [$invalid, $invalid, $valid], 2],
             [$valid, [$invalid, $valid, $invalid], 1],
@@ -132,13 +135,16 @@ class BitstampTradePairsTest extends WebTestCase
             [$valid, [$valid, $valid, $invalid], 0],
             [$valid, [$valid, $invalid, $valid], 0],
             [$valid, [$valid, $valid, $valid], 0],
+
             // Single panic.
             [$panic, [$panic], 0],
+
             // Panic, valid, invalid combos.
             [$panic, [$valid, $panic], 1],
             [$panic, [$panic, $valid], 0],
             [$panic, [$invalid, $panic], 1],
             [$panic, [$panic, $invalid], 0],
+
             // Double panic combos.
             [$panic, [$panic, $invalid, $panic], 0],
             [$panic, [$invalid, $invalid, $panic], 2],
@@ -149,6 +155,7 @@ class BitstampTradePairsTest extends WebTestCase
             [$panic, [$panic, $invalid, $panic], 0],
             [$panic, [$panic, $panic, $panic], 0],
             [$panic, [$panic, $invalid, $panic], 0],
+
             // Double valid combos.
             [$panic, [$valid, $valid, $panic], 2],
             [$panic, [$valid, $panic, $valid], 1],
@@ -157,6 +164,7 @@ class BitstampTradePairsTest extends WebTestCase
             [$panic, [$panic, $panic, $valid], 0],
             [$panic, [$panic, $valid, $panic], 0],
             [$panic, [$panic, $panic, $panic], 0],
+
             // Mixed combos.
             [$panic, [$valid, $invalid, $panic], 2],
             [$panic, [$invalid, $valid, $panic], 2],
@@ -177,6 +185,7 @@ class BitstampTradePairsTest extends WebTestCase
             $report = array_map(function ($state) {
                 $tradeProposal = $this->prophet->prophesize('\AppBundle\API\Bitstamp\TradePairs\TradeProposal');
                 $tradeProposal->state()->willReturn($state);
+
                 return $tradeProposal->reveal();
             }, $test[1]);
 
