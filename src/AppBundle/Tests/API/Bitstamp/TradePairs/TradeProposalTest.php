@@ -62,9 +62,9 @@ class TradeProposalTest extends WebTestCase
      */
     public function testStateNotSetException()
     {
-      $tp = $this->tradeProposal();
-      $this->setExpectedException('Exception', 'No state has been set for this TradeProposal, it has not been validated correctly.');
-      $tp->state();
+        $tp = $this->tradeProposal();
+        $this->setExpectedException('Exception', 'No state has been set for this TradeProposal, it has not been validated correctly.');
+        $tp->state();
     }
 
     /**
@@ -74,9 +74,9 @@ class TradeProposalTest extends WebTestCase
      */
     public function testStateReasonNotSetException()
     {
-      $tp = $this->tradeProposal();
-      $this->setExpectedException('Exception', 'No state reason has been set for this TradeProposal, it has not been validated correctly.');
-      $tp->reason();
+        $tp = $this->tradeProposal();
+        $this->setExpectedException('Exception', 'No state reason has been set for this TradeProposal, it has not been validated correctly.');
+        $tp->reason();
     }
 
     /**
