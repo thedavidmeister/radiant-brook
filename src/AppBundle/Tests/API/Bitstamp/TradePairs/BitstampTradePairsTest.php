@@ -12,6 +12,8 @@ use AppBundle\Tests\EnvironmentTestTrait;
 use AppBundle\API\Bitstamp\Dupes;
 use AppBundle\Secrets;
 use Money\Money;
+use Prophecy\Prophet;
+use Prophecy\Argument;
 
 /**
  * Tests for AppBundle\API\Bitstamp\BitstampTradePairs.
@@ -20,6 +22,16 @@ class BitstampTradePairsTest extends WebTestCase
 {
 
     use EnvironmentTestTrait;
+
+    protected function setup()
+    {
+        $this->prophet = new Prophet();
+    }
+
+    protected function tearDown()
+    {
+        $this->prophet->checkPredictions();
+    }
 
     protected function setIsTrading($isTrading)
     {
@@ -69,96 +81,59 @@ class BitstampTradePairsTest extends WebTestCase
         return $this->mock('\AppBundle\API\Bitstamp\TradePairs\TradeProposal');
     }
 
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::validateTradeProposal
+     */
     public function testValidateTradeProposal()
     {
-        // isProfitable, hasDupes, invalidateReason, panicReason
+        // isProfitable, dupeBids, dupeAsks, invalidateReason, panicReason
         $tests = [
-            [true, false, null, null],
-            [false, false, 'Not a profitable trade proposition.', null],
-            [false, true, 'Not a profitable trade proposition.', 'Duplicate trade pairs found.'],
+            [true, [], [], null, null],
+            [false, [], [], 'Not a profitable trade proposition.', null],
+            [true, [uniqid()], [], null, 'Duplicate trade pairs found.'],
+            [true, [], [uniqid()], null, 'Duplicate trade pairs found.'],
+            [true, [uniqid()], [uniqid()], null, 'Duplicate trade pairs found.'],
+            [false, [uniqid()], [], 'Not a profitable trade proposition.', 'Duplicate trade pairs found.'],
+            [false, [], [uniqid()], 'Not a profitable trade proposition.', 'Duplicate trade pairs found.'],
+            [false, [uniqid()], [uniqid()], 'Not a profitable trade proposition.', 'Duplicate trade pairs found.'],
         ];
 
         array_walk($tests, function($test) {
-            $tradeProposal = $this->tradeProposal();
-            $tradeProposal->method('isProfitable')->willReturn($test[0]);
+            $tradeProposalProphet = $this->prophet->prophesize('\AppBundle\API\Bitstamp\TradePairs\TradeProposal');
 
-            $tradeProposal->expects($spyIsProfitable = $this->any())->method('isProfitable');
-            $tradeProposal->expects($spyInvalidate = $this->any())->method('invalidate');
-            $tradeProposal->expects($spyPanic = $this->any())->method('panic');
+            // We expect isProfitable() to be called, to check for profit
+            // invalidation.
+            $tradeProposalProphet->isProfitable()->willReturn($test[0])->shouldBeCalled();
 
-            // Annoyingly, we cannot spy on calls to methods on $dupes once it
-            // is passed to BitstampTradePairs.
-            $dupes = $this->dupes();
-            $dupes->method('tradeProposalHasDupes')->willReturn($test[1]);
-
-            $tp = new BitstampTradePairs($this->fees(), $dupes, $this->buysell(), $this->proposer());
-
-            print_r('foo: ');
-            print $tp->dupes->tradeProposalHasDupes($tradeProposal);
-
-        \Psy\Shell::debug(get_defined_vars(), $this);
-            $this->tp()->validateTradeProposal($tradeProposal);
-
-            $this->assertSame(1, count($spyIsProfitable->getInvocations()));
-
-            $spyInvalidateInvocations = $spyInvalidate->getInvocations();
-            if (isset($test[2])) {
-                $this->assertSame(1, count($spyInvalidateInvocations));
-                $this->assertSame($test[2], end($spyInvalidateInvocations)->parameters[0]);
-            } else {
-                $this->assertSame(0, count($spyInvalidateInvocations));
-            }
-
-            $spyPanicInvocations = $spyPanic->getInvocations();
+            // We only expect invalidate to be called if the trade is not
+            // profitable.
             if (isset($test[3])) {
-                $this->assertSame(1, count($spyPanicInvocations));
-                $this->assertSame($test[3], end($spyPanicInvocations)->parameters[0]);
+                $tradeProposalProphet->invalidate($test[3])->shouldBeCalled();
             } else {
-                $this->assertSame(0, count($spyPanicInvocations));
+                $tradeProposalProphet->invalidate(Argument::any())->shouldNotBeCalled();
             }
+
+            // We expect the bid and ask USD prices to be called in the search
+            // for dupes.
+            $priceReturn = Money::USD(mt_rand());
+            $tradeProposalProphet->bidUSDPrice()->willReturn($priceReturn)->shouldBeCalled();
+            $tradeProposalProphet->askUSDPrice()->willReturn($priceReturn)->shouldBeCalled();
+
+            $dupesProphet = $this->prophet->prophesize('\AppBundle\API\Bitstamp\TradePairs\Dupes');
+            $dupesProphet->bids($priceReturn)->willReturn($test[1])->shouldBeCalled();
+            $dupesProphet->asks($priceReturn)->willReturn($test[2])->shouldBeCalled();
+
+            // We only expect panic to be called if there is a dupe.
+            if (isset($test[4])) {
+                $tradeProposalProphet->panic($test[4])->shouldBeCalled();
+            } else {
+                $tradeProposalProphet->panic(Argument::any())->shouldNotBeCalled();
+            }
+
+            // Attempt validation.
+            $tp = new BitstampTradePairs($this->fees(), $dupesProphet->reveal(), $this->buysell(), $this->proposer());
+            $tp->validateTradeProposal($tradeProposalProphet->reveal());
         });
-
-    }
-
-    /**
-     * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::validateTradeProposal
-     */
-    // public function testValidateTradeProposalProfitable()
-    // {
-    //     $tradeProposal = $this->tradeProposal();
-    //     $tradeProposal->method('isProfitable')->willReturn(true);
-
-    //     // A profitable TradeProposal must not have invalidate called.
-    //     // Profit is not a panic test.
-    //     $tradeProposal->expects($spyIsProfitable = $this->any())->method('isProfitable');
-    //     $tradeProposal->expects($spyInvalidate = $this->any())->method('invalidate');
-    //     $tradeProposal->expects($spyPanic = $this->any())->method('panic');
-    //     $validatedProposal = $this->tp()->validateTradeProposal($tradeProposal);
-    //     $this->assertSame(1, count($spyIsProfitable->getInvocations()));
-    //     $this->assertSame(0, count($spyInvalidate->getInvocations()));
-    //     $this->assertSame(0, count($spyPanic->getInvocations()));
-    // }
-
-    /**
-     * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::validateTradeProposal
-     */
-    public function testValidateTradeProposalNotProfitable()
-    {
-        // $tradeProposal = $this->tradeProposal();
-        // $tradeProposal->method('isProfitable')->willReturn(false);
-
-        // // An unprofitable TradeProposal must have invalidate called.
-        // // Profit is not a panic test.
-        // $tradeProposal->expects($spyIsProfitable = $this->any())->method('isProfitable');
-        // $tradeProposal->expects($spyInvalidate = $this->any())->method('invalidate');
-        // $tradeProposal->expects($spyPanic = $this->any())->method('panic');
-        // $this->tp()->validateTradeProposal($tradeProposal);
-        // $this->assertSame(1, count($spyIsProfitable->getInvocations()));
-
-        // $spyInvalidateInvocations = $spyInvalidate->getInvocations();
-        // $this->assertSame(1, count($spyInvalidateInvocations));
-        // $this->assertSame('Not a profitable trade proposition.', end($spyInvalidateInvocations)->parameters[0]);
-        // $this->assertSame(0, count($spyPanic->getInvocations()));
     }
 
     /**

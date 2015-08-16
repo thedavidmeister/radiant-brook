@@ -121,18 +121,6 @@ class Dupes
     }
 
     /**
-     * Returns true if a given TradeProposal has dupes.
-     *
-     * @param TradeProposal $tradeProposal
-     *
-     * @return boolean
-     */
-    public function tradeProposalHasDupes(TradeProposal $tradeProposal)
-    {
-        return !empty($this->bids($tradeProposal->bidUSDPrice())) || !empty($this->asks($tradeProposal->askUSDPrice()));
-    }
-
-    /**
      * Returns the dupe range multiplier.
      *
      * @return float
