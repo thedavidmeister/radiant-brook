@@ -39,6 +39,7 @@ class TradeProposalTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::state
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::validate
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::reason
      *
      * @group stable
@@ -81,6 +82,7 @@ class TradeProposalTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::invalidate
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::validate
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::setState
      *
      * @group stable
@@ -103,6 +105,8 @@ class TradeProposalTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::panic
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::invalidate
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::validate
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::setState
      *
      * @group stable
