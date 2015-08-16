@@ -84,7 +84,7 @@ class MoneyStringsTest extends WebTestCase
      * @covers AppBundle\MoneyStrings::stringToUSD
      *
      * @expectedException Exception
-     * @expectedExceptionMessage The parameter passed to stringToUSD must be a string
+     * @expectedExceptionMessage null is not a string.
      * @group stable
      */
     public function testStringToUSDNullException()
@@ -164,34 +164,31 @@ class MoneyStringsTest extends WebTestCase
         }
     }
 
-    /**
-     * Data provider for testStringToUSD().
-     *
-     * @return array
-     */
-    public function dataStringToUSDExceptions()
+    public function dataStringToXExceptions()
     {
         return [
-            ['a1'],
-            ['1a'],
-            ['1,00'],
-            ['1,000.00'],
+            ['a1', '"a1" is not numeric.'],
+            ['1a', '"1a" is not numeric.'],
+            ['1,00', '"1,00" is not numeric.'],
+            ['1,000.00', '"1,000.00" is not numeric.'],
         ];
     }
 
     /**
      * @covers AppBundle\MoneyStrings::stringToUSD
      *
-     * @dataProvider dataStringToUSDExceptions
-     * @expectedException Exception
-     * @expectedExceptionMessage Could not parse Money::USD from string:
+     * @dataProvider dataStringToXExceptions
      * @group stable
      *
      * @param string $string
      *   The string to test.
+     *
+     * @param string $message
+     *   The expected exception message.
      */
-    public function testStringToUSDExceptions($string)
+    public function testStringToUSDExceptions($string, $message)
     {
+        $this->setExpectedException('Exception', $message);
         MoneyStrings::stringToUSD($string);
     }
 
@@ -232,28 +229,21 @@ class MoneyStringsTest extends WebTestCase
      */
     public function dataStringToBTCExceptions()
     {
-        return [
-            ['a1'],
-            ['1a'],
-            ['1,00'],
-            ['1,000.00'],
-            ['$100'],
-        ];
+        return array_merge($this->dataStringToXExceptions(), [['$100', '"$100" is not numeric.']]);
     }
 
     /**
      * @covers AppBundle\MoneyStrings::stringToBTC
      *
      * @dataProvider dataStringToBTCExceptions
-     * @expectedException Exception
-     * @expectedExceptionMessage Could not parse Money::BTC from string:
      * @group stable
      *
      * @param string $string
      *   The string to test.
      */
-    public function testStringToBTCExceptions($string)
+    public function testStringToBTCExceptions($string, $message)
     {
+        $this->setExpectedException('Exception', $message);
         MoneyStrings::stringToBTC($string);
     }
 }
