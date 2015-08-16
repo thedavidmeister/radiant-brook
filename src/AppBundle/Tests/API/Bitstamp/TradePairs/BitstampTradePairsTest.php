@@ -86,63 +86,63 @@ class BitstampTradePairsTest extends WebTestCase
      */
     public function testReduceReportToActionableTradeProposal()
     {
-        // expected, sequence.
+        // expected, sequence, correct item index.
         $valid = TradeProposal::STATE_VALID;
         $invalid = TradeProposal::STATE_INVALID;
         $panic = TradeProposal::STATE_PANIC;
         $tests = [
             // Single valid.
-            [$valid, [$valid]],
+            [$valid, [$valid], 0],
             // One valid, one invalid.
-            [$valid, [$invalid, $valid]],
-            [$valid, [$valid, $invalid]],
+            [$valid, [$invalid, $valid], 1],
+            [$valid, [$valid, $invalid], 0],
             // Double valid/invalid combos.
-            [$valid, [$invalid, $invalid, $valid]],
-            [$valid, [$invalid, $valid, $invalid]],
-            [$valid, [$valid, $invalid, $invalid]],
-            [$valid, [$invalid, $valid, $valid]],
-            [$valid, [$valid, $valid, $invalid]],
-            [$valid, [$valid, $invalid, $valid]],
-            [$valid, [$valid, $valid, $valid]],
+            [$valid, [$invalid, $invalid, $valid], 2],
+            [$valid, [$invalid, $valid, $invalid], 1],
+            [$valid, [$valid, $invalid, $invalid], 0],
+            [$valid, [$invalid, $valid, $valid], 1],
+            [$valid, [$valid, $valid, $invalid], 0],
+            [$valid, [$valid, $invalid, $valid], 0],
+            [$valid, [$valid, $valid, $valid], 0],
             // Single panic.
-            [$panic, [$panic]],
+            [$panic, [$panic], 0],
             // Panic, valid, invalid combos.
-            [$panic, [$valid, $panic]],
-            [$panic, [$panic, $valid]],
-            [$panic, [$invalid, $panic]],
-            [$panic, [$panic, $invalid]],
+            [$panic, [$valid, $panic], 1],
+            [$panic, [$panic, $valid], 0],
+            [$panic, [$invalid, $panic], 1],
+            [$panic, [$panic, $invalid], 0],
             // Double panic combos.
-            [$panic, [$panic, $invalid, $panic]],
-            [$panic, [$invalid, $invalid, $panic]],
-            [$panic, [$invalid, $panic, $invalid]],
-            [$panic, [$panic, $invalid, $invalid]],
-            [$panic, [$invalid, $panic, $panic]],
-            [$panic, [$panic, $panic, $invalid]],
-            [$panic, [$panic, $invalid, $panic]],
-            [$panic, [$panic, $panic, $panic]],
-            [$panic, [$panic, $invalid, $panic]],
+            [$panic, [$panic, $invalid, $panic], 0],
+            [$panic, [$invalid, $invalid, $panic], 2],
+            [$panic, [$invalid, $panic, $invalid], 1],
+            [$panic, [$panic, $invalid, $invalid], 0],
+            [$panic, [$invalid, $panic, $panic], 1],
+            [$panic, [$panic, $panic, $invalid], 0],
+            [$panic, [$panic, $invalid, $panic], 0],
+            [$panic, [$panic, $panic, $panic], 0],
+            [$panic, [$panic, $invalid, $panic], 0],
             // Double valid combos.
-            [$panic, [$valid, $valid, $panic]],
-            [$panic, [$valid, $panic, $valid]],
-            [$panic, [$panic, $valid, $valid]],
-            [$panic, [$valid, $panic, $panic]],
-            [$panic, [$panic, $panic, $valid]],
-            [$panic, [$panic, $valid, $panic]],
-            [$panic, [$panic, $panic, $panic]],
+            [$panic, [$valid, $valid, $panic], 2],
+            [$panic, [$valid, $panic, $valid], 1],
+            [$panic, [$panic, $valid, $valid], 0],
+            [$panic, [$valid, $panic, $panic], 1],
+            [$panic, [$panic, $panic, $valid], 0],
+            [$panic, [$panic, $valid, $panic], 0],
+            [$panic, [$panic, $panic, $panic], 0],
             // Mixed combos.
-            [$panic, [$valid, $invalid, $panic]],
-            [$panic, [$invalid, $valid, $panic]],
-            [$panic, [$valid, $panic, $invalid]],
-            [$panic, [$invalid, $panic, $valid]],
-            [$panic, [$panic, $valid, $invalid]],
-            [$panic, [$panic, $invalid, $valid]],
-            [$panic, [$valid, $panic, $panic]],
-            [$panic, [$invalid, $panic, $panic]],
-            [$panic, [$panic, $panic, $valid]],
-            [$panic, [$panic, $panic, $invalid]],
-            [$panic, [$panic, $valid, $panic]],
-            [$panic, [$panic, $invalid, $panic]],
-            [$panic, [$panic, $panic, $panic]],
+            [$panic, [$valid, $invalid, $panic], 2],
+            [$panic, [$invalid, $valid, $panic], 2],
+            [$panic, [$valid, $panic, $invalid], 1],
+            [$panic, [$invalid, $panic, $valid], 1],
+            [$panic, [$panic, $valid, $invalid], 0],
+            [$panic, [$panic, $invalid, $valid], 0],
+            [$panic, [$valid, $panic, $panic], 1],
+            [$panic, [$invalid, $panic, $panic], 1],
+            [$panic, [$panic, $panic, $valid], 0],
+            [$panic, [$panic, $panic, $invalid], 0],
+            [$panic, [$panic, $valid, $panic], 0],
+            [$panic, [$panic, $invalid, $panic], 0],
+            [$panic, [$panic, $panic, $panic], 0],
         ];
 
         array_walk($tests, function($test) {
@@ -153,7 +153,9 @@ class BitstampTradePairsTest extends WebTestCase
                 $report[] = $tradeProposal->reveal();
             }
 
-            $this->assertSame($test[0], $this->tp()->reduceReportToActionableTradeProposal($report)->state());
+            $action = $this->tp()->reduceReportToActionableTradeProposal($report);
+            $this->assertSame($test[0], $action->state());
+            $this->assertSame($report[$test[2]], $action, json_encode($test));
         });
     }
 
