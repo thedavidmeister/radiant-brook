@@ -77,7 +77,7 @@ class BitstampTradePairs
 
         if (isset($proposalToAction)) {
             if ($proposalToAction->state() === TradeProposal::STATE_VALID) {
-                // $this->buySell->execute($proposalToAction);
+                $this->buySell->execute($proposalToAction);
             } else {
                 throw new \Exception('Proposal action is not valid. State: ' . $proposalToAction->state() . ', reason: ' . $proposalToAction->reason());
             }
