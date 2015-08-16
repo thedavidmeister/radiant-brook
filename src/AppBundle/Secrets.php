@@ -79,27 +79,32 @@ class Secrets
 
         // If the environment variable is already set, don't try to use Dotenv
         // as an exception will be thrown if a .env file cannot be found.
-        if (null === $value = $loader->getEnvironmentVariable($name)) {
+        $value = $loader->getEnvironmentVariable($name);
+        if (!isset($value)) {
             try {
                 // Attempt to load environment variables from .env if we didn't
                 // already have what we were looking for in memory.
                 $dotenv = new Dotenv($this->dotEnvPath());
                 $dotenv->load($this->dotEnvPath());
+
+                // Try once more to find what we're looking for before giving
+                // up. It is not possible to test this on infrastructure with
+                // .env missing and it is not possible to test the above
+                // exception where it is set. We have to ignore this for code
+                // coverage reports.
+                // @codeCoverageIgnoreStart
+                $value = $loader->getEnvironmentVariable($name);
+                if (!isset($value)) {
+                    throw new \Exception(self::MISSING_ENV_EXCEPTION_MESSAGE . $name);
+                }
+                // Code coverage requires this return.
+                return $value;
+                // @codeCoverageIgnoreEnd
             } catch (\Exception $e) {
                 // Provide a more useful message than the Dotenv default.
                 throw new \Exception(self::MISSING_ENV_EXCEPTION_MESSAGE . $name);
             }
         }
-
-        // Try once more to find what we're looking for before giving up.
-        // It is not possible to test this on infrastructure with .env
-        // missing and it is not possible to test the above exception where
-        // it is set. We have to ignore this for code coverage reports.
-        // @codeCoverageIgnoreStart
-        if (null === $value && null === $value = $loader->getEnvironmentVariable($name)) {
-            throw new \Exception(self::MISSING_ENV_EXCEPTION_MESSAGE . $name);
-        }
-        // @codeCoverageIgnoreEnd
 
         return $value;
     }
