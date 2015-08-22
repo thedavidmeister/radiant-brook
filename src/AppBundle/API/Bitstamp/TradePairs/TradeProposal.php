@@ -23,11 +23,6 @@ class TradeProposal implements TradeProposalInterface
 
     const MIN_BTC_PROFIT_SECRET = 'BITSTAMP_MIN_BTC_PROFIT';
 
-    public function isFinal()
-    {
-
-    }
-
     const STATE_VALID_REASON = 'Valid trade pair.';
 
     /**
@@ -117,10 +112,27 @@ class TradeProposal implements TradeProposalInterface
     {
         $this->compulsory = true;
         $this->addReason($reason);
+
+        // Compulsory implies final. Avoid calling ensureFinal() so that we
+        // don't dupe the reason.
+        $this->final = true;
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function isFinal()
+    {
+        return $this->final;
+    }
+    protected $final = false;
+
+    /**
+     * {@inheritdoc}
+     */
     public function ensureFinal($reason)
     {
+        $this->final = true;
         $this->addReason($reason);
     }
 

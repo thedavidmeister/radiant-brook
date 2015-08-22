@@ -4,6 +4,7 @@ namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
+use AppBundle\Ensure;
 use Money\Money;
 use AppBundle\Tests\EnvironmentTestTrait;
 
@@ -60,32 +61,59 @@ class TradeProposalTest extends WebTestCase
         $this->assertSame((bool) $expected, $proposal->{$checkMethod}());
     }
 
+    protected function methodRangeArray($method, $start = 0, $end = 5) {
+        Ensure::isString($method);
+        Ensure::isInt($start);
+        Ensure::isInt($end);
+
+        return map(range($start, $end), function ($times) use ($method) {
+            return array_fill(0, $times, $method);
+        });
+    }
+
+    protected function assertBooleanAfterMethodRange($method, $checkMethod, $expected, $start = 0, $end = 5)
+    {
+        $range = $this->methodRangeArray($method, $start, $end);
+        array_walk($range, function($methods) use ($checkMethod, $expected) {
+            $this->assertBooleanAfterMethods($methods, $checkMethod, $expected);
+        });
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::isFinal
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::ensureFinal
+     *
+     * @group stable
+     */
+    public function testFinal()
+    {
+        // No matter how many times we call isFinal, it should be false.
+        $this->assertBooleanAfterMethodRange('isFinal', 'isFinal', false);
+        // After calling ensureFinal, isFinal must be true.
+        $this->assertBooleanAfterMethodRange('ensureFinal', 'isFinal', true, 1, 5);
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::isCompulsory
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::ensureCompulsory
+     *
+     * @group stable
+     */
     public function testCompulsory()
     {
-        // Call isCompulsory a bunch of times.
-        $compulsoryXTimes = map(range(0, 5), function ($times) {
-            return array_fill(0, $times, 'isCompulsory');
-        });
-
         // No matter how many times we call isCompulsory, it should be false.
-        array_walk($compulsoryXTimes, function($methods) {
-            $this->assertBooleanAfterMethods($methods, 'isCompulsory', false);
-        });
-
-        // Call ensureCompulsory a bunch of times.
-        $ensureCompulsoryXTimes = map(range(1, 5), function ($times) {
-            return array_fill(0, $times, 'ensureCompulsory');
-        });
-
-        // Now isCompulsory must always be true.
-        array_walk($ensureCompulsoryXTimes, function($methods) {
-            $this->assertBooleanAfterMethods($methods, 'isCompulsory', true);
-        });
+        $this->assertBooleanAfterMethodRange('isCompulsory', 'isCompulsory', false);
+        // After calling ensureCompulsory, isCompulsory must be true.
+        $this->assertBooleanAfterMethodRange('ensureCompulsory', 'isCompulsory', true, 1, 5);
+        // After calling ensureCompulsory, isFinal must be true.
+        $this->assertBooleanAfterMethodRange('ensureCompulsory', 'isFinal', true, 1, 5);
     }
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::reasons
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::addReason
+     *
+     * @group stable
      */
     public function testReasons()
     {
@@ -119,6 +147,8 @@ class TradeProposalTest extends WebTestCase
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::isValid
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::validate
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::invalidate
+     *
+     * @group stable
      */
     public function testIsValid()
     {
@@ -164,6 +194,8 @@ class TradeProposalTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::isValid
+     *
+     * @group stable
      */
     public function testIsValidNullException()
     {
@@ -171,6 +203,9 @@ class TradeProposalTest extends WebTestCase
         $this->tradeProposal()->isValid();
     }
 
+    /**
+     * Data provider for invalid reasons.
+     */
     public function dataInvalidReason()
     {
         // Generate some data that is not a string.
@@ -196,6 +231,8 @@ class TradeProposalTest extends WebTestCase
 
     /**
      * @dataProvider dataInvalidReason
+     *
+     * @group stable
      */
     public function testInvalidateInvalidReasonException($invalidReason = null)
     {
@@ -205,6 +242,8 @@ class TradeProposalTest extends WebTestCase
 
     /**
      * @dataProvider dataInvalidReason
+     *
+     * @group stable
      */
     public function testCompulsoryInvalidReasonException($invalidReason = null)
     {
@@ -213,46 +252,14 @@ class TradeProposalTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::panic
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::invalidate
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::validate
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::setState
+     * @dataProvider dataInvalidReason
      *
      * @group stable
      */
-    public function testStatePanic()
+    public function testFinalInvalidReasonException($invalidReason = null)
     {
-        // Test moving through invalid to panic.
-        $tp = $this->tradeProposal();
-        $invalidateReason = uniqid();
-        $panicReason = uniqid();
-        $tp->invalidate($invalidateReason);
-        $tp->panic($panicReason);
-        // Validate should not do anything at this point.
-        $tp->validate();
-
-        $this->assertSame(TradeProposal::STATE_PANIC, $tp->state());
-        $this->assertSame(2, $tp->state());
-        $this->assertSame($panicReason, $tp->reason());
-
-        // We cannot move backwards.
-        $anotherInvalidateReason = uniqid();
-        $tp->invalidate($anotherInvalidateReason);
-
-        $this->assertSame(TradeProposal::STATE_PANIC, $tp->state());
-        $this->assertSame(2, $tp->state());
-        $this->assertSame($panicReason, $tp->reason());
-
-        // Jump straight to panic from a valid state.
-        $tp2 = $this->tradeProposal();
-        $panicReason2 = uniqid();
-        $tp2->panic($panicReason2);
-        // Validate should not do anything at this point.
-        $tp2->validate();
-
-        $this->assertSame(TradeProposal::STATE_PANIC, $tp2->state());
-        $this->assertSame(2, $tp2->state());
-        $this->assertSame($panicReason2, $tp2->reason());
+        $this->setExpectedException('Exception');
+        $this->tradeProposal()->ensureFinal($invalidReason);
     }
 
     /**
