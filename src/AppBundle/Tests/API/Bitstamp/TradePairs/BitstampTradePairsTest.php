@@ -86,33 +86,113 @@ class BitstampTradePairsTest extends WebTestCase
         return $proposal->reveal();
     }
 
+    protected function statefulProposalMockFiller ($isValid = false, $isCompulsory = false, $isFinal = false) {
+        return array_fill(0, mt_rand(0, 10), $this->statefulProposalMock($isValid));
+    }
+
+    protected function assertActionableReport(array $pre, array $post, array $tests)
+    {
+        $i = 0;
+        do {
+            $sequencer = function ($config) {
+                // Fill an array with statful mocks based on the config options.
+                $sequence = array_reduce($config, function(array $carry, array $args) {
+                    // Merge arrays from the filler together to build the
+                    // sequence.
+                    return array_merge($carry, call_user_func_array([$this, 'statefulProposalMockFiller'], $args));
+                }, []);
+
+                // Randomise the sequence for fun.
+                shuffle($sequence);
+
+                return $sequence;
+            };
+
+            $pre_sequence = $sequencer($pre);
+            $post_sequence = $sequencer($post);
+
+            // Convert the expectations config into mocks.
+            $testMocks = array_map(function ($test) {
+                return call_user_func_array([$this, 'statefulProposalMock'], $test);
+            }, $tests);
+
+            array_walk($testMocks, function ($expected) use ($pre_sequence, $post_sequence) {
+                $sequence = array_merge($pre_sequence, [$expected], $post_sequence);
+
+                $actionable = $this->tp()->reduceReportToActionableTradeProposal($sequence);
+
+                $this->assertSame($expected, $actionable);
+            });
+
+            $i++;
+        } while ($i < 20);
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::reduceReportToActionableTradeProposal
+     */
+    public function testReduceReportToActionableTradeProposalFirstValidFinal()
+    {
+        $pre = [
+            // Valid pres have to be tested separately.
+            [false],
+        ];
+        $post = [
+            [true],
+            [false],
+            [true, true],
+            [false, true],
+            [true, true, true],
+            [true, false, true],
+            [false, true, true],
+            [false, false, true],
+        ];
+        // Invalid finals have to be tested separately.
+        $tests = [
+            [true, true, true],
+            [true, false, true],
+        ];
+        $this->assertActionableReport($pre, $post, $tests);
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::reduceReportToActionableTradeProposal
+     */
+    public function testReduceReportToActionableTradeProposalFirstCompulsory()
+    {
+        $pre = [
+            [false],
+            [true],
+        ];
+        $post = [
+            [false],
+            [true],
+            [false, true],
+            [false, false],
+        ];
+        $tests = [
+            [false, true],
+            [true, true],
+        ];
+        $this->assertActionableReport($pre, $post, $tests);
+    }
+
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::reduceReportToActionableTradeProposal
      */
     public function testReduceReportToActionableTradeProposalFirstValid()
     {
-        $pre_fluff_length = mt_rand(0, 10);
-        // This is actually doubled, for valid and invalid mixing.
-        $post_fluff_length = mt_rand(0, 10);
-
-        $mock_filler = function($length, $isValid) {
-            return array_fill(0, $length, $this->statefulProposalMock($isValid));
-        };
-
-        // Pre must all be invalid.
-        $pre_fluff = $mock_filler($pre_fluff_length, false);
-
-        // Post is a mix of invalid and valid.
-        $post_fluff = array_merge($mock_filler($post_fluff_length, false), $mock_filler($post_fluff_length, true));
-        shuffle($post_fluff);
-
-        $expected = $this->statefulProposalMock(true);
-
-        $sequence = array_merge($pre_fluff, [$expected], $post_fluff);
-
-        $actionable = $this->tp()->reduceReportToActionableTradeProposal($sequence);
-
-        $this->assertSame($expected, $actionable);
+        $pre = [
+            [false],
+        ];
+        $post = [
+            [false],
+            [true],
+        ];
+        $tests = [
+            [true],
+        ];
+        $this->assertActionableReport($pre, $post, $tests);
     }
 
     /**
