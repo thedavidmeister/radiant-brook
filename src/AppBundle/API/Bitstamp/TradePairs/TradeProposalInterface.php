@@ -8,8 +8,6 @@ namespace AppBundle\API\Bitstamp\TradePairs;
 
 interface TradeProposalInterface
 {
-    const DEFAULT_VALID_REASON = 'Valid trade pair.';
-
     /**
      * The reasons for the current proposal.
      *
@@ -40,7 +38,7 @@ interface TradeProposalInterface
      *
      * @param string reason
      *   The (optional) reason for the validation. Defaults to
-     *   TradeProposalInterface::DEFAULT_VALID_REASON if not provided.
+     *   'Valid trade proposal.'if not provided.
      *
      * @see invalidate()
      * @see isValid()

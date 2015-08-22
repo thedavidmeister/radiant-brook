@@ -58,6 +58,8 @@ class TradeProposal implements TradeProposalInterface
      * Validity.
      */
 
+    const DEFAULT_VALID_REASON = 'Valid trade proposal.';
+
     protected $reasons = [];
     public function reasons()
     {
@@ -85,8 +87,9 @@ class TradeProposal implements TradeProposalInterface
      * There is no need to pass a reason to validate because there is only one
      * possible reason that something is valid.
      */
-    public function validate($reason)
+    public function validate($reason = null)
     {
+        $reason = isset($reason) ? $reason : self::DEFAULT_VALID_REASON;
         $this->addReason($reason);
     }
 

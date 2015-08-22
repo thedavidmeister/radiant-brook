@@ -71,7 +71,26 @@ class TradeProposalTest extends WebTestCase
         });
 
         $this->assertSame($reasons, $proposal->reasons());
-        print_r($reasons);
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::reasons
+     */
+    public function testReasonsValidDefault()
+    {
+        $reasons = map(range(0, 20), function () { return (mt_rand() / mt_getrandmax() > 0.5) ? $this->faker()->sentence : null; });
+
+        $proposal = $this->tradeProposal();
+
+        array_walk($reasons, function($reason) use (&$proposal) {
+            $proposal->validate($reason);
+        });
+
+        $expected = map($reasons, function($reason) {
+            return isset($reason) ? $reason : 'Valid trade proposal.';
+        });
+
+        $this->assertSame($expected, $proposal->reasons());
     }
 
     /**
