@@ -76,6 +76,61 @@ class BitstampTradePairsTest extends WebTestCase
         return new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $this->proposer());
     }
 
+    protected function statefulProposalMock($isValid = false, $isCompulsory = false, $isFinal = false)
+    {
+        $proposal = $this->prophet->prophesize('\AppBundle\API\Bitstamp\TradePairs\TradeProposal');
+        $proposal->isValid()->willReturn($isValid);
+        $proposal->isCompulsory()->willReturn($isCompulsory);
+        $proposal->isFinal()->willReturn($isFinal);
+
+        return $proposal->reveal();
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::reduceReportToActionableTradeProposal
+     */
+    public function testReduceReportToActionableTradeProposalFirstValid()
+    {
+        $pre_fluff_length = mt_rand(0, 10);
+        // This is actually doubled, for valid and invalid mixing.
+        $post_fluff_length = mt_rand(0, 10);
+
+        $mock_filler = function($length, $isValid) {
+            return array_fill(0, $length, $this->statefulProposalMock($isValid));
+        };
+
+        // Pre must all be invalid.
+        $pre_fluff = $mock_filler($pre_fluff_length, false);
+
+        // Post is a mix of invalid and valid.
+        $post_fluff = array_merge($mock_filler($post_fluff_length, false), $mock_filler($post_fluff_length, true));
+        shuffle($post_fluff);
+
+        $expected = $this->statefulProposalMock(true);
+
+        $sequence = array_merge($pre_fluff, [$expected], $post_fluff);
+
+        $actionable = $this->tp()->reduceReportToActionableTradeProposal($sequence);
+
+        $this->assertSame($expected, $actionable);
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::reduceReportToActionableTradeProposal
+     */
+    public function testReduceReportToActionableTradeProposalNoValid()
+    {
+        $tests = array_map(function($length) {
+            return array_fill(0, $length, $this->statefulProposalMock(false));
+        }, range(0, 5));
+        // \Psy\Shell::debug(get_defined_vars(), $this);
+
+        array_walk($tests, function($test) {
+            $actionable = $this->tp()->reduceReportToActionableTradeProposal($test);
+            $this->assertNull($actionable);
+        });
+    }
+
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::reduceReportToActionableTradeProposal
      *
@@ -83,7 +138,7 @@ class BitstampTradePairsTest extends WebTestCase
      *
      * @return void
      */
-    public function testReduceReportToActionableTradeProposalNoValid()
+    public function testReduceReportToActionableTradeProposalNoValidz()
     {
         // Sequence to test: [], [1], [1, 1] ...
         $tests = array_map(function($arrayLength) {
