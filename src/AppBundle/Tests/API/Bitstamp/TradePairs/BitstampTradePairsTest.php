@@ -130,6 +130,8 @@ class BitstampTradePairsTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::reduceReportToActionableTradeProposal
+     *
+     * @group stable
      */
     public function testReduceReportToActionableTradeProposalFirstValidFinal()
     {
@@ -157,6 +159,8 @@ class BitstampTradePairsTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::reduceReportToActionableTradeProposal
+     *
+     * @group stable
      */
     public function testReduceReportToActionableTradeProposalFirstCompulsory()
     {
@@ -179,6 +183,8 @@ class BitstampTradePairsTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::reduceReportToActionableTradeProposal
+     *
+     * @group stable
      */
     public function testReduceReportToActionableTradeProposalFirstValid()
     {
@@ -197,6 +203,8 @@ class BitstampTradePairsTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::reduceReportToActionableTradeProposal
+     *
+     * @group stable
      */
     public function testReduceReportToActionableTradeProposalNoValid()
     {
