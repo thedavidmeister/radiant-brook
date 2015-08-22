@@ -45,6 +45,44 @@ class TradeProposalTest extends WebTestCase
         return \Faker\Factory::create();
     }
 
+    protected function assertBooleanAfterMethods(array $methods, $checkMethod, $expected) {
+        $proposal = $this->tradeProposal();
+
+        // Generate a random reason.
+        $reason = $this->faker()->sentence;
+
+        foreach ($methods as $method) {
+            $proposal->{$method}($reason);
+        }
+
+        // Double check the return.
+        $this->assertSame((bool) $expected, $proposal->{$checkMethod}());
+        $this->assertSame((bool) $expected, $proposal->{$checkMethod}());
+    }
+
+    public function testCompulsory()
+    {
+        // Call isCompulsory a bunch of times.
+        $compulsoryXTimes = map(range(0, 5), function ($times) {
+            return array_fill(0, $times, 'isCompulsory');
+        });
+
+        // No matter how many times we call isCompulsory, it should be false.
+        array_walk($compulsoryXTimes, function($methods) {
+            $this->assertBooleanAfterMethods($methods, 'isCompulsory', false);
+        });
+
+        // Call ensureCompulsory a bunch of times.
+        $ensureCompulsoryXTimes = map(range(1, 5), function ($times) {
+            return array_fill(0, $times, 'ensureCompulsory');
+        });
+
+        // Now isCompulsory must always be true.
+        array_walk($ensureCompulsoryXTimes, function($methods) {
+            $this->assertBooleanAfterMethods($methods, 'isCompulsory', true);
+        });
+    }
+
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::reasons
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::addReason
@@ -75,19 +113,6 @@ class TradeProposalTest extends WebTestCase
         });
 
         $this->assertSame($reasons, $proposal->reasons());
-    }
-
-    protected function assertBooleanAfterMethods(array $methods, $checkMethod, $expected) {
-        $proposal = $this->tradeProposal();
-
-        // Generate a random reason.
-        $reason = $this->faker()->sentence;
-
-        foreach ($methods as $method) {
-            $proposal->{$method}($reason);
-        }
-
-        $this->assertSame((bool) $expected, $proposal->{$checkMethod}());
     }
 
     /**
@@ -148,16 +173,24 @@ class TradeProposalTest extends WebTestCase
 
     public function dataInvalidReason()
     {
+        // Generate some data that is not a string.
         $data = map(range(0, 10), function ($index) {
             $invalidReasonTypes = ['randomDigit', 'randomFloat', 'words', 'dateTime'];
             return $this->faker()->{$invalidReasonTypes[$index % count($index)]};
         });
 
+        // Test the empty string.
         $data[] = '';
+
+        // Test a blank data point.
         $data[] = [];
+
+        // Shuffle the data.
         shuffle($data);
 
+        // Wrap each data point in an array.
         $data = map($data, function($item) { return (array) $item; });
+
         return $data;
     }
 
@@ -171,73 +204,12 @@ class TradeProposalTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::state
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::validate
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::reason
-     *
-     * @group stable
+     * @dataProvider dataInvalidReason
      */
-    public function testStateReason()
+    public function testCompulsoryInvalidReasonException($invalidReason = null)
     {
-        // Test that a brand new TradeProposal is in the valid state/reason.
-        // These methods are read-only from the public API.
-        $tp = $this->tradeProposal();
-        $tp->validate();
-        $this->assertSame(TradeProposal::STATE_VALID, $tp->state());
-        $this->assertSame(0, $tp->state());
-        $this->assertSame(TradeProposal::STATE_VALID_REASON, $tp->reason());
-        $this->assertSame('Valid trade pair.', $tp->reason());
-    }
-
-    /**
-     * Tests exception thrown when state is not set.
-     *
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::state
-     *
-     * @group stable
-     */
-    public function testStateNotSetException()
-    {
-        $tp = $this->tradeProposal();
-        $this->setExpectedException('Exception', 'No state has been set for this TradeProposal, it has not been validated correctly.');
-        $tp->state();
-    }
-
-    /**
-     * Tests exception thrown when reason is not set.
-     *
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::reason
-     *
-     * @group stable
-     */
-    public function testStateReasonNotSetException()
-    {
-        $tp = $this->tradeProposal();
-        $this->setExpectedException('Exception', 'No state reason has been set for this TradeProposal, it has not been validated correctly.');
-        $tp->reason();
-    }
-
-    /**
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::invalidate
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::validate
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::setState
-     *
-     * @group stable
-     */
-    public function testStateInvalidate()
-    {
-        $tp = $this->tradeProposal();
-        $reason = uniqid();
-        $tp->invalidate($reason);
-        // Validate should not do anything after an invalidate.
-        $tp->validate();
-        $this->assertSame(TradeProposal::STATE_INVALID, $tp->state());
-        $this->assertSame(1, $tp->state());
-        $this->assertSame($reason, $tp->reason());
-
-        // Need an exception if we invalidate with no good reason.
         $this->setExpectedException('Exception');
-        $tp->invalidate('');
+        $this->tradeProposal()->ensureCompulsory($invalidReason);
     }
 
     /**

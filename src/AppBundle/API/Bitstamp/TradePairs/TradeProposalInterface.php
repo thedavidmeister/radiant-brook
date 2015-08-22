@@ -78,6 +78,9 @@ interface TradeProposalInterface
      *
      * @see isFinal()
      * @see isValid()
+     *
+     * @return bool
+     *   True if this proposal is compulsory, false otherwise.
      */
     public function isCompulsory();
 
@@ -91,6 +94,9 @@ interface TradeProposalInterface
      * Throws an exception if a reason is not given.
      *
      * @see isCompulsory()
+     *
+     * @return bool
+     *   Returns the value of isCompulsory (which will be true).
      */
     public function ensureCompulsory($reason);
 

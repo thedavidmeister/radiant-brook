@@ -23,10 +23,6 @@ class TradeProposal implements TradeProposalInterface
 
     const MIN_BTC_PROFIT_SECRET = 'BITSTAMP_MIN_BTC_PROFIT';
 
-    public function isCompulsory()
-    {
-
-    }
     public function isFinal()
     {
 
@@ -67,19 +63,23 @@ class TradeProposal implements TradeProposalInterface
     }
 
     protected function addReason($reason) {
+        // Don't allow empty string reasons (although the string '0' is fine).
         Ensure::notIdentical($reason, '');
         Ensure::isString($reason);
 
         $this->reasons[] = $reason;
     }
 
-    protected $valid;
+    /**
+     * {@inheritdoc}
+     */
     public function isValid()
     {
         Ensure::notNull($this->valid);
 
         return $this->valid;
     }
+    protected $valid;
 
     /**
      * {@inheritdoc}
@@ -101,9 +101,21 @@ class TradeProposal implements TradeProposalInterface
         $this->addReason($reason);
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function isCompulsory()
+    {
+        return $this->compulsory;
+    }
+    protected $compulsory = false;
 
+    /**
+     * {@inheritdoc}
+     */
     public function ensureCompulsory($reason)
     {
+        $this->compulsory = true;
         $this->addReason($reason);
     }
 
