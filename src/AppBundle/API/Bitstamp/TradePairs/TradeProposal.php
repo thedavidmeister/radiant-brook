@@ -76,17 +76,20 @@ class TradeProposal implements TradeProposalInterface
     protected $valid;
     public function isValid()
     {
+        Ensure::notNull($this->valid);
+
         return $this->valid;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function validate($reason = null)
+    public function validate()
     {
-        $this->valid = true;
-        $reason = isset($reason) ? $reason : self::DEFAULT_VALID_REASON;
-        $this->addReason($reason);
+        // Only validate this if it wasn't previously invalidated.
+        if ($this->valid !== false) {
+            $this->valid = true;
+        }
     }
 
     /**

@@ -36,9 +36,7 @@ interface TradeProposalInterface
     /**
      * Sets the TradeProposal as valid, if not previously invalidated.
      *
-     * @param string reason
-     *   The (optional) reason for the validation. Defaults to
-     *   'Valid trade proposal.'if not provided.
+     * There is no reason for validate().
      *
      * @see invalidate()
      * @see isValid()
@@ -46,7 +44,7 @@ interface TradeProposalInterface
      * @return bool
      *   Returns the result of isValid().
      */
-    public function validate($reason);
+    public function validate();
 
     /**
      * Sets the TradeProposal as invalid.

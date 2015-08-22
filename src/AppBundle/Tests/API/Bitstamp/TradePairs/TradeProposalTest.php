@@ -47,6 +47,7 @@ class TradeProposalTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::reasons
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::addReason
      */
     public function testReasons()
     {
@@ -56,7 +57,6 @@ class TradeProposalTest extends WebTestCase
         $nextMethod = function() {
             $methods = [
                 'invalidate',
-                'validate',
                 'ensureCompulsory',
                 'ensureFinal',
             ];
@@ -71,26 +71,6 @@ class TradeProposalTest extends WebTestCase
         });
 
         $this->assertSame($reasons, $proposal->reasons());
-    }
-
-    /**
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::reasons
-     */
-    public function testReasonsValidDefault()
-    {
-        $reasons = map(range(0, 20), function () { return (mt_rand() / mt_getrandmax() > 0.5) ? $this->faker()->sentence : null; });
-
-        $proposal = $this->tradeProposal();
-
-        array_walk($reasons, function($reason) use (&$proposal) {
-            $proposal->validate($reason);
-        });
-
-        $expected = map($reasons, function($reason) {
-            return isset($reason) ? $reason : 'Valid trade proposal.';
-        });
-
-        $this->assertSame($expected, $proposal->reasons());
     }
 
     protected function assertBooleanAfterMethods(array $methods, $checkMethod, $expected) {
@@ -108,26 +88,58 @@ class TradeProposalTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::isValid
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::validate
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::invalidate
      */
     public function testIsValid()
     {
+        $range = range(1, 50);
+
         // Test calling validate a bunch of times and seeing true.
-        $validateXTimes = map(range(1, 5), function($times) {
+        $validateXTimes = map($range, function($times) {
             return array_fill(0, $times, 'validate');
         });
+        shuffle($validateXTimes);
 
         array_walk($validateXTimes, function($validations) {
             $this->assertBooleanAfterMethods($validations, 'isValid', true);
         });
 
         // Test calling invalidate a bunch of times and seeing false.
-        $invalidateXTimes = map(range(1, 5), function($times) {
+        $invalidateXTimes = map($range, function($times) {
             return array_fill(0, $times, 'invalidate');
         });
+        shuffle($invalidateXTimes);
 
         array_walk($invalidateXTimes, function($invalidations) {
             $this->assertBooleanAfterMethods($invalidations, 'isValid', false);
         });
+
+        // Test that a random mix of validate and invalidate is false.
+        $randomXTimes = array_map(function($valid, $invalid) {
+            $merged = array_merge($valid, $invalid);
+            shuffle($merged);
+            return $merged;
+        }, $validateXTimes, $invalidateXTimes);
+
+        array_walk($randomXTimes, function($invalidated) {
+            $this->assertBooleanAfterMethods($invalidated, 'isValid', false);
+        });
+
+        $single_validate_invalidate = ['validate', 'invalidate'];
+        $this->assertBooleanAfterMethods($single_validate_invalidate, 'isValid', false);
+
+        $single_invalidate_validage = ['invalidate', 'validate'];
+        $this->assertBooleanAfterMethods($single_validate_invalidate, 'isValid', false);
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::isValid
+     */
+    public function testIsValidException()
+    {
+        $this->setExpectedException('Exception');
+        $this->tradeProposal()->isValid();
     }
 
     /**
