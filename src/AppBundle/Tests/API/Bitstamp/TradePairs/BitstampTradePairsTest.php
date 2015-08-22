@@ -136,7 +136,7 @@ class BitstampTradePairsTest extends WebTestCase
     public function testReduceReportToActionableTradeProposalFirstValidFinal()
     {
         $pre = [
-            // Valid pres have to be tested separately.
+            // Valid pre-mocks have to be tested separately.
             [false],
         ];
         $post = [
@@ -211,7 +211,6 @@ class BitstampTradePairsTest extends WebTestCase
         $tests = array_map(function($length) {
             return array_fill(0, $length, $this->statefulProposalMock(false));
         }, range(0, 5));
-        // \Psy\Shell::debug(get_defined_vars(), $this);
 
         array_walk($tests, function($test) {
             $actionable = $this->tp()->reduceReportToActionableTradeProposal($test);
