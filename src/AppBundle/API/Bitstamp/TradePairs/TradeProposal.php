@@ -76,33 +76,25 @@ class TradeProposal implements TradeProposalInterface
     protected $valid;
     public function isValid()
     {
-        // return $valid;
+        return $this->valid;
     }
 
     /**
-     * Set this TradeProposal to valid.
-     *
-     * Valid TradeProposals should be executed.
-     *
-     * There is no need to pass a reason to validate because there is only one
-     * possible reason that something is valid.
+     * {@inheritdoc}
      */
     public function validate($reason = null)
     {
+        $this->valid = true;
         $reason = isset($reason) ? $reason : self::DEFAULT_VALID_REASON;
         $this->addReason($reason);
     }
 
     /**
-     * Set this TradeProposal to invalid.
-     *
-     * Invalid TradeProposals should not be executed.
-     *
-     * @param string $reason
-     *   The reason this TradeProposal was invalidated.
+     * {@inheritdoc}
      */
     public function invalidate($reason)
     {
+        $this->valid = false;
         $this->addReason($reason);
     }
 

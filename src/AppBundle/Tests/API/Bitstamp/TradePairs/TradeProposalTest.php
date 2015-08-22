@@ -93,6 +93,43 @@ class TradeProposalTest extends WebTestCase
         $this->assertSame($expected, $proposal->reasons());
     }
 
+    protected function assertBooleanAfterMethods(array $methods, $checkMethod, $expected) {
+        $proposal = $this->tradeProposal();
+
+        // Generate a random reason.
+        $reason = $this->faker()->sentence;
+
+        foreach ($methods as $method) {
+            $proposal->{$method}($reason);
+        }
+
+        $this->assertSame((bool) $expected, $proposal->{$checkMethod}());
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::isValid
+     */
+    public function testIsValid()
+    {
+        // Test calling validate a bunch of times and seeing true.
+        $validateXTimes = map(range(1, 5), function($times) {
+            return array_fill(0, $times, 'validate');
+        });
+
+        array_walk($validateXTimes, function($validations) {
+            $this->assertBooleanAfterMethods($validations, 'isValid', true);
+        });
+
+        // Test calling invalidate a bunch of times and seeing false.
+        $invalidateXTimes = map(range(1, 5), function($times) {
+            return array_fill(0, $times, 'invalidate');
+        });
+
+        array_walk($invalidateXTimes, function($invalidations) {
+            $this->assertBooleanAfterMethods($invalidations, 'isValid', false);
+        });
+    }
+
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::state
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::validate
