@@ -6,6 +6,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use AppBundle\API\Bitstamp\OrderBook;
 use AppBundle\API\Bitstamp\BitstampTradePairs;
+use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -99,10 +100,11 @@ class DefaultController extends Controller
             'Is trading' => $tp->isTrading(),
         ];
 
-        $stats['-Trade proposals-'] = '';
-        foreach ($tp->report() as $item) {
+        $report = $tp->report();
+        $stats_array_from_proposal = function(TradeProposal $proposal) {
             $name = uniqid();
             $stats[$name] = '';
+            
             $methods = [
                 'bidUSDPrice',
                 'bidUSDVolumeBase',
@@ -119,13 +121,22 @@ class DefaultController extends Controller
                 'minProfitUSD',
             ];
             foreach ($methods as $method) {
-                $stats[$name . ' ' . $method] = $item->{$method}()->getAmount();
+                $stats[$name . ' ' . $method] = $proposal->{$method}()->getAmount();
             }
 
-            $stats[$name . ' isProfitable'] = $item->isProfitable() ? 'Yes' : 'No';
-            $stats[$name . ' state'] = $item->state();
-            $stats[$name . ' reason'] = $item->reason();
+            $stats[$name . ' isProfitable'] = $proposal->isProfitable() ? 'Yes' : 'No';
+            $stats[$name . ' state'] = $proposal->state();
+            $stats[$name . ' reason'] = $proposal->reason();
 
+            return $stats;
+        };
+
+        $stats['-Actionable proposal-'] = '';
+        $stats += $stats_array_from_proposal($tp->reduceReportToActionableTradeProposal($report));
+
+        $stats['-Trade proposals-'] = '';
+        foreach ($report as $item) {
+            $stats += $stats_array_from_proposal($item);
         }
 
         return $this->render('AppBundle::index.html.twig', [
