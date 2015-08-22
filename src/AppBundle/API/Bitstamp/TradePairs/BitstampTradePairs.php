@@ -100,16 +100,22 @@ class BitstampTradePairs
     {
         $actionable = null;
 
-        foreach ($report as $tradeProposal) {
-            Ensure::isInstanceOf($tradeProposal, 'AppBundle\API\Bitstamp\TradePairs\TradeProposal');
+        foreach ($report as $proposal) {
+            Ensure::isInstanceOf($proposal, 'AppBundle\API\Bitstamp\TradePairs\TradeProposal');
 
-            if ($tradeProposal->state() === TradeProposal::STATE_PANIC) {
-                $actionable = $tradeProposal;
-                break;
+            // Find the first valid proposal to action.
+            if ($proposal->isValid()) {
+                $actionable = !isset($actionable) ? $proposal : $actionable;
             }
 
-            if ($tradeProposal->state() === TradeProposal::STATE_VALID) {
-                $actionable = !isset($actionable) ? $tradeProposal : $actionable;
+            // Compulsory actions must be set.
+            if ($proposal->isCompulsory()) {
+                $actionable = $proposal;
+            }
+
+            // Final actions prevent further consideration.
+            if ($proposal->isFinal()) {
+                break;
             }
         }
 

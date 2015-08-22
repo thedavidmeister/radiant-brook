@@ -11,7 +11,7 @@ use Money\Money;
 /**
  * AppBundle\API\Bitstamp\TradePairs\TradeProposal.
  */
-class TradeProposal
+class TradeProposal implements TradeProposalInterface
 {
     protected $bidUSDPrice;
 
@@ -23,13 +23,16 @@ class TradeProposal
 
     const MIN_BTC_PROFIT_SECRET = 'BITSTAMP_MIN_BTC_PROFIT';
 
-    const STATE_VALID = 0;
+    public function isCompulsory()
+    {
+
+    }
+    public function isFinal()
+    {
+
+    }
 
     const STATE_VALID_REASON = 'Valid trade pair.';
-
-    const STATE_INVALID = 1;
-
-    const STATE_PANIC = 2;
 
     /**
      * DI Constructor.
@@ -52,8 +55,27 @@ class TradeProposal
     }
 
     /**
-     * STATE
+     * Validity.
      */
+
+    protected $reasons = [];
+    public function reasons()
+    {
+        return $this->reasons;
+    }
+
+    protected function addReason($reason) {
+        Ensure::notEmpty($reason);
+        Ensure::isString($reason);
+
+        $this->reasons[] = $reason;
+    }
+
+    protected $valid;
+    public function isValid()
+    {
+        // return $valid;
+    }
 
     /**
      * Set this TradeProposal to valid.
@@ -63,9 +85,9 @@ class TradeProposal
      * There is no need to pass a reason to validate because there is only one
      * possible reason that something is valid.
      */
-    public function validate()
+    public function validate($reason)
     {
-        $this->setState(self::STATE_VALID, self::STATE_VALID_REASON);
+        $this->addReason($reason);
     }
 
     /**
@@ -78,84 +100,18 @@ class TradeProposal
      */
     public function invalidate($reason)
     {
-        $this->setState(self::STATE_INVALID, $reason);
+        $this->addReason($reason);
     }
 
-    /**
-     * Set this TradeProposal to panic.
-     *
-     * Panic TradeProposals should not be executed AND no further attempts to
-     * execute any Proposals should be attempted.
-     *
-     * @param string $reason
-     *   The reason for this TradeProposal to panic.
-     */
-    public function panic($reason)
+
+    public function ensureCompulsory($reason)
     {
-        $this->setState(self::STATE_PANIC, $reason);
+        $this->addReason($reason);
     }
 
-    /**
-     * Get the current state of the TradeProposal as read-only.
-     *
-     * Anything other than a 0 is a fail. Higher numbers indicate more extreme
-     * failure.
-     *
-     * @return int
-     *   The current state of the TradeProposal.
-     */
-    public function state()
+    public function ensureFinal($reason)
     {
-        if (isset($this->state)) {
-            return $this->state;
-        } else {
-            throw new \Exception('No state has been set for this TradeProposal, it has not been validated correctly.');
-        }
-    }
-    protected $state;
-
-    /**
-     * Get the reason for the current state as read-only.
-     *
-     * @return string
-     *   The reason for the current state.
-     */
-    public function reason()
-    {
-        if (isset($this->stateReason)) {
-            return $this->stateReason;
-        } else {
-            throw new \Exception('No state reason has been set for this TradeProposal, it has not been validated correctly.');
-        }
-    }
-    protected $stateReason;
-
-    /**
-     * Sets the current state.
-     *
-     * Requires a non-empty reason. States can only be increased in severity as
-     * a previous, more severe failure state takes preference over the current,
-     * less (or equally) severe state.
-     *
-     * @param int $state
-     *   The new state to attempt.
-     *
-     * @param string $reason
-     *   The reason for the new state.
-     */
-    protected function setState($state, $reason)
-    {
-        // We need a reason to consider a state change.
-        Ensure::notEmpty($reason);
-        Ensure::isString($reason);
-
-        // States can only increase over time (get worse).
-        Ensure::isInt($state);
-
-        if ($state > $this->state || !isset($this->state)) {
-            $this->state = $state;
-            $this->stateReason = $reason;
-        }
+        $this->addReason($reason);
     }
 
     /**

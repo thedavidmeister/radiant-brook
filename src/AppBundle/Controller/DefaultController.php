@@ -104,7 +104,7 @@ class DefaultController extends Controller
         $stats_array_from_proposal = function(TradeProposal $proposal) {
             $name = uniqid();
             $stats[$name] = '';
-            
+
             $methods = [
                 'bidUSDPrice',
                 'bidUSDVolumeBase',

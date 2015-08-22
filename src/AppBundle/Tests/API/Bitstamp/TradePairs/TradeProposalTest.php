@@ -7,6 +7,9 @@ use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
 use Money\Money;
 use AppBundle\Tests\EnvironmentTestTrait;
 
+use function Functional\map;
+use function Functional\each;
+
 /**
  * Tests AppBundle\API\Bitstamp\TradePairs\TradeProposal.
  */
@@ -35,6 +38,40 @@ class TradeProposalTest extends WebTestCase
     protected function randomBidAskPrices()
     {
         return ['bidUSDPrice' => Money::USD(mt_rand()), 'askUSDPrice' => Money::USD(mt_rand())];
+    }
+
+    public function faker()
+    {
+        return \Faker\Factory::create();
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::reasons
+     */
+    public function testReasons()
+    {
+        $reasons = map(range(0, 100), function() { return $this->faker()->sentence; });
+
+        // Generate a random method to test.
+        $nextMethod = function() {
+            $methods = [
+                'invalidate',
+                'validate',
+                'ensureCompulsory',
+                'ensureFinal',
+            ];
+            shuffle($methods);
+            return reset($methods);
+        };
+
+        $proposal = $this->tradeProposal();
+
+        array_walk($reasons, function($reason) use (&$proposal, $nextMethod) {
+            $proposal->{$nextMethod()}($reason);
+        });
+
+        $this->assertSame($reasons, $proposal->reasons());
+        print_r($reasons);
     }
 
     /**
