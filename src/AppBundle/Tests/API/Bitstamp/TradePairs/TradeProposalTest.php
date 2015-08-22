@@ -51,7 +51,11 @@ class TradeProposalTest extends WebTestCase
      */
     public function testReasons()
     {
-        $reasons = map(range(0, 100), function() { return $this->faker()->sentence; });
+        // Get a bunch of random sentences.
+        $reasons = map(range(0, 50), function() { return $this->faker()->sentence; });
+
+        // Add a range of numeric strings that runs through 0.
+        $reasons = array_merge($reasons, map(range(-10, 10), function($item) { return (string) $item; }));
 
         // Generate a random method to test.
         $nextMethod = function() {
@@ -136,10 +140,34 @@ class TradeProposalTest extends WebTestCase
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::isValid
      */
-    public function testIsValidException()
+    public function testIsValidNullException()
     {
         $this->setExpectedException('Exception');
         $this->tradeProposal()->isValid();
+    }
+
+    public function dataInvalidReason()
+    {
+        $data = map(range(0, 10), function ($index) {
+            $invalidReasonTypes = ['randomDigit', 'randomFloat', 'words', 'dateTime'];
+            return $this->faker()->{$invalidReasonTypes[$index % count($index)]};
+        });
+
+        $data[] = '';
+        $data[] = [];
+        shuffle($data);
+
+        $data = map($data, function($item) { return (array) $item; });
+        return $data;
+    }
+
+    /**
+     * @dataProvider dataInvalidReason
+     */
+    public function testInvalidateInvalidReasonException($invalidReason = null)
+    {
+        $this->setExpectedException('Exception');
+        $this->tradeProposal()->invalidate($invalidReason);
     }
 
     /**

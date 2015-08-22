@@ -195,6 +195,11 @@ final class Ensure
         return ($left === $right) ? $left : self::fail('%s is not identical to %s.', $left, $right);
     }
 
+    public static function notIdentical($left, $right)
+    {
+        return ($left !== $right) ? $left : self::fail('%s is identical to %s', $left, $right);
+    }
+
     /**
      * Ensures that the first value is greater than or equal to the second.
      *

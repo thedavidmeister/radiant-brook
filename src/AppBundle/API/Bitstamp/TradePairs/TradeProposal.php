@@ -67,7 +67,7 @@ class TradeProposal implements TradeProposalInterface
     }
 
     protected function addReason($reason) {
-        Ensure::notEmpty($reason);
+        Ensure::notIdentical($reason, '');
         Ensure::isString($reason);
 
         $this->reasons[] = $reason;
