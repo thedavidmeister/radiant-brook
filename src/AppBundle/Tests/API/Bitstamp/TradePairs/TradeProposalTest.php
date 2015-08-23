@@ -53,8 +53,12 @@ class TradeProposalTest extends WebTestCase
         $reason = $this->faker()->sentence;
 
         foreach ($methods as $method) {
-            $proposal->{$method}($reason);
+            $setReturn = $proposal->{$method}($reason);
+
+          // Check the value of the setter return.
+          $this->assertSame((bool) $expected, $setReturn);
         }
+
 
         // Double check the return.
         $this->assertSame((bool) $expected, $proposal->{$checkMethod}());

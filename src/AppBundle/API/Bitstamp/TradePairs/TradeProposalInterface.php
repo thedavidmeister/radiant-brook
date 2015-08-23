@@ -6,6 +6,9 @@
 
 namespace AppBundle\API\Bitstamp\TradePairs;
 
+/**
+ * Interface for a TradeProposal.
+ */
 interface TradeProposalInterface
 {
     /**
@@ -95,6 +98,9 @@ interface TradeProposalInterface
      *
      * @see isCompulsory()
      *
+     * @param string $reason
+     *   The reason for ensuring compulsory status.
+     *
      * @return bool
      *   Returns the value of isCompulsory (which will be true).
      */
@@ -122,6 +128,14 @@ interface TradeProposalInterface
      * to a sequence.
      *
      * Throws an exception if a reason is not given.
+     *
+     * @see isFinal()
+     *
+     * @param string $reason
+     *   The reason for ensuring final status.
+     *
+     * @return bool
+     *   Returns the value of isFinal (which will be true).
      */
     public function ensureFinal($reason);
 }

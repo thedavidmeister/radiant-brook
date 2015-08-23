@@ -88,6 +88,8 @@ class TradeProposal implements TradeProposalInterface
         if ($this->valid !== false) {
             $this->valid = true;
         }
+
+        return $this->isValid();
     }
 
     /**
@@ -97,6 +99,8 @@ class TradeProposal implements TradeProposalInterface
     {
         $this->valid = false;
         $this->addReason($reason);
+
+        return $this->isValid();
     }
 
     /**
@@ -119,6 +123,8 @@ class TradeProposal implements TradeProposalInterface
         // Compulsory implies final. Avoid calling ensureFinal() so that we
         // don't dupe the reason.
         $this->final = true;
+
+        return $this->isCompulsory();
     }
 
     /**
@@ -137,6 +143,8 @@ class TradeProposal implements TradeProposalInterface
     {
         $this->final = true;
         $this->addReason($reason);
+
+        return $this->isFinal();
     }
 
     /**
