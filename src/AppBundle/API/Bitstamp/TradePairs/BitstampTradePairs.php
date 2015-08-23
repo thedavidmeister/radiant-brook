@@ -62,10 +62,12 @@ class BitstampTradePairs
     }
 
     /**
-     * Execute the suggested trade pairs with Bitstamp.
+     * Execute the actionable trade pair from the report with Bitstamp.
      *
-     * If $this fails validation, the trade pairs will not be executed and an
-     * exception thrown, to protect against unprofitable and duplicate orders.
+     * If the report fails validation, the trade pairs will not be executed and
+     * an exception thrown, to protect against execution of invalid trades.
+     *
+     * @see report()
      */
     public function execute()
     {
