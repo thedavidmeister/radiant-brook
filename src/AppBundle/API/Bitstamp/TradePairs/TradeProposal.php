@@ -51,11 +51,14 @@ class TradeProposal implements TradeProposalInterface
 
     const DEFAULT_VALID_REASON = 'Valid trade proposal.';
 
-    protected $reasons = [];
+    /**
+     * {@inheritdoc}
+     */
     public function reasons()
     {
         return $this->reasons;
     }
+    protected $reasons = [];
 
     protected function addReason($reason) {
         // Don't allow empty string reasons (although the string '0' is fine).
