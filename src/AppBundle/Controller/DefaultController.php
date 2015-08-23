@@ -101,10 +101,7 @@ class DefaultController extends Controller
         ];
 
         $report = $tp->report();
-        $statsArrayFromProposal = function(TradeProposal $proposal) {
-            $name = uniqid();
-            $stats[$name] = '';
-
+        $statsArrayFromProposal = function(TradeProposal $proposal, $prefix = '') {
             $methods = [
                 'bidUSDPrice',
                 'bidUSDVolumeBase',
@@ -121,24 +118,33 @@ class DefaultController extends Controller
                 'minProfitUSD',
             ];
             foreach ($methods as $method) {
-                $stats[$name . ' ' . $method] = $proposal->{$method}()->getAmount();
+                $stats[$method] = $proposal->{$method}()->getAmount();
             }
 
-            $stats[$name . ' isProfitable'] = $proposal->isProfitable() ? 'Yes' : 'No';
-            $stats[$name . ' isValid'] = $proposal->isValid();
-            $stats[$name . ' isFinal'] = $proposal->isFinal();
-            $stats[$name . ' isCompulsory'] = $proposal->isCompulsory();
-            $stats[$name . ' reasons'] = json_encode($proposal->reasons());
+            $stats['isProfitable'] = $proposal->isProfitable() ? 'Yes' : 'No';
+            $stats['isValid'] = $proposal->isValid();
+            $stats['isFinal'] = $proposal->isFinal();
+            $stats['isCompulsory'] = $proposal->isCompulsory();
+            $stats['reasons'] = json_encode($proposal->reasons());
 
-            return $stats;
+            $name = md5(serialize($stats));
+
+            // Add prefixes.
+            $return = [$name => ''];
+            foreach ($stats as $key => $value) {
+                $label = implode(' ', array_filter([$prefix, $name, $key]));
+                $return[$label] = $value;
+            }
+
+            return $return;
         };
 
         $stats['-Actionable proposal-'] = '';
-        $stats += $statsArrayFromProposal($tp->reduceReportToActionableTradeProposal($report));
+        $stats += $statsArrayFromProposal($tp->reduceReportToActionableTradeProposal($report), 'actionable');
 
         $stats['-Trade proposals-'] = '';
         foreach ($report as $item) {
-            $stats += $statsArrayFromProposal($item);
+            $stats += $statsArrayFromProposal($item, 'report');
         }
 
         return $this->render('AppBundle::index.html.twig', [
