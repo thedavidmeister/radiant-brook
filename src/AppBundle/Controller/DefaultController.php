@@ -101,7 +101,7 @@ class DefaultController extends Controller
         ];
 
         $report = $tp->report();
-        $stats_array_from_proposal = function(TradeProposal $proposal) {
+        $statsArrayFromProposal = function(TradeProposal $proposal) {
             $name = uniqid();
             $stats[$name] = '';
 
@@ -134,11 +134,11 @@ class DefaultController extends Controller
         };
 
         $stats['-Actionable proposal-'] = '';
-        $stats += $stats_array_from_proposal($tp->reduceReportToActionableTradeProposal($report));
+        $stats += $statsArrayFromProposal($tp->reduceReportToActionableTradeProposal($report));
 
         $stats['-Trade proposals-'] = '';
         foreach ($report as $item) {
-            $stats += $stats_array_from_proposal($item);
+            $stats += $statsArrayFromProposal($item);
         }
 
         return $this->render('AppBundle::index.html.twig', [

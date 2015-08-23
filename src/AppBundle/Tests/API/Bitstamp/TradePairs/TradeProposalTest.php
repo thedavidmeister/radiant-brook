@@ -68,7 +68,8 @@ class TradeProposalTest extends WebTestCase
         $this->assertSame((bool) $expected, $proposal->{$checkMethod}());
     }
 
-    protected function methodRangeArray($method, $start = 0, $end = 5) {
+    protected function methodRangeArray($method, $start = 0, $end = 5)
+    {
         Ensure::isString($method);
         Ensure::isInt($start);
         Ensure::isInt($end);
@@ -121,14 +122,20 @@ class TradeProposalTest extends WebTestCase
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::addReason
      *
      * @group stable
+     *
+     * @return void
      */
     public function testReasons()
     {
         // Get a bunch of random sentences.
-        $reasons = map(range(0, 50), function() { return $this->faker()->sentence; });
+        $reasons = map(range(0, 50), function() {
+            return $this->faker()->sentence;
+        });
 
         // Add a range of numeric strings that runs through 0.
-        $reasons = array_merge($reasons, map(range(-10, 10), function($item) { return (string) $item; }));
+        $reasons = array_merge($reasons, map(range(-10, 10), function($item) {
+            return (string) $item;
+        }));
 
         // Generate a random method to test.
         $nextMethod = function() {
@@ -138,6 +145,7 @@ class TradeProposalTest extends WebTestCase
                 'ensureFinal',
             ];
             shuffle($methods);
+
             return reset($methods);
         };
 
@@ -156,6 +164,8 @@ class TradeProposalTest extends WebTestCase
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::invalidate
      *
      * @group stable
+     *
+     * @return void
      */
     public function testIsValid()
     {
@@ -185,6 +195,7 @@ class TradeProposalTest extends WebTestCase
         $randomXTimes = array_map(function($valid, $invalid) {
             $merged = array_merge($valid, $invalid);
             shuffle($merged);
+
             return $merged;
         }, $validateXTimes, $invalidateXTimes);
 
@@ -192,11 +203,11 @@ class TradeProposalTest extends WebTestCase
             $this->assertBooleanAfterMethods($invalidated, 'isValid', false);
         });
 
-        $single_validate_invalidate = ['validate', 'invalidate'];
-        $this->assertBooleanAfterMethods($single_validate_invalidate, 'isValid', false);
+        $singleValidateInvalidate = ['validate', 'invalidate'];
+        $this->assertBooleanAfterMethods($singleValidateInvalidate, 'isValid', false);
 
-        $single_invalidate_validage = ['invalidate', 'validate'];
-        $this->assertBooleanAfterMethods($single_validate_invalidate, 'isValid', false);
+        $singleInvalidateValidate = ['invalidate', 'validate'];
+        $this->assertBooleanAfterMethods($singleInvalidateValidate, 'isValid', false);
     }
 
     /**
@@ -212,12 +223,15 @@ class TradeProposalTest extends WebTestCase
 
     /**
      * Data provider for invalid reasons.
+     *
+     * @return void
      */
     public function dataInvalidReason()
     {
         // Generate some data that is not a string.
         $data = map(range(0, 10), function ($index) {
             $invalidReasonTypes = ['randomDigit', 'randomFloat', 'words', 'dateTime'];
+
             return $this->faker()->{$invalidReasonTypes[$index % count($index)]};
         });
 
@@ -231,13 +245,18 @@ class TradeProposalTest extends WebTestCase
         shuffle($data);
 
         // Wrap each data point in an array.
-        $data = map($data, function($item) { return (array) $item; });
+        $data = map($data, function($item) {
+            return (array) $item;
+        });
 
         return $data;
     }
 
     /**
      * @dataProvider dataInvalidReason
+     *
+     * @param mixed $invalidReason
+     *   Anything that is not a valid reason string.
      *
      * @group stable
      */
@@ -250,6 +269,9 @@ class TradeProposalTest extends WebTestCase
     /**
      * @dataProvider dataInvalidReason
      *
+     * @param mixed $invalidReason
+     *   Anything that is not a valid reason string.
+     *
      * @group stable
      */
     public function testCompulsoryInvalidReasonException($invalidReason = null)
@@ -260,6 +282,9 @@ class TradeProposalTest extends WebTestCase
 
     /**
      * @dataProvider dataInvalidReason
+     *
+     * @param mixed $invalidReason
+     *   Anything that is not a valid reason string.
      *
      * @group stable
      */

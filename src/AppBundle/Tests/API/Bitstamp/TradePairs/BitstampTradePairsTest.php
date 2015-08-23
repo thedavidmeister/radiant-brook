@@ -136,7 +136,8 @@ class BitstampTradePairsTest extends WebTestCase
         } while ($i < 20);
     }
 
-    protected function randomBool() {
+    protected function randomBool()
+    {
         return (bool) mt_rand(0, 1);
     }
 
@@ -144,6 +145,8 @@ class BitstampTradePairsTest extends WebTestCase
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::reduceReportToActionableTradeProposal
      *
      * @group stable
+     *
+     * @return void
      */
     public function testReduceReportToActionableTradeProposalInvalidFinal()
     {
@@ -170,7 +173,9 @@ class BitstampTradePairsTest extends WebTestCase
         // Build the sequence.
         $sequence = [$first, $second, $third];
         // Reveal the sequence.
-        $sequence = array_map(function($item) { return $item->reveal(); }, $sequence);
+        $sequence = array_map(function($item) {
+            return $item->reveal();
+        }, $sequence);
 
         $actionable = $this->tp()->reduceReportToActionableTradeProposal($sequence);
 
@@ -181,6 +186,8 @@ class BitstampTradePairsTest extends WebTestCase
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::reduceReportToActionableTradeProposal
      *
      * @group stable
+     *
+     * @return void
      */
     public function testReduceReportToActionableTradeProposalPreValidFinal()
     {
@@ -208,7 +215,9 @@ class BitstampTradePairsTest extends WebTestCase
         // Build the sequence.
         $sequence = [$first, $second, $third];
         // Reveal the sequence.
-        $sequence = array_map(function($item) { return $item->reveal(); }, $sequence);
+        $sequence = array_map(function($item) {
+            return $item->reveal();
+        }, $sequence);
 
         $actionable = $this->tp()->reduceReportToActionableTradeProposal($sequence);
 
@@ -294,6 +303,8 @@ class BitstampTradePairsTest extends WebTestCase
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::reduceReportToActionableTradeProposal
      *
      * @group stable
+     *
+     * @return void
      */
     public function testReduceReportToActionableTradeProposalNoValid()
     {
