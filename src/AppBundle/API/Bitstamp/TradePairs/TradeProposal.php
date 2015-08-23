@@ -60,7 +60,8 @@ class TradeProposal implements TradeProposalInterface
     }
     protected $reasons = [];
 
-    protected function addReason($reason) {
+    protected function addReason($reason)
+    {
         // Don't allow empty string reasons (although the string '0' is fine).
         Ensure::notIdentical($reason, '');
         Ensure::isString($reason);
