@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * AppBundle\API\Bitstamp\TracePairs\PriceProposer.
+ */
 
 namespace AppBundle\API\Bitstamp\TradePairs;
 
@@ -8,7 +12,7 @@ use AppBundle\Cast;
 use Money\Money;
 
 /**
- * AppBundle\API\Bitstamp\TracePairs\PriceProposer.
+ * Iterate over percentiles straight from the OrderBook.
  */
 class PriceProposer implements \Iterator
 {
