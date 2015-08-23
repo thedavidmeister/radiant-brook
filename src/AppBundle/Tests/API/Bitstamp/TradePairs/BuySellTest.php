@@ -92,7 +92,7 @@ class BuySellTest extends WebTestCase
             $buySell = $this->buySell();
 
             $tradeProposal = $this->tradeProposal($test[0], $test[1], $test[2], $test[3]);
-            $tradeProposal->state()->willReturn(0)->shouldBeCalled();
+            $tradeProposal->isValid()->willReturn(true)->shouldBeCalled();
 
             $buySell->execute($tradeProposal->reveal());
             $buyRequest = $buySell->buy->client->history->getLastRequest();
@@ -117,17 +117,16 @@ class BuySellTest extends WebTestCase
 
         // Any state other than 0 is a fail. We expect buySell to ask for a
         // state and reason when generating the exception.
-        $state = mt_rand(1, mt_getrandmax());
-        $reason = uniqid();
-        $tradeProposal->state()->willReturn($state)->shouldBeCalled();
-        $tradeProposal->reason()->willReturn($reason)->shouldBeCalled();
+        $reasons = [uniqid(), uniqid()];
+        $tradeProposal->isValid()->willReturn(false)->shouldBeCalled();
+        $tradeProposal->reasons()->willReturn($reasons)->shouldBeCalled();
 
         $tradeProposal->bidUSDPrice()->shouldNotBeCalled();
         $tradeProposal->bidBTCVolume()->shouldNotBeCalled();
         $tradeProposal->askUSDPrice()->shouldNotBeCalled();
         $tradeProposal->askBTCVolume()->shouldNotBeCalled();
 
-        $this->setExpectedException('Exception', 'Attempted to place invalid trade with state: ' . $state . ' and reason: ' . $reason);
+        $this->setExpectedException('Exception', 'Attempted to place invalid trade and reasons: ' . json_encode($reasons));
         $this->buySell()->execute($tradeProposal->reveal());
     }
 
@@ -154,7 +153,7 @@ class BuySellTest extends WebTestCase
         $buyfail = new BuySell(new Buy($client, $this->mockLogger(), $this->mockAuthenticator()), $this->sell(), $this->mockLogger());
 
         $tradeProposal = $this->tradeProposal();
-        $tradeProposal->state()->willReturn(0)->shouldBeCalled();
+        $tradeProposal->isValid()->willReturn(true)->shouldBeCalled();
 
         $buyfail->execute($tradeProposal->reveal());
 

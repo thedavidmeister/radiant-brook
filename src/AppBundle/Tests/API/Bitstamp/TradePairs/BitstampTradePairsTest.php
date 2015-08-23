@@ -307,68 +307,6 @@ class BitstampTradePairsTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::validateTradeProposal
-     * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::__construct
-     *
-     * @group stable
-     */
-    public function testValidateTradeProposal()
-    {
-        // isProfitable, dupeBids, dupeAsks, invalidateReason, panicReason
-        $tests = [
-            [true, [], [], null, null],
-            [false, [], [], 'Not a profitable trade proposition.', null],
-            [true, [uniqid()], [], null, 'Duplicate trade pairs found.'],
-            [true, [], [uniqid()], null, 'Duplicate trade pairs found.'],
-            [true, [uniqid()], [uniqid()], null, 'Duplicate trade pairs found.'],
-            [false, [uniqid()], [], 'Not a profitable trade proposition.', 'Duplicate trade pairs found.'],
-            [false, [], [uniqid()], 'Not a profitable trade proposition.', 'Duplicate trade pairs found.'],
-            [false, [uniqid()], [uniqid()], 'Not a profitable trade proposition.', 'Duplicate trade pairs found.'],
-        ];
-
-        array_walk($tests, function($test) {
-            $tradeProposalProphet = $this->prophet->prophesize('\AppBundle\API\Bitstamp\TradePairs\TradeProposal');
-
-            // We expect isProfitable() to be called, to check for profit
-            // invalidation.
-            $tradeProposalProphet->isProfitable()->willReturn($test[0])->shouldBeCalled();
-
-            // We only expect invalidate to be called if the trade is not
-            // profitable.
-            if (isset($test[3])) {
-                $tradeProposalProphet->invalidate($test[3])->shouldBeCalled();
-            } else {
-                $tradeProposalProphet->invalidate(Argument::any())->shouldNotBeCalled();
-            }
-
-            // We expect the bid and ask USD prices to be called in the search
-            // for dupes.
-            $priceReturn = Money::USD(mt_rand());
-            $tradeProposalProphet->bidUSDPrice()->willReturn($priceReturn)->shouldBeCalled();
-            $tradeProposalProphet->askUSDPrice()->willReturn($priceReturn)->shouldBeCalled();
-
-            $dupesProphet = $this->prophet->prophesize('\AppBundle\API\Bitstamp\TradePairs\Dupes');
-            $dupesProphet->bids($priceReturn)->willReturn($test[1])->shouldBeCalled();
-            $dupesProphet->asks($priceReturn)->willReturn($test[2])->shouldBeCalled();
-
-            // We only expect panic to be called if there is a dupe.
-            if (isset($test[4])) {
-                $tradeProposalProphet->panic($test[4])->shouldBeCalled();
-            } else {
-                $tradeProposalProphet->panic(Argument::any())->shouldNotBeCalled();
-            }
-
-            // We expect validate() to be called unconditionally as it is always
-            // overridden by a higher state anyway.
-            $tradeProposalProphet->validate()->shouldBeCalled();
-
-            // Attempt validation.
-            $tp = new BitstampTradePairs($this->fees(), $dupesProphet->reveal(), $this->buysell(), $this->proposer());
-            $tp->validateTradeProposal($tradeProposalProphet->reveal());
-        });
-    }
-
-    /**
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::isTrading
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::__construct
      *

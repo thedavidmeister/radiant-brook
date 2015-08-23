@@ -63,8 +63,8 @@ class BuySell
     public function execute(TradeProposal $tradeProposal)
     {
         // Only execute valid TradeProposals.
-        if ($tradeProposal->state()) {
-            throw new \Exception('Attempted to place invalid trade with state: ' . $tradeProposal->state() . ' and reason: ' . $tradeProposal->reason());
+        if (!$tradeProposal->isValid()) {
+            throw new \Exception('Attempted to place invalid trade and reasons: ' . json_encode($tradeProposal->reasons()));
         }
 
         try {

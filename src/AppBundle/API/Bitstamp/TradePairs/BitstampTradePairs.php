@@ -111,6 +111,8 @@ class BitstampTradePairs
             // Compulsory actions must be set.
             if ($proposal->isCompulsory()) {
                 $actionable = $proposal;
+                // Even though compulsory is final, bail anyway for safety.
+                break;
             }
 
             // Final actions prevent further consideration.
