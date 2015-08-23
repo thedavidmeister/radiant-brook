@@ -179,11 +179,11 @@ class OrderList
             return Money::BTC((int) ceil($this->totalVolume() * $pc));
         };
         $sumInit = Money::BTC(0);
-        $runningFunction = function(array $datum, Money $runningSum) {
+        $sumFunction = function(array $datum, Money $runningSum) {
             return $runningSum->add($datum[self::BTC_KEY]);
         };
 
-        return $this->percentileFinder($pc, $indexFunction, $sumInit, $runningFunction);
+        return $this->percentileFinder($pc, $indexFunction, $sumInit, $sumFunction);
     }
 
     /**
