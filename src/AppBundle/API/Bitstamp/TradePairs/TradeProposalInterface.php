@@ -1,13 +1,16 @@
 <?php
 /**
  * @file
- * Interface for TradeProposal classes.
+ * AppBundle\API\Bitstamp\TradePairs\TradeProposalInterface
  */
 
 namespace AppBundle\API\Bitstamp\TradePairs;
 
 /**
- * Interface for a TradeProposal.
+ * Interface for a single TradeProposal.
+ *
+ * TradeProposals must be able to be validated/invalidated, enforced and request
+ * that further processing halt.
  */
 interface TradeProposalInterface
 {
