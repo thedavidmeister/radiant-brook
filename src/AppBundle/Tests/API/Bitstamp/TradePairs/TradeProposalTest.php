@@ -52,13 +52,15 @@ class TradeProposalTest extends WebTestCase
         // Generate a random reason.
         $reason = $this->faker()->sentence;
 
-        foreach ($methods as $method) {
-            $setReturn = $proposal->{$method}($reason);
+        if (!empty($methods)) {
+          foreach ($methods as $method) {
+              $setReturn = $proposal->{$method}($reason);
+          }
 
-          // Check the value of the setter return.
+          // Check the value of the last setter return. It should be the same as
+          // the getter.
           $this->assertSame((bool) $expected, $setReturn);
         }
-
 
         // Double check the return.
         $this->assertSame((bool) $expected, $proposal->{$checkMethod}());
