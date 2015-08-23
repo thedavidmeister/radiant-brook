@@ -139,8 +139,10 @@ class DefaultControllerTest extends WebTestCase
             'profitUSD',
             'minProfitUSD',
             'isProfitable',
-            'state',
-            'reason',
+            'isValid',
+            'isCompulsory',
+            'isFinal',
+            'reasons',
         ];
 
         $this->standardTests($uri, $expecteds);

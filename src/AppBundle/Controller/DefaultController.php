@@ -125,8 +125,10 @@ class DefaultController extends Controller
             }
 
             $stats[$name . ' isProfitable'] = $proposal->isProfitable() ? 'Yes' : 'No';
-            $stats[$name . ' state'] = $proposal->state();
-            $stats[$name . ' reason'] = $proposal->reason();
+            $stats[$name . ' isValid'] = $proposal->isValid();
+            $stats[$name . ' isFinal'] = $proposal->isFinal();
+            $stats[$name . ' isCompulsory'] = $proposal->isCompulsory();
+            $stats[$name . ' reasons'] = json_encode($proposal->reasons());
 
             return $stats;
         };
