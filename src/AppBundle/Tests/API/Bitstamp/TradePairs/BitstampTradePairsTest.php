@@ -93,7 +93,8 @@ class BitstampTradePairsTest extends WebTestCase
         return $proposal->reveal();
     }
 
-    protected function statefulProposalMockFiller ($isValid = false, $isCompulsory = false, $isFinal = false) {
+    protected function statefulProposalMockFiller ($isValid = false, $isCompulsory = false, $isFinal = false)
+    {
         return array_fill(0, mt_rand(0, 10), $this->statefulProposalMock($isValid, $isCompulsory, $isFinal));
     }
 
@@ -115,16 +116,16 @@ class BitstampTradePairsTest extends WebTestCase
                 return $sequence;
             };
 
-            $pre_sequence = $sequencer($pre);
-            $post_sequence = $sequencer($post);
+            $preSequence = $sequencer($pre);
+            $postSequence = $sequencer($post);
 
             // Convert the expectations config into mocks.
             $testMocks = array_map(function ($test) {
                 return call_user_func_array([$this, 'statefulProposalMock'], $test);
             }, $tests);
 
-            array_walk($testMocks, function ($expected) use ($pre_sequence, $post_sequence) {
-                $sequence = array_merge($pre_sequence, [$expected], $post_sequence);
+            array_walk($testMocks, function ($expected) use ($preSequence, $postSequence) {
+                $sequence = array_merge($preSequence, [$expected], $postSequence);
 
                 $actionable = $this->tp()->reduceReportToActionableTradeProposal($sequence);
 
