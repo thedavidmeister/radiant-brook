@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * AppBundle\API\Bitstamp\TradePairs\TradeProposal.
+ */
 
 namespace AppBundle\API\Bitstamp\TradePairs;
 
@@ -9,7 +13,7 @@ use AppBundle\MoneyConstants;
 use Money\Money;
 
 /**
- * AppBundle\API\Bitstamp\TradePairs\TradeProposal.
+ * Wrap one set of proposed prices into a TradeProposalInterface object.
  */
 class TradeProposal implements TradeProposalInterface
 {
