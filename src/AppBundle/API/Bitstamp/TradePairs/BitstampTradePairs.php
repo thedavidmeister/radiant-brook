@@ -77,10 +77,10 @@ class BitstampTradePairs
         $proposalToAction = $this->reduceReportToActionableTradeProposal($report);
 
         if (isset($proposalToAction)) {
-            if ($proposalToAction->state() === TradeProposal::STATE_VALID) {
+            if ($proposalToAction->isValid()) {
                 $this->buySell->execute($proposalToAction);
             } else {
-                throw new \Exception('Proposal action is not valid. State: ' . $proposalToAction->state() . ', reason: ' . $proposalToAction->reason());
+                throw new \Exception('Proposal action is not valid. Reasons: ' . json_encode($proposalToAction->reasons()));
             }
         } else {
             throw new \Exception('No valid trade proposals at this time.');
@@ -156,6 +156,9 @@ class BitstampTradePairs
      */
     public function validateTradeProposal(TradeProposal $tradeProposal)
     {
+        // Validate the $tradeProposal so that it has a state.
+        $tradeProposal->validate();
+
         // This proposition is not profitable, but others may be.
         if (!$tradeProposal->isProfitable()) {
             $tradeProposal->invalidate('Not a profitable trade proposition.');
@@ -163,11 +166,9 @@ class BitstampTradePairs
 
         // If we found dupes, we cannot continue trading, panic!
         if (!empty($this->dupes->bids($tradeProposal->bidUSDPrice()) + $this->dupes->asks($tradeProposal->askUSDPrice()))) {
-            $tradeProposal->panic('Duplicate trade pairs found.');
+            $tradeProposal->invalidate('Duplicate trade pairs found.');
+            $tradeProposal->ensureFinal('Duplicate trade pairs found.');
         }
-
-        // Validate the $tradeProposal so that it has a state.
-        $tradeProposal->validate();
 
         return $tradeProposal;
     }
