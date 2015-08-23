@@ -24,6 +24,3 @@ notifications:
   email:
     on_success: never
     on_failure: never
-
-cache:
-  - composer
