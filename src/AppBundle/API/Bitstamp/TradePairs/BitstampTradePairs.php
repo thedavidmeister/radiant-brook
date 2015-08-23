@@ -167,7 +167,7 @@ class BitstampTradePairs
             $tradeProposal->invalidate('Not a profitable trade proposition.');
         }
 
-        // If we found dupes, we cannot continue trading, panic!
+        // If we found dupes, we cannot continue trading, ensureFinal.
         if (!empty($this->dupes->bids($tradeProposal->bidUSDPrice()) + $this->dupes->asks($tradeProposal->askUSDPrice()))) {
             $tradeProposal->invalidate('Duplicate trade pairs found.');
             $tradeProposal->ensureFinal('Duplicate trade pairs found.');
