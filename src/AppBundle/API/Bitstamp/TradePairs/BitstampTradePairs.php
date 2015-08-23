@@ -149,15 +149,15 @@ class BitstampTradePairs
     /**
      * Validates a given TradeProposal.
      *
-     * A TradeProposal can either be valid (executable), invalid (unexecutable),
-     * or panic (halt all proposals).
+     * Relies on the validation rules specified by TradeProposalInterface to
+     * flag unprofitable and duplicate proposals as invalid.
      *
-     * @param  TradeProposal $tradeProposal
+     * @param TradeProposalInterface $tradeProposal
      *
-     * @return TradeProposal
-     *   A validated TradeProposal
+     * @return TradeProposalInterface
+     *   A validated/invalidated TradeProposalInterface object.
      */
-    public function validateTradeProposal(TradeProposal $tradeProposal)
+    public function validateTradeProposal(TradeProposalInterface $tradeProposal)
     {
         // Validate the $tradeProposal so that it has a state.
         $tradeProposal->validate();
