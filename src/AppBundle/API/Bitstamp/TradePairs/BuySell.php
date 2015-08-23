@@ -64,7 +64,7 @@ class BuySell
     {
         // Only execute valid TradeProposals.
         if (!$tradeProposal->isValid()) {
-            throw new \Exception('Attempted to place invalid trade and reasons: ' . json_encode($tradeProposal->reasons()));
+            throw new \Exception('Attempted to place invalid trade with reasons: ' . json_encode($tradeProposal->reasons()));
         }
 
         try {

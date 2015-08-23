@@ -126,7 +126,7 @@ class BuySellTest extends WebTestCase
         $tradeProposal->askUSDPrice()->shouldNotBeCalled();
         $tradeProposal->askBTCVolume()->shouldNotBeCalled();
 
-        $this->setExpectedException('Exception', 'Attempted to place invalid trade and reasons: ' . json_encode($reasons));
+        $this->setExpectedException('Exception', 'Attempted to place invalid trade with reasons: ' . json_encode($reasons));
         $this->buySell()->execute($tradeProposal->reveal());
     }
 
