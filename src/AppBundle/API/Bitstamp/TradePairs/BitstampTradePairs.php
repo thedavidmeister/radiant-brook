@@ -29,8 +29,6 @@ class BitstampTradePairs
 {
     const IS_TRADING_SECRET = 'BITSTAMP_IS_TRADING';
 
-    const PERCENTILE_SECRET = 'BITSTAMP_PERCENTILE';
-
     /**
      * Constructor to store services passed by Symfony.
      *
