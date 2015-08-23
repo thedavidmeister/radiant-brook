@@ -41,25 +41,26 @@ class TradeProposalTest extends WebTestCase
         return ['bidUSDPrice' => Money::USD(mt_rand()), 'askUSDPrice' => Money::USD(mt_rand())];
     }
 
-    public function faker()
+    protected function faker()
     {
         return \Faker\Factory::create();
     }
 
-    protected function assertBooleanAfterMethods(array $methods, $checkMethod, $expected) {
+    protected function assertBooleanAfterMethods(array $methods, $checkMethod, $expected)
+    {
         $proposal = $this->tradeProposal();
 
         // Generate a random reason.
         $reason = $this->faker()->sentence;
 
         if (!empty($methods)) {
-          foreach ($methods as $method) {
-              $setReturn = $proposal->{$method}($reason);
-          }
+            foreach ($methods as $method) {
+                $setReturn = $proposal->{$method}($reason);
+            }
 
-          // Check the value of the last setter return. It should be the same as
-          // the getter.
-          $this->assertSame((bool) $expected, $setReturn);
+            // Check the value of the last setter return. It should be the same as
+            // the getter.
+            $this->assertSame((bool) $expected, $setReturn);
         }
 
         // Double check the return.
