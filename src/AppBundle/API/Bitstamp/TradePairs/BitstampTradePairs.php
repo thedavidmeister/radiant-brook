@@ -8,22 +8,25 @@ use Money\Money;
 use AppBundle\API\Bitstamp\TradePairs\PriceProposer;
 
 /**
- * Suggests and executes profitable trade pairs.
+ * Analyses and executes profitable trade pairs.
  *
- * The algorithm used for suggesting is:
+ * The algorithm used for TradeProposals analysed is:
  *
- * - Get the 5% percentile of bids as a USD price for BTC
+ * - Get the percentile of bids as a USD price for BTC
  * - Get the minimum USD amount, scaled up to maximum on isofee
  * - Get the volume of BTC purchaseable for chosen USD price & volume
  * - Get the total USD amount, including fees
  *
- * - Get the 5% percentile of asks as a USD price for BTC
+ * - Get the percentile of asks as a USD price for BTC
  * - Get the USD amount to cover, including bid/ask fees and min USD profit
  * - Get the minimum total BTC volume to sell to cover USD amount, scaled to
  *   minimum isofee
  *
  * - If the USD amount spent in bid can be covered with min USD profit, and the
  *   BTC sold is less than the BTC bought, and there are no dupes, place a pair.
+ * - If the first pair is not valid, rince and repeat the above from a min to a
+ *   max percentile with a given step size, until a valid pair is found, then
+ *   stop.
  */
 class BitstampTradePairs
 {
