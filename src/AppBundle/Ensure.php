@@ -183,6 +183,8 @@ final class Ensure
      *
      * Checks equality with ===.
      *
+     * @see notIdentical()
+     *
      * @param mixed $left
      *
      * @param mixed $right
@@ -195,6 +197,20 @@ final class Ensure
         return ($left === $right) ? $left : self::fail('%s is not identical to %s.', $left, $right);
     }
 
+    /**
+     * Ensures that the first value passed is not identical to the second.
+     *
+     * Checks equality with !==.
+     *
+     * @see identical()
+     *
+     * @param mixed $left
+     *
+     * @param mixed $right
+     *
+     * @return mixed $left
+     *   Returns the first argument.
+     */
     public static function notIdentical($left, $right)
     {
         return ($left !== $right) ? $left : self::fail('%s is identical to %s', $left, $right);
