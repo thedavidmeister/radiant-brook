@@ -19,39 +19,42 @@ class MoneyStringsTest extends WebTestCase
     public function dataStringToXTypeExceptions()
     {
         return [
-            [1],
-            [0],
-            [true],
-            [false],
-            [[]],
-            [1.00],
-            [123],
-            [100],
-            [0.1],
-            [05.00],
+            [1, '1 is not a string.'],
+            [0, '0 is not a string.'],
+            [true, 'true is not a string.'],
+            [false, 'false is not a string.'],
+            [[], '[] is not a string.'],
+            [1.00, '1 is not a string.'],
+            [123, '123 is not a string.'],
+            [100, '100 is not a string.'],
+            [0.1, '0.1 is not a string.'],
+            [05.00, '5 is not a string.'],
         ];
     }
 
     /**
-     * Tests that exceptions are thrown when stringToBTC does not get a string.
+     * @covers AppBundle\MoneyStrings::stringToBTC
      *
      * @dataProvider dataStringToXTypeExceptions
-     * @expectedException Exception
-     * @expectedExceptionMessage The parameter passed to stringToBTC must be a string
      * @group stable
      *
-     * @param mixed $notString
+     * @param mixed  $notString
+     *   Thing that is not a string.
+     *
+     * @param string $message
+     *   The expected exception.
      */
-    public function testStringToBTCTypeExceptions($notString)
+    public function testStringToBTCTypeExceptions($notString, $message)
     {
+        $this->setExpectedException('Exception', $message);
         MoneyStrings::stringToBTC($notString);
     }
 
     /**
-     * Tests that exceptions are thrown when stringToBTC gets null.
+     * @covers AppBundle\MoneyStrings::stringToBTC
      *
      * @expectedException Exception
-     * @expectedExceptionMessage The parameter passed to stringToBTC must be a string
+     * @expectedExceptionMessage null is not a string.
      * @group stable
      */
     public function testStringToBTCNullException()
@@ -60,26 +63,28 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
-     * Tests that exceptions are thrown when stringToUSD does not get a string.
+     * @covers AppBundle\MoneyStrings::stringToUSD
      *
      * @dataProvider dataStringToXTypeExceptions
-     * @expectedException Exception
-     * @expectedExceptionMessage The parameter passed to stringToUSD must be a string
      * @group stable
      *
-     * @param mixed $notString
+     * @param mixed  $notString
      *   Thing that is not a string.
+     *
+     * @param string $message
+     *   The expected exception message.
      */
-    public function testStringToUSDTypeExceptions($notString)
+    public function testStringToUSDTypeExceptions($notString, $message)
     {
+        $this->setExpectedException('Exception', $message);
         MoneyStrings::stringToUSD($notString);
     }
 
     /**
-     * Tests that exceptions are thrown when stringToUSD gets null.
+     * @covers AppBundle\MoneyStrings::stringToUSD
      *
      * @expectedException Exception
-     * @expectedExceptionMessage The parameter passed to stringToUSD must be a string
+     * @expectedExceptionMessage null is not a string.
      * @group stable
      */
     public function testStringToUSDNullException()
@@ -88,7 +93,7 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
-     * Tests MoneyString::BTCToString().
+     * @covers AppBundle\MoneyStrings::BTCToString
      *
      * @group stable
      */
@@ -114,7 +119,7 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
-     * Tests MoneyStrings::USDToString().
+     * @covers AppBundle\MoneyStrings::USDToString
      *
      * @group stable
      */
@@ -134,7 +139,7 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
-     * Tests MoneyStrings::stringToUSD().
+     * @covers AppBundle\MoneyStrings::stringToUSD
      *
      * @group stable
      */
@@ -160,38 +165,42 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
-     * Data provider for testStringToUSD().
+     * Data provider for testStringToUSD() and base of others.
+     *
+     * @see dataStringToBTCExceptions()
      *
      * @return array
      */
-    public function dataStringToUSDExceptions()
+    public function dataStringToXExceptions()
     {
         return [
-            ['a1'],
-            ['1a'],
-            ['1,00'],
-            ['1,000.00'],
+            ['a1', '"a1" is not numeric.'],
+            ['1a', '"1a" is not numeric.'],
+            ['1,00', '"1,00" is not numeric.'],
+            ['1,000.00', '"1,000.00" is not numeric.'],
         ];
     }
 
     /**
-     * Tests stringToUSD exceptions.
+     * @covers AppBundle\MoneyStrings::stringToUSD
      *
-     * @dataProvider dataStringToUSDExceptions
-     * @expectedException Exception
-     * @expectedExceptionMessage Could not parse Money::USD from string:
+     * @dataProvider dataStringToXExceptions
      * @group stable
      *
      * @param string $string
      *   The string to test.
+     *
+     * @param string $message
+     *   The expected exception message.
      */
-    public function testStringToUSDExceptions($string)
+    public function testStringToUSDExceptions($string, $message)
     {
+        $this->setExpectedException('Exception', $message);
         MoneyStrings::stringToUSD($string);
     }
 
     /**
-     * Tests MoneyStrings::stringToBTC().
+     * @covers AppBundle\MoneyStrings::stringToBTC
      *
      * @group stable
      */
@@ -227,28 +236,24 @@ class MoneyStringsTest extends WebTestCase
      */
     public function dataStringToBTCExceptions()
     {
-        return [
-            ['a1'],
-            ['1a'],
-            ['1,00'],
-            ['1,000.00'],
-            ['$100'],
-        ];
+        return array_merge($this->dataStringToXExceptions(), [['$100', '"$100" is not numeric.']]);
     }
 
     /**
-     * Tests exceptions thrown by stringToBTC().
+     * @covers AppBundle\MoneyStrings::stringToBTC
      *
      * @dataProvider dataStringToBTCExceptions
-     * @expectedException Exception
-     * @expectedExceptionMessage Could not parse Money::BTC from string:
      * @group stable
      *
      * @param string $string
      *   The string to test.
+     *
+     * @param string $message
+     *   The expected exception message.
      */
-    public function testStringToBTCExceptions($string)
+    public function testStringToBTCExceptions($string, $message)
     {
+        $this->setExpectedException('Exception', $message);
         MoneyStrings::stringToBTC($string);
     }
 }

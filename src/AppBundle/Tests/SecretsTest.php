@@ -15,20 +15,59 @@ class SecretsTest extends WebTestCase
         return new Secrets();
     }
 
-    protected function assertEnvironmentSet($setFunc)
+    protected function key()
     {
-        // Generate a unique tuple that will not collide with previous sets.
-        $tuple = [uniqid(), uniqid()];
-        $setFunc($tuple);
-        $this->assertSame($tuple[1], $this->secrets()->get($tuple[0]));
+        return strtoupper(uniqid('k'));
+    }
+
+    protected function value()
+    {
+        return uniqid('v');
     }
 
     /**
-     * Tests that secrets can find variables set by putenv().
+     * @covers AppBundle\Secrets::clear
+     *
+     * @see testSet()
      *
      * @group stable
      */
-    public function testSecretsSet()
+    public function testClear()
+    {
+        $key = $this->key();
+        $value = $this->value();
+        $this->secrets()->set($key, $value);
+        $this->secrets()->clear($key);
+
+        $this->assertSame(false, getenv($key));
+        $this->assertTrue(empty($_SERVER[$key]));
+        $this->assertTrue(empty($_ENV[$key]));
+
+        $this->setExpectedException('Exception', 'Loading .env file failed while attempting to access environment variable ' . $key);
+        $this->secrets()->get($key);
+    }
+
+    /**
+     * @covers AppBundle\Secrets::dotEnvPath
+     *
+     * @group stable
+     */
+    public function testDotEnvPath()
+    {
+        // We expect the Secrets class to be just above this directory.
+        $expected = str_replace('/Tests', '', __DIR__);
+        $this->assertSame($expected, $this->secrets()->dotEnvPath());
+    }
+
+    /**
+     * @covers AppBundle\Secrets::set
+     * @covers AppBundle\Secrets::get
+     *
+     * @group stable
+     *
+     * @return void
+     */
+    public function testSet()
     {
         $tests = [
             function(array $tuple) {
@@ -44,18 +83,23 @@ class SecretsTest extends WebTestCase
                 $_SERVER[$tuple[0]] = $tuple[1];
             },
         ];
-        array_walk($tests, [$this, 'assertEnvironmentSet']);
+        array_walk($tests, function (callable $setFunc) {
+            // Generate a unique tuple that will not collide with previous sets.
+            $tuple = [uniqid('a'), uniqid('a')];
+            $setFunc($tuple);
+            $this->assertSame($tuple[1], $this->secrets()->get($tuple[0]));
+        });
     }
 
     /**
-     * Tests exceptions thrown when secrets are not found.
+     * @covers AppBundle\Secrets::get
      *
      * @expectedException Exception
-     * @expectedExceptionMessage Environment variable not found: no match - This probably means you did not set your .env file up properly, you dingus.
+     * @expectedExceptionMessage Loading .env file failed while attempting to access environment variable NO_MATCH
      * @group stable
      */
-    public function testSecretsException()
+    public function testGetException()
     {
-        $this->secrets()->get('no match');
+        $this->secrets()->get('NO_MATCH');
     }
 }

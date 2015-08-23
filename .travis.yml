@@ -1,0 +1,26 @@
+language: php
+
+php:
+  - 5.6
+
+env:
+  - TASK=phpunit:clover
+  - TASK=phpunit:travis
+  - TASK=security:check
+  - TASK=phpcs
+
+before_script:
+ - wget http://getcomposer.org/composer.phar
+ - php composer.phar install --no-interaction
+
+script:
+ - mkdir -p build/logs
+ - rake $TASK
+
+after_script:
+- if [ $TASK='phpunit:clover' ]; then bash <(curl -s https://codecov.io/bash); fi;
+
+notifications:
+  email:
+    on_success: never
+    on_failure: never

@@ -6,6 +6,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use AppBundle\API\Bitstamp\OrderBook;
 use AppBundle\API\Bitstamp\BitstampTradePairs;
+use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -77,6 +78,11 @@ class DefaultController extends Controller
      *
      * @Route("trade/trade", name="trade")
      *
+     * We have to ignore code coverage because all this requires an API key to
+     * function.
+     *
+     * @codeCoverageIgnore
+     *
      * @param Request $request Symfony request
      *
      * @return Response
@@ -88,37 +94,58 @@ class DefaultController extends Controller
         $timeFormat = 'Y-m-d H:i:s';
 
         $stats = [
-            '-Bids-' => '',
-            'bid/buy USD Base Volume' => $tp->volumeUSDBid()->getAmount(),
-            'bid/buy BTC Volume' => $tp->bidBTCVolume()->getAmount(),
-            'bid/buy USD Price' => $tp->bidPrice()->getAmount(),
-            'bid/buy USD Volume post fees (what USD must we spend to play?)' => $tp->volumeUSDBidPostFees()->getAmount(),
-            'bid/buy BTC Volume * USD Price' => $tp->bidBTCVolume()->getAmount() * $tp->bidPrice()->getAmount(),
-            'bid/buy BTC Volume * USD Price as USD' => $tp->bidBTCVolume()->getAmount() * $tp->bidPrice()->getAmount() / (10 ** $tp::BTC_PRECISION),
-            '-Asks-' => '',
-            'ask/sell USD Base Volume' => $tp->volumeUSDAsk()->getAmount(),
-            'ask/sell BTC Volume' => $tp->askBTCVolume()->getAmount(),
-            'ask/sell USD Price' => $tp->askPrice()->getAmount(),
-            'ask/sell BTC Volume * USD Price' => $tp->askBTCVolume()->getAmount() * $tp->askPrice()->getAmount(),
-            'ask/sell BTC Volume * USD Price as USD' => $tp->askBTCVolume()->getAmount() * $tp->askPrice()->getAmount() / (10 ** $tp::BTC_PRECISION),
-            'ask/sell USD Volume post fees (what USD can we keep from sale?)' => $tp->volumeUSDAskPostFees()->getAmount(),
-            '-Diff-' => '',
-            'BTC Profit (satoshis)' => $tp->profitBTC()->getAmount(),
-            'BTC Profit (BTC)' => $tp->profitBTC()->getAmount() / (10 ** $tp::BTC_PRECISION),
-            'BTC Profit USD value (midpoint) as USD cents' => $tp->profitBTC()->getAmount() * $tp->midprice()->getAmount() / (10 ** $tp::BTC_PRECISION),
-            'USD Profit (USD cents)' => $tp->profitUSD()->getAmount(),
-            'Is profitable' => $tp->isProfitable() ? 'Yes' : 'No',
-            'Has dupes' => $tp->hasDupes() ? 'Yes' : 'No',
-            'Is trading' => $tp->isTrading() ? 'Yes' : 'No',
-            '-Dupes-' => '',
-            'Dupe bid range' => $tp->bidPrice()->getAmount() * $tp->dupes->rangeMultiplier(),
-            'Dupe bids' => var_export($tp->dupes->bids($tp->bidPrice()), true),
-            'Dupe ask range' => $tp->askPrice()->getAmount() * $tp->dupes->rangeMultiplier(),
-            'Dupe asks' => var_export($tp->dupes->asks($tp->askPrice()), true),
             '-Facts-' => '',
             'Fees bids multiplier' => $tp->fees->bidsMultiplier(),
             'Fees asks multiplier' => $tp->fees->asksMultiplier(),
+            'Is trading' => $tp->isTrading(),
         ];
+
+        $report = $tp->report();
+        $statsArrayFromProposal = function(TradeProposal $proposal, $prefix = '') {
+            $methods = [
+                'bidUSDPrice',
+                'bidUSDVolumeBase',
+                'bidUSDVolume',
+                'bidUSDVolumePlusFees',
+                'bidBTCVolume',
+                'askUSDPrice',
+                'askUSDVolumeCoverFees',
+                'askUSDVolumePostFees',
+                'askBTCVolume',
+                'profitBTC',
+                'minProfitBTC',
+                'profitUSD',
+                'minProfitUSD',
+            ];
+            foreach ($methods as $method) {
+                $stats[$method] = $proposal->{$method}()->getAmount();
+            }
+
+            $stats['isProfitable'] = $proposal->isProfitable() ? 'Yes' : 'No';
+            $stats['isValid'] = $proposal->isValid();
+            $stats['isFinal'] = $proposal->isFinal();
+            $stats['isCompulsory'] = $proposal->isCompulsory();
+            $stats['reasons'] = json_encode($proposal->reasons());
+
+            $name = md5(serialize($stats));
+
+            // Add prefixes.
+            $return = [$name => ''];
+            foreach ($stats as $key => $value) {
+                $label = implode(' ', array_filter([$prefix, $name, $key]));
+                $return[$label] = $value;
+            }
+
+            return $return;
+        };
+
+        $stats['-Actionable proposal-'] = '';
+        $stats += $statsArrayFromProposal($tp->reduceReportToActionableTradeProposal($report), 'actionable');
+
+        $stats['-Trade proposals-'] = '';
+        foreach ($report as $item) {
+            $stats += $statsArrayFromProposal($item, 'report');
+        }
 
         return $this->render('AppBundle::index.html.twig', [
             'stats' => $stats,

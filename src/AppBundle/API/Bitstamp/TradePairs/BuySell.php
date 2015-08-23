@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\API\Bitstamp;
+namespace AppBundle\API\Bitstamp\TradePairs;
 
 use AppBundle\MoneyStrings;
 use Money\Money;
@@ -18,8 +18,8 @@ class BuySell
      * @param \Psr\Log\LoggerInterface $logger
      */
     public function __construct(
-      PrivateAPI\Buy $buy,
-      PrivateAPI\Sell $sell,
+      \AppBundle\API\Bitstamp\PrivateAPI\Buy $buy,
+      \AppBundle\API\Bitstamp\PrivateAPI\Sell $sell,
       \Psr\Log\LoggerInterface $logger
     )
     {
@@ -57,27 +57,23 @@ class BuySell
      *
      * Basic handling of logging when trade pairs are placed.
      *
-     * @param Money::USD $bidPrice
-     *   The bid price to place, in USD Money.
-     *
-     * @param Money::BTC $bidVolume
-     *   The ask price to place, in BTC Money.
-     *
-     * @param Money::USD $askPrice
-     *   The ask price to place, in USD Money.
-     *
-     * @param Money::BTC $askVolume
-     *   The ask volume to place, in BTC Money.
+     * @param TradeProposal $tradeProposal
+     *   The proposal to execute on the market.
      */
-    public function execute(Money $bidPrice, Money $bidVolume, Money $askPrice, Money $askVolume)
+    public function execute(TradeProposal $tradeProposal)
     {
+        // Only execute valid TradeProposals.
+        if (!$tradeProposal->isValid()) {
+            throw new \Exception('Attempted to place invalid trade with reasons: ' . json_encode($tradeProposal->reasons()));
+        }
+
         try {
-            $this->doBuy($bidPrice, $bidVolume);
+            $this->doBuy($tradeProposal->bidUSDPrice(), $tradeProposal->bidBTCVolume());
         } catch (\Exception $e) {
             // Even if the buy failed, we want to continue to the sell.
         }
 
-        $this->doSell($askPrice, $askVolume);
+        $this->doSell($tradeProposal->askUSDPrice(), $tradeProposal->askBTCVolume());
 
         $this->logger->info('Trade pairs executed.');
     }

@@ -3,6 +3,8 @@
 namespace AppBundle\API\Bitstamp;
 
 use AppBundle\MoneyStrings;
+use AppBundle\Ensure;
+use AppBundle\Cast;
 use Money\Money;
 
 /**
@@ -13,7 +15,7 @@ use Money\Money;
  */
 class OrderList
 {
-    protected $data;
+    protected $data = [];
 
     const USD_PRICE_DATUM_INDEX = 0;
     const USD_KEY = 'usd';
@@ -28,9 +30,10 @@ class OrderList
      *   Order list data from Bitstamp. Either the 'bids' or 'asks' array from
      *   a full order book array.
      */
-    public function __construct($data)
+    public function __construct(array $data)
     {
-        $this->data = [];
+        Ensure::notEmpty($data);
+
         foreach ($data as $datum) {
             $this->data[] = [
                 self::USD_KEY => MoneyStrings::stringToUSD($datum[self::USD_PRICE_DATUM_INDEX]),
@@ -143,7 +146,60 @@ class OrderList
     }
 
     /**
-     * Calculate a percentile of the BTC Volume using the "Nearest rank" method.
+     * Calculates a given percentile based off BTC Volumes.
+     *
+     * @see percentileFinder()
+     *
+     * @param float $pc
+     *   Percentile to calculate. Must be between 0 - 1.
+     *
+     * @return int
+     *   An aggregate value representing the USD price of the percentile
+     *   calculated against BTC Volume, in USD cents.
+     */
+    public function percentileBTCVolume($pc)
+    {
+        $indexFunction = function($pc) {
+            return Money::BTC((int) ceil($this->totalVolume() * $pc));
+        };
+        $sumInit = Money::BTC(0);
+        $sumFunction = function(array $datum, Money $runningSum) {
+            return $runningSum->add($datum[self::BTC_KEY]);
+        };
+
+        return $this->percentileFinder($pc, $indexFunction, $sumInit, $sumFunction);
+    }
+
+    /**
+     * Calculates a given percentile based off order list capitalisation.
+     *
+     * @see percentileFinder()
+     *
+     * @param float $pc
+     *   Percentile to calculate. Must be between 0 - 1.
+     *
+     * @return int
+     *   An aggregate value representing the USD price of the percentile
+     *   calculated against market cap, in USD cents.
+     */
+    public function percentileCap($pc)
+    {
+        $indexFunction = function($pc) {
+            return Money::USD((int) ceil($this->totalCap() * $pc));
+        };
+        $sumInit = Money::USD(0);
+        $sumFunction = function(array $datum, Money $runningSum) {
+            return $runningSum->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
+        };
+
+        return $this->percentileFinder($pc, $indexFunction, $sumInit, $sumFunction);
+    }
+
+    /**
+     * Calculate a percentile using the "Nearest rank" method.
+     *
+     * There are multiple ways to calculate percentiles around, the
+     * "Nearest rank" method is as follows:
      *
      * To find Holly's grade, we need to do the following steps:
      *
@@ -167,69 +223,45 @@ class OrderList
      * @param float $pc
      *   Float between 0 - 1 represending the percentile.
      *
-     * @return int
-     *   An aggregate value representing the USD price of the percentile
-     *   calculated against BTC Volume, in USD cents.
-     */
-    public function percentileBTCVolume($pc)
-    {
-        if ($pc < 0 || $pc > 1) {
-            throw new \Exception('Percentage must be between 0 - 1.');
-        }
-        // 1. Calculate the index, rounding up any decimals, which is not how
-        // Money would normally work if we called multiply().
-        $index = Money::BTC((int) ceil($this->totalVolume() * $pc));
-
-        // 2. Order all the values in the set in ascending order.
-        $this->sortUSDAsc();
-
-        // If index is less than the running total of the next datum, return the
-        // current datum.
-        $sum = Money::BTC(0);
-        foreach ($this->data as $datum) {
-            $sum = $sum->add($datum[self::BTC_KEY]);
-
-            // We've found the percentile, save it and break loop execution.
-            if ($index <= $sum) {
-                $return = $datum[self::USD_KEY]->getAmount();
-                break;
-            }
-        }
-
-        return $return;
-    }
-
-    /**
-     * Calculates a given percentile based off order list capitalisation.
+     * @param callable $indexFunction
+     *   The function used to calculate the index.
      *
-     * @see percentileBTCVolume()
+     * @param Money $sumInit
+     *   The Money value to start the running sum at. 0 is recommended.
      *
-     * @param float $pc
-     *   Percentile to calculate. Must be between 0 - 1.
+     * @param callable $sumFunction
+     *   The function to increment the running sum by for each index comparison.
      *
      * @return int
-     *   An aggregate value representing the USD price of the percentile
-     *   calculated against market cap, in USD cents.
+     *   The calculated percentile amount. This is NOT a Money object as a
+     *   percentile is not necessarily money, e.g. a market cap percentile
+     *   calculation.
      */
-    public function percentileCap($pc)
+    protected function percentileFinder($pc, callable $indexFunction, Money $sumInit, callable $sumFunction)
     {
-        if ($pc < 0 || $pc > 1) {
-            throw new \Exception('Percentage must be between 0 - 1.');
-        }
+        $pc = Cast::toFloat($pc);
+        Ensure::inRange($pc, 0, 1);
 
-        $index = Money::USD((int) ceil($this->totalCap() * $pc));
+        $index = $indexFunction($pc);
         $this->sortUSDAsc();
 
-        $sum = Money::USD(0);
+        $runningSum = $sumInit;
         foreach ($this->data as $datum) {
-            $sum = $sum->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
+            $runningSum = $sumFunction($datum, $runningSum);
 
-            if ($index <= $sum) {
+            if ($index <= $runningSum) {
                 // We've found the cap percentile, save it and break loop
                 // execution.
                 $return = $datum[self::USD_KEY]->getAmount();
                 break;
             }
+        }
+
+        // It's possible that because of the ceil() in the index generation, the
+        // index can be 1 larger than the final sum. In this case, set the
+        // percentileCap to the highest data value.
+        if (!isset($return)) {
+            $return = end($this->data)[self::USD_KEY]->getAmount();
         }
 
         return $return;

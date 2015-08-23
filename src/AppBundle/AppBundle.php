@@ -18,7 +18,9 @@ class AppBundle extends Bundle
         // math on market capitalization can fail - the numbers we're dealing with
         // exceed the 32 bit bounds when cap is measured in satoshis.
         if (!$this->phpEnvironmentIs64Bits()) {
+            // @codeCoverageIgnoreStart
             throw new \Exception('This is not a 64 bit PHP environment. Important math operations are unsupported without a 64 bit environment!');
+            // @codeCoverageIgnoreEnd
         }
     }
 

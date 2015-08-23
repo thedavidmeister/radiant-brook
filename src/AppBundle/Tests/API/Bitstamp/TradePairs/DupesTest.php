@@ -1,20 +1,22 @@
 <?php
 
-namespace AppBundle\Tests\API\Bitstamp;
+namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\Tests\GuzzleTestTrait;
+use AppBundle\Tests\EnvironmentTestTrait;
 use AppBundle\API\Bitstamp\PrivateAPI\OpenOrders;
-use AppBundle\API\Bitstamp\Dupes;
+use AppBundle\API\Bitstamp\TradePairs\Dupes;
 use AppBundle\Secrets;
 use Money\Money;
 
 /**
- * Tests AppBundle\API\Bitstamp\Dupes
+ * Tests AppBundle\API\Bitstamp\TradePairs\Dupes
  */
 class DupesTest extends WebTestCase
 {
     use GuzzleTestTrait;
+    use EnvironmentTestTrait;
 
     protected $sample = '[{"price":"237.50","amount":"0.03397937","type":1,"id":67290521,"datetime":"2015-05-16 21:30:19"},{"price":"232.95","amount":"0.03434213","type":0,"id":67290522,"datetime":"2015-05-16 21:30:19"},{"price":"241.45","amount":"0.03342358","type":1,"id":67009615,"datetime":"2015-05-14 01:30:54"},{"price":"246.00","amount":"0.03280538","type":1,"id":66672917,"datetime":"2015-05-10 12:17:32"}]';
     protected $sample2 = '[{"price":"241.45","amount":"0.03342358","type":1,"id":67009615,"datetime":"2015-05-14 01:30:54"},{"price":"246.00","amount":"0.03280538","type":1,"id":66672917,"datetime":"2015-05-10 12:17:32"}]';
@@ -29,28 +31,26 @@ class DupesTest extends WebTestCase
         return new Dupes($this->openOrders(), new Secrets());
     }
 
-    protected function setRangeMultiplier($multiplier)
-    {
-        $secrets = new Secrets();
-        $secrets->set('DUPES_RANGE_MULTIPLIER', $multiplier);
-    }
-
     /**
-     * Tests that we can get the range multiplier environment variable.
+     * @covers AppBundle\API\Bitstamp\TradePairs\Dupes::rangeMultiplier
      *
      * @group stable
      */
     public function testRangeMultiplier()
     {
-        $rms = [0.01, 0.005];
+        // set, expect.
+        $rms = [
+            ['0.01', 0.01],
+            ['0.005', 0.005],
+        ];
         foreach ($rms as $rm) {
-            $this->setRangeMultiplier($rm);
-            $this->assertSame($rm, $this->dupes()->rangeMultiplier());
+            $this->setEnv('DUPES_RANGE_MULTIPLIER', $rm[0]);
+            $this->assertSame($rm[1], $this->dupes()->rangeMultiplier());
         }
     }
 
     /**
-     * Tests calculation of range, upper and lower bounds from the multiplier.
+     * @covers AppBundle\API\Bitstamp\TradePairs\Dupes::bounds
      *
      * @group stable
      */
@@ -64,13 +64,16 @@ class DupesTest extends WebTestCase
             ['0.01', Money::USD(23750), Money::USD(238), Money::USD(23988), Money::USD(23512)],
         ];
         foreach ($tests as $test) {
-            $this->setRangeMultiplier($test[0]);
+            $this->setEnv('DUPES_RANGE_MULTIPLIER', $test[0]);
             $this->assertEquals(['range' => $test[2], 'upper' => $test[3], 'lower' => $test[4]], $this->dupes()->bounds($test[1]));
         }
     }
 
     /**
-     * Tests prices that are known dupes and not dupes against OO test data.
+     * @covers AppBundle\API\Bitstamp\TradePairs\Dupes::asks
+     * @covers AppBundle\API\Bitstamp\TradePairs\Dupes::bids
+     * @covers AppBundle\API\Bitstamp\TradePairs\Dupes::findDupes
+     * @covers AppBundle\API\Bitstamp\TradePairs\Dupes::__construct
      *
      * Given:
      *   - OO price = X
@@ -159,7 +162,7 @@ class DupesTest extends WebTestCase
         ];
 
         foreach ($askTests as $test) {
-            $this->setRangeMultiplier($test[0]);
+            $this->setEnv('DUPES_RANGE_MULTIPLIER', $test[0]);
             $this->assertEquals($test[3], $this->dupes()->$test[1]($test[2]));
         }
     }

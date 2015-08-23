@@ -29,20 +29,24 @@ services:
     arguments: [@guzzle.http_client, @logger]
 
   bitstamp.fees:
-    class: AppBundle\API\Bitstamp\Fees
+    class: AppBundle\API\Bitstamp\TradePairs\Fees
     arguments: [@bitstamp.balance]
 
   bitstamp.dupes:
-    class: AppBundle\API\Bitstamp\Dupes
+    class: AppBundle\API\Bitstamp\TradePairs\Dupes
     arguments: [@bitstamp.open_orders, @app.secrets]
 
   bitstamp.buysell:
-    class: AppBundle\API\Bitstamp\BuySell
+    class: AppBundle\API\Bitstamp\TradePairs\BuySell
     arguments: [@bitstamp.buy, @bitstamp.sell, @logger]
 
   bitstamp.trade_pairs:
-    class: AppBundle\API\Bitstamp\BitstampTradePairs
-    arguments: [@bitstamp.fees, @bitstamp.dupes, @bitstamp.buysell, @bitstamp.order_book]
+    class: AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs
+    arguments: [@bitstamp.fees, @bitstamp.dupes, @bitstamp.buysell, @bitstamp.price_proposer]
+
+  bitstamp.price_proposer:
+    class: AppBundle\API\Bitstamp\TradePairs\PriceProposer
+    arguments: [@bitstamp.order_book]
 
   # Private API
   bitstamp.private_api_authenticator:

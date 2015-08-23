@@ -1,11 +1,11 @@
 <?php
 
-namespace AppBundle\Tests\API\Bitstamp;
+namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\Tests\GuzzleTestTrait;
 use AppBundle\API\Bitstamp\PrivateAPI\Balance;
-use AppBundle\API\Bitstamp\Fees;
+use AppBundle\API\Bitstamp\TradePairs\Fees;
 use Money\Money;
 
 /**
@@ -39,7 +39,9 @@ class FeesTest extends WebTestCase
 
 
     /**
-     * Tests percent().
+     * @covers AppBundle\API\Bitstamp\TradePairs\Fees::percent
+     * @covers AppBundle\API\Bitstamp\TradePairs\Fees::raw
+     * @covers AppBundle\API\Bitstamp\TradePairs\Fees::__construct
      *
      * @group stable
      */
@@ -50,20 +52,30 @@ class FeesTest extends WebTestCase
     }
 
     /**
-     * Tests multiplier().
+     * @covers AppBundle\API\Bitstamp\TradePairs\Fees::asksMultiplier
      *
      * @group stable
      */
-    public function testMultiplier()
+    public function testAsksMultiplier()
     {
-        $this->assertSame(0.0025, $this->fees()->bidsMultiplier());
         $this->assertSame(0.9975, $this->fees()->asksMultiplier());
-        $this->assertSame(0.0024, $this->fees2()->bidsMultiplier());
         $this->assertSame(0.9976, $this->fees2()->asksMultiplier());
     }
 
     /**
-     * Tests absoluteFeeUSD().
+     * @covers AppBundle\API\Bitstamp\TradePairs\Fees::bidsMultiplier
+     *
+     * @group stable
+     */
+    public function testBidsMultiplier()
+    {
+        $this->assertSame(0.0025, $this->fees()->bidsMultiplier());
+        $this->assertSame(0.0024, $this->fees2()->bidsMultiplier());
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\Fees::absoluteFeeUSD
+     * @covers AppBundle\API\Bitstamp\TradePairs\Fees::absoluteFeeUSDNoRounding
      *
      * @group stable
      */
@@ -101,7 +113,7 @@ class FeesTest extends WebTestCase
     }
 
     /**
-     * Tests absoluteFeeUSD exceptions.
+     * @covers AppBundle\API\Bitstamp\TradePairs\Fees::absoluteFeeUSD
      *
      * @expectedException Exception
      * @expectedExceptionMessage Cannot calculate fees for negative amounts
@@ -113,7 +125,8 @@ class FeesTest extends WebTestCase
     }
 
     /**
-     * Tests the calculation of the Max USD on the isofee.
+     * @covers AppBundle\API\Bitstamp\TradePairs\Fees::isofeeMaxUSD
+     * @covers AppBundle\API\Bitstamp\TradePairs\Fees::absoluteFeeUSDNoRounding
      *
      * @group stable
      */

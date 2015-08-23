@@ -14,8 +14,8 @@ class BitstampDocumentationTest extends WebTestCase
     const BITSTAMP_DOCUMENTATION_URL = 'https://www.bitstamp.net/api/';
 
     /**
-    * Fetch and cache a response from the API documentation.
-    */
+     * Fetch and cache a response from the API documentation.
+     */
     protected function response()
     {
         if (!isset($this->response)) {
@@ -28,22 +28,22 @@ class BitstampDocumentationTest extends WebTestCase
     protected $response;
 
     /**
-    * Tests that the API documentation is responding as 200.
-    *
-    * @group stable
-    * @group slow
-    */
+     * Tests that the API documentation is responding as 200.
+     *
+     * @group stable
+     * @group slow
+     */
     public function testStatusCode()
     {
         $this->assertEquals(200, $this->response()->getStatusCode());
     }
 
     /**
-    * Tests that the expected and current body represents the same API docs.
-    *
-    * @group stable
-    * @group slow
-    */
+     * Tests that the expected and current body represents the same API docs.
+     *
+     * @group stable
+     * @group slow
+     */
     public function testBody()
     {
         $current = $this->extractAPIDocumentation($this->response()->getBody());
@@ -51,14 +51,14 @@ class BitstampDocumentationTest extends WebTestCase
     }
 
     /**
-    * Given an HTML body, extracts the relevant API documentation text.
-    *
-    * @param mixed $html
-    *   Anything that can be cast to a valid HTML string.
-    *
-    * @return string
-    *   API documentation text string, without HTML.
-    */
+     * Given an HTML body, extracts the relevant API documentation text.
+     *
+     * @param mixed $html
+     *   Anything that can be cast to a valid HTML string.
+     *
+     * @return string
+     *   API documentation text string, without HTML.
+     */
     protected function extractAPIDocumentation($html)
     {
         $html5 = new HTML5();
@@ -72,13 +72,13 @@ class BitstampDocumentationTest extends WebTestCase
     }
 
     /**
-    * Sampled extracted output from Bitstamp API docs.
-    *
-    * Last sampled: 2015-8-2.
-    *
-    * @return string
-    *   The sampled HTML from the Bitstamp API docs.
-    */
+     * Sampled extracted output from Bitstamp API docs.
+     *
+     * Last sampled: 2015-8-2.
+     *
+     * @return string
+     *   The sampled HTML from the Bitstamp API docs.
+     */
     protected function expectedExtract()
     {
         return 'Overview Order Book API  HTTP API Websocket APIAPIWhat Is API?Bitstamp application programming interface (API) allows our clients to access and control their accounts, using custom written software.Request limitsDo not make more than 600 request per 10 minutes or we will ban your IP address. For real time data please refer to the websocket API.Public Data FunctionsTickerGET https://www.bitstamp.net/api/ticker/Returns JSON dictionary:last - last BTC pricehigh - last 24 hours price highlow - last 24 hours price lowvwap - last 24 hours volume weighted average price: vwapvolume - last 24 hours volumebid - highest buy orderask - lowest sell orderHourly tickerGET https://www.bitstamp.net/api/ticker_hour/Returns JSON dictionary like https://www.bitstamp.net/api/ticker/, but calculated values are from within an hour.Order bookGET https://www.bitstamp.net/api/order_book/Returns JSON dictionary with "bids" and "asks". Each is a list of open orders and each order is represented as a list of price and amount.TransactionsGET https://www.bitstamp.net/api/transactions/Params:time - time frame for transaction export ("minute" - 1 minute, "hour" - 1 hour). Default: hour.Returns descending JSON list of transactions. Every transaction (dictionary) contains:date - unix timestamp date and timetid - transaction idprice - BTC priceamount - BTC amounttype - buy or sell (0 - buy; 1 - sell)EUR/USD conversion rateGET https://www.bitstamp.net/api/eur_usd/Returns JSON dictionary:buy - buy conversion ratesell - sell conversion rateAPI authenticationAll private API calls require authentication. You need to provide 3 parameters to authenticate a request:API keyNonceSignatureAPI keyTo get an API key, go to "Account", "Security" and then "API Access". Set permissions and click "Generate key".NonceNonce is a regular integer number. It must be increasing with every request you make. Read more about it here. Example: if you set nonce to 1 in your first request, you must set it to at least 2 in your second request. You are not required to start with 1. A common practice is to use unix time for that parameter.SignatureSignature is a HMAC-SHA256 encoded message containing: nonce, customer ID (can be found here) and API key. The HMAC-SHA256 code must be generated using a secret key that was generated with your API key. This code must be converted to it\'s hexadecimal representation (64 uppercase characters).Example (Python):
