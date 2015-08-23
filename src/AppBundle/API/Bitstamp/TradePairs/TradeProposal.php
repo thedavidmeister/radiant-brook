@@ -64,6 +64,12 @@ class TradeProposal implements TradeProposalInterface
     }
     protected $reasons = [];
 
+    /**
+     * Safely add a single reason to the internal $reasons array.
+     *
+     * @param string $reason
+     *   A reason string (will be validated).
+     */
     protected function addReason($reason)
     {
         // Don't allow empty string reasons (although the string '0' is fine).
