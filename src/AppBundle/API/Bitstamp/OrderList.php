@@ -4,6 +4,7 @@ namespace AppBundle\API\Bitstamp;
 
 use AppBundle\MoneyStrings;
 use AppBundle\Ensure;
+use AppBundle\Cast;
 use Money\Money;
 
 /**
