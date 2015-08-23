@@ -145,7 +145,60 @@ class OrderList
     }
 
     /**
-     * Calculate a percentile of the BTC Volume using the "Nearest rank" method.
+     * Calculates a given percentile based off BTC Volumes.
+     *
+     * @see percentileFinder()
+     *
+     * @param float $pc
+     *   Percentile to calculate. Must be between 0 - 1.
+     *
+     * @return int
+     *   An aggregate value representing the USD price of the percentile
+     *   calculated against BTC Volume, in USD cents.
+     */
+    public function percentileBTCVolume($pc)
+    {
+        $indexFunction = function($pc) {
+            return Money::BTC((int) ceil($this->totalVolume() * $pc));
+        };
+        $sumInit = Money::BTC(0);
+        $sumFunction = function(array $datum, Money $runningSum) {
+            return $runningSum->add($datum[self::BTC_KEY]);
+        };
+
+        return $this->percentileFinder($pc, $indexFunction, $sumInit, $sumFunction);
+    }
+
+    /**
+     * Calculates a given percentile based off order list capitalisation.
+     *
+     * @see percentileFinder()
+     *
+     * @param float $pc
+     *   Percentile to calculate. Must be between 0 - 1.
+     *
+     * @return int
+     *   An aggregate value representing the USD price of the percentile
+     *   calculated against market cap, in USD cents.
+     */
+    public function percentileCap($pc)
+    {
+        $indexFunction = function($pc) {
+            return Money::USD((int) ceil($this->totalCap() * $pc));
+        };
+        $sumInit = Money::USD(0);
+        $sumFunction = function(array $datum, Money $runningSum) {
+            return $runningSum->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
+        };
+
+        return $this->percentileFinder($pc, $indexFunction, $sumInit, $sumFunction);
+    }
+
+    /**
+     * Calculate a percentile using the "Nearest rank" method.
+     *
+     * There are multiple ways to calculate percentiles around, the
+     * "Nearest rank" method is as follows:
      *
      * To find Holly's grade, we need to do the following steps:
      *
@@ -169,50 +222,23 @@ class OrderList
      * @param float $pc
      *   Float between 0 - 1 represending the percentile.
      *
-     * @return int
-     *   An aggregate value representing the USD price of the percentile
-     *   calculated against BTC Volume, in USD cents.
-     */
-    public function percentileBTCVolume($pc)
-    {
-        $indexFunction = function($pc) {
-            return Money::BTC((int) ceil($this->totalVolume() * $pc));
-        };
-        $sumInit = Money::BTC(0);
-        $sumFunction = function(array $datum, Money $runningSum) {
-            return $runningSum->add($datum[self::BTC_KEY]);
-        };
-
-        return $this->percentileFinder($pc, $indexFunction, $sumInit, $sumFunction);
-    }
-
-    /**
-     * Calculates a given percentile based off order list capitalisation.
+     * @param callable $indexFunction
+     *   The function used to calculate the index.
      *
-     * @see percentileBTCVolume()
+     * @param Money $sumInit
+     *   The Money value to start the running sum at. 0 is recommended.
      *
-     * @param float $pc
-     *   Percentile to calculate. Must be between 0 - 1.
+     * @param callable $sumFunction
+     *   The function to increment the running sum by for each index comparison.
      *
      * @return int
-     *   An aggregate value representing the USD price of the percentile
-     *   calculated against market cap, in USD cents.
+     *   The calculated percentile amount. This is NOT a Money object as a
+     *   percentile is not necessarily money, e.g. a market cap percentile
+     *   calculation.
      */
-    public function percentileCap($pc)
-    {
-        $indexFunction = function($pc) {
-            return Money::USD((int) ceil($this->totalCap() * $pc));
-        };
-        $sumInit = Money::USD(0);
-        $sumFunction = function(array $datum, Money $runningSum) {
-            return $runningSum->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
-        };
-
-        return $this->percentileFinder($pc, $indexFunction, $sumInit, $sumFunction);
-    }
-
     protected function percentileFinder($pc, callable $indexFunction, Money $sumInit, callable $sumFunction)
     {
+        $pc = Cast::toFloat($pc);
         Ensure::inRange($pc, 0, 1);
 
         $index = $indexFunction($pc);
