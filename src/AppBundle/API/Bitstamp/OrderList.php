@@ -7,6 +7,8 @@ use AppBundle\Ensure;
 use AppBundle\Cast;
 use Money\Money;
 
+use function Functional\memoize;
+
 /**
  * Wraps a list of orders provided by Bitstamp to handle some basic statistics.
  *
@@ -48,31 +50,51 @@ class OrderList
 
     /**
      * Sorts set by USD asc.
+     *
+     * $data is immutable once constructed, so we can cache this safely.
+     * Caching this removes ~5s from the unit test suite.
      */
     protected function sortUSDAsc()
     {
-        usort($this->data, function($a, $b) {
-            if ($a[self::USD_KEY] == $b[self::USD_KEY]) {
-                return 0;
-            }
+        if (!isset($this->sortUSDAsc)) {
+            usort($this->data, function($a, $b) {
+                if ($a[self::USD_KEY] == $b[self::USD_KEY]) {
+                    return 0;
+                }
 
-            return $a[self::USD_KEY] < $b[self::USD_KEY] ? -1 : 1;
-        });
+                return $a[self::USD_KEY] < $b[self::USD_KEY] ? -1 : 1;
+            });
+            $this->sortUSDAsc = $this->data;
+        }
+        else {
+            $this->data = $this->sortUSDAsc;
+        }
     }
+    protected $sortUSDAsc;
 
     /**
      * Sorts set by USD desc.
+     *
+     * $data is immutable once constructed, so we can cache this safely.
+     * Caching this removes ~5s from the unit test suite.
      */
     protected function sortUSDDesc()
     {
-        usort($this->data, function($a, $b) {
-            if ($a[self::USD_KEY] == $b[self::USD_KEY]) {
-                return 0;
-            }
+        if (!isset($this->sortUSDDesc)) {
+            usort($this->data, function($a, $b) {
+                if ($a[self::USD_KEY] == $b[self::USD_KEY]) {
+                    return 0;
+                }
 
-            return $a[self::USD_KEY] > $b[self::USD_KEY] ? -1 : 1;
-        });
+                return $a[self::USD_KEY] > $b[self::USD_KEY] ? -1 : 1;
+            });
+            $this->sortUSDDesc = $this->data;
+        }
+        else {
+            $this->data = $this->sortUSDDesc;
+        }
     }
+    protected $sortUSDDesc;
 
     /**
      * API.
@@ -247,6 +269,7 @@ class OrderList
 
         $runningSum = $sumInit;
         foreach ($this->data as $datum) {
+            \Psy\Shell::debug(get_defined_vars(), $this);
             $runningSum = $sumFunction($datum, $runningSum);
 
             if ($index <= $runningSum) {
