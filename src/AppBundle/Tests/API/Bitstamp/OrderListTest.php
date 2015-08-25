@@ -32,13 +32,25 @@ class OrderListTest extends WebTestCase
 
     protected function bids()
     {
-        return new OrderList($this->bidsSample());
+        // This showed up in the Blackfire profiler as super slow so we don't
+        // rebuild every time.
+        if (!isset($this->bids)) {
+          $this->bids = new OrderList($this->bidsSample());
+        }
+        return $this->bids;
     }
+    protected $bids;
 
     protected function asks()
     {
-        return new OrderList($this->asksSample());
+        // This showed up in the Blackfire profiler as super slow so we don't
+        // rebuild every time.
+        if (!isset($this->asks)) {
+            $this->asks = new OrderList($this->asksSample());
+        }
+        return $this->asks;
     }
+    protected $asks;
 
     /**
      * Test that pair methods return arrays and aggregates return scalars.
