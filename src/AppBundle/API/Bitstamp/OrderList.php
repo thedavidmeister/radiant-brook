@@ -181,16 +181,31 @@ class OrderList
      */
     public function percentileBTCVolume($pc)
     {
-        $indexFunction = function($pc) {
-            return Money::BTC((int) ceil($this->totalVolume() * $pc));
-        };
-        $sumInit = Money::BTC(0);
-        $sumFunction = function(array $datum, Money $runningSum) {
-            return $runningSum->add($datum[self::BTC_KEY]);
-        };
+        if (!isset($this->percentileBTCVolumeData)) {
+            $this->sortUSDAsc();
 
-        return $this->percentileFinder($pc, $indexFunction, $sumInit, $sumFunction);
+            // Build a data array with USD prices as keys and comparison amounts
+            // as values.
+            $this->percentileBTCVolumeData = array_reduce($this->data, function($carry, $datum) {
+                $last = empty($carry) ? Money::BTC(0) : end($carry);
+                $carry[$datum[self::USD_KEY]->getAmount()] = $last->add($datum[self::BTC_KEY]);
+                return $carry;
+            }, []);
+        }
+
+        $index = Money::BTC((int) ceil($this->totalVolume() * $pc));
+
+        foreach ($this->percentileBTCVolumeData as $usd => $compare) {
+            if ($index->lessThanOrEqual($compare)) {
+                return $usd;
+            }
+        }
+
+        // Catch the edge case where rounding causes $index to overshoot the end
+        // of the data set.
+        return $usd;
     }
+    protected $percentileBTCVolumeData;
 
     /**
      * Calculates a given percentile based off order list capitalisation.
@@ -269,7 +284,6 @@ class OrderList
 
         $runningSum = $sumInit;
         foreach ($this->data as $datum) {
-            \Psy\Shell::debug(get_defined_vars(), $this);
             $runningSum = $sumFunction($datum, $runningSum);
 
             if ($index <= $runningSum) {
@@ -288,6 +302,19 @@ class OrderList
         }
 
         return $return;
+    }
+
+    protected function percentileFinderX($index, $data)
+    {
+        foreach ($data as $usd => $compare) {
+            if ($index->lessThanOrEqual($compare)) {
+                return $usd;
+            }
+        }
+
+        // Catch the edge case where rounding causes $index to overshoot the end
+        // of the data set.
+        return $usd;
     }
 
 }
