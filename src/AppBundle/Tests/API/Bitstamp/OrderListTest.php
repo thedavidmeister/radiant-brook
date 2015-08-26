@@ -35,8 +35,9 @@ class OrderListTest extends WebTestCase
         // This showed up in the Blackfire profiler as super slow so we don't
         // rebuild every time.
         if (!isset($this->bids)) {
-          $this->bids = new OrderList($this->bidsSample());
+            $this->bids = new OrderList($this->bidsSample());
         }
+
         return $this->bids;
     }
     protected $bids;
@@ -48,6 +49,7 @@ class OrderListTest extends WebTestCase
         if (!isset($this->asks)) {
             $this->asks = new OrderList($this->asksSample());
         }
+
         return $this->asks;
     }
     protected $asks;
@@ -78,7 +80,7 @@ class OrderListTest extends WebTestCase
                     $this->assertTrue(is_array($check));
 
                     array_walk($check, function($item) {
-                      $this->assertTrue($item instanceof \Money\Money);
+                        $this->assertTrue($item instanceof Money);
                     });
                 }
                 if ($value[0] === 'aggregate') {
