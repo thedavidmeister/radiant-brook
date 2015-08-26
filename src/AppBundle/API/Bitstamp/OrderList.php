@@ -64,8 +64,7 @@ class OrderList
             // Avoiding closures here helps understand the profiler.
             usort($this->data, [$this, '_sortUSDAscAlgo']);
             $this->sortUSDAsc = $this->data;
-        }
-        else {
+        } else {
             $this->data = $this->sortUSDAsc;
         }
     }
