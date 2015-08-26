@@ -94,7 +94,8 @@ class OrderList
             $this->data = $this->sortUSDDesc;
         }
     }
-    protected function _sortUSDDescAlgo($a, $b) {
+    protected function _sortUSDDescAlgo($a, $b)
+    {
         if ($a[self::USD_KEY] == $b[self::USD_KEY]) {
             return 0;
         }
@@ -233,6 +234,7 @@ class OrderList
             $this->percentileBTCVolumeData = array_reduce($this->data, function($carry, $datum) {
                 $last = [] === $carry ? Money::BTC(0) : end($carry);
                 $carry[$datum[self::USD_KEY]->getAmount()] = $last->add($datum[self::BTC_KEY]);
+
                 return $carry;
             }, []);
         }
@@ -279,6 +281,7 @@ class OrderList
                 // Get the last sum, so we can add to it for a running total.
                 $last = [] === $carry ? Money::USD(0) : end($carry);
                 $carry[$datum[self::USD_KEY]->getAmount()] = $last->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
+
                 return $carry;
             }, []);
         }
