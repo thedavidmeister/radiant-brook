@@ -114,6 +114,8 @@ class DefaultControllerTest extends WebTestCase
      * @group slow
      * @group requiresAPIKey
      * @group stable
+     *
+     * @slowThreshold 5000
      */
     public function testTrade()
     {
@@ -154,6 +156,8 @@ class DefaultControllerTest extends WebTestCase
      * @covers AppBundle\Controller\DefaultController::orderBookAction
      * @group slow
      * @group stable
+     *
+     * @slowThreshold 5000
      */
     public function testOrderBook()
     {

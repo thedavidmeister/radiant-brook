@@ -32,6 +32,8 @@ class BitstampDocumentationTest extends WebTestCase
      *
      * @group stable
      * @group slow
+     *
+     * @slowThreshold 5000
      */
     public function testStatusCode()
     {
@@ -43,6 +45,8 @@ class BitstampDocumentationTest extends WebTestCase
      *
      * @group stable
      * @group slow
+     *
+     * @slowThreshold 5000
      */
     public function testBody()
     {
