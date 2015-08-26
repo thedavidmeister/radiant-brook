@@ -28,14 +28,36 @@ task :"heroku-snapshot-bitstamp" do
   system "heroku run 'php app/console snapshot:bitstamp'"
 end
 
+def dosystem(base, *args)
+  cmd = args.unshift(base).join(" ")
+  exit 1 unless system cmd
+end
+
 def console(*args)
   base = "app/console"
-  exit 1 unless system args.unshift(base).join(" ")
+  dosystem base, args
 end
 
 def phpunit(*args)
   base = "bin/phpunit -c app/"
-  exit 1 unless system args.unshift(base).join(" ")
+  dosystem base, args
+end
+
+def blackfire(*args)
+  base = "blackfire run php bin/phpunit -c app/"
+  dosystem base, args
+end
+
+namespace :blackfire do
+  desc 'profile all phpunit tests'
+  task :all do
+    blackfire
+  end
+
+  desc 'profile all phpunit tests not tagged with slow'
+  task :fast do
+    blackfire "--exclude-group", "slow"
+  end
 end
 
 namespace :phpunit do
