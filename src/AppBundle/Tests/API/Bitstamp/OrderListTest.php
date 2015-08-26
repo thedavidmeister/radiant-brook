@@ -139,7 +139,6 @@ class OrderListTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\OrderList::percentileBTCVolume
-     * @covers AppBundle\API\Bitstamp\OrderList::percentileFinder
      *
      * @group stable
      */
@@ -183,7 +182,6 @@ class OrderListTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\OrderList::percentileCap
-     * @covers AppBundle\API\Bitstamp\OrderList::percentileFinder
      *
      * @group stable
      */
