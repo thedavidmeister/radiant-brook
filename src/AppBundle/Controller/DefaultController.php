@@ -140,7 +140,10 @@ class DefaultController extends Controller
         };
 
         $stats['-Actionable proposal-'] = '';
-        $stats += $statsArrayFromProposal($tp->reduceReportToActionableTradeProposal($report), 'actionable');
+        $actionable = $tp->reduceReportToActionableTradeProposal($report);
+        if (isset($actionable)) {
+            $stats += $statsArrayFromProposal($actionable, 'actionable');
+        }
 
         $stats['-Trade proposals-'] = '';
         foreach ($report as $item) {
