@@ -145,6 +145,7 @@ class BitstampTradePairsTest extends WebTestCase
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::validateTradeProposal
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::__construct
      *
+     * @group stable
      */
     public function testValidateTradeProposal()
     {

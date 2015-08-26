@@ -58,6 +58,7 @@ class OrderListTest extends WebTestCase
      * @coversNothing
      *
      * @group stable
+     * @slowThreshold 2000
      */
     public function testReturnFormats()
     {
@@ -73,7 +74,12 @@ class OrderListTest extends WebTestCase
         foreach ($methods as $method) {
             foreach ($expected as $key => $value) {
                 if ($value[0] === 'pair') {
-                    $this->assertTrue(is_array($this->{$method}()->{$key}()));
+                    $check = $this->{$method}()->{$key}();
+                    $this->assertTrue(is_array($check));
+
+                    array_walk($check, function($item) {
+                      $this->assertTrue($item instanceof \Money\Money);
+                    });
                 }
                 if ($value[0] === 'aggregate') {
                     $this->assertTrue(!is_array($this->{$method}()->{$key}(isset($value[1]) ? $value[1] : null)));
@@ -135,6 +141,8 @@ class OrderListTest extends WebTestCase
      * @covers AppBundle\API\Bitstamp\OrderList::percentileBTCVolume
      * @covers AppBundle\API\Bitstamp\OrderList::percentileFinder
      *
+     * @slowThreshold 2000
+     *
      * @group stable
      */
     public function testPercentileBTCVolume()
@@ -178,6 +186,8 @@ class OrderListTest extends WebTestCase
     /**
      * @covers AppBundle\API\Bitstamp\OrderList::percentileCap
      * @covers AppBundle\API\Bitstamp\OrderList::percentileFinder
+     *
+     * @slowThreshold 2000
      *
      * @group stable
      */
