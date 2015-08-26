@@ -3,6 +3,7 @@
 namespace AppBundle;
 
 use Money\Money;
+use Money\Currency;
 use AppBundle\Ensure;
 use AppBundle\MoneyConstants;
 
@@ -21,14 +22,20 @@ class MoneyStrings
      */
     public static function stringToUSD($string)
     {
+
         Ensure::isString($string);
 
-        // @see http://stackoverflow.com/questions/14169820/regular-expression-to-match-all-currency-symbols
-        $string = preg_replace('@\p{Sc}*@', '', $string);
+        // USD string may be prepended with a $ char, other symbols should die.
+        $string = str_replace('$', '', $string);
 
         Ensure::isNumeric($string);
 
-        return Money::USD((int) round($string * (10 ** MoneyConstants::USD_PRECISION)));
+        // Profiling shows this is ~40% faster than the convenience method.
+        static $usd;
+        if (!isset($usd)) {
+            $usd = new Currency('USD');
+        }
+        return new Money((int) round($string * (10 ** MoneyConstants::USD_PRECISION)), $usd);
     }
 
     /**
@@ -44,6 +51,11 @@ class MoneyStrings
         Ensure::isString($string);
         Ensure::isNumeric($string);
 
+        static $btc;
+        if (!isset($btc)) {
+            $btc = new Currency('BTC');
+        }
+        return new Money((int) round($string * (10 ** MoneyConstants::BTC_PRECISION)), $btc);
         return Money::BTC((int) round($string * (10 ** MoneyConstants::BTC_PRECISION)));
     }
 
