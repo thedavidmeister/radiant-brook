@@ -133,7 +133,7 @@ class BitstampTradePairsTest extends WebTestCase
             });
 
             $i++;
-        } while ($i < 20);
+        } while ($i < 5);
     }
 
     protected function randomBool()

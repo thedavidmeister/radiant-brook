@@ -169,7 +169,7 @@ class TradeProposalTest extends WebTestCase
      */
     public function testIsValid()
     {
-        $range = range(1, 50);
+        $range = range(1, 10);
 
         // Test calling validate a bunch of times and seeing true.
         $validateXTimes = map($range, function($times) {
