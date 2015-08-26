@@ -68,7 +68,8 @@ class OrderList
             $this->data = $this->sortUSDAsc;
         }
     }
-    protected function _sortUSDAscAlgo($a, $b) {
+    protected function _sortUSDAscAlgo($a, $b)
+    {
         if ($a[self::USD_KEY] == $b[self::USD_KEY]) {
             return 0;
         }
@@ -89,8 +90,7 @@ class OrderList
             // Avoiding closures here helps understand the profiler.
             usort($this->data, [$this, '_sortUSDDescAlgo']);
             $this->sortUSDDesc = $this->data;
-        }
-        else {
+        } else {
             $this->data = $this->sortUSDDesc;
         }
     }
