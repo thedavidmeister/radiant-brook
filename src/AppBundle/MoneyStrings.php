@@ -35,6 +35,7 @@ class MoneyStrings
         if (!isset($usd)) {
             $usd = new Currency('USD');
         }
+
         return new Money((int) round($string * (10 ** MoneyConstants::USD_PRECISION)), $usd);
     }
 
@@ -55,8 +56,8 @@ class MoneyStrings
         if (!isset($btc)) {
             $btc = new Currency('BTC');
         }
+
         return new Money((int) round($string * (10 ** MoneyConstants::BTC_PRECISION)), $btc);
-        return Money::BTC((int) round($string * (10 ** MoneyConstants::BTC_PRECISION)));
     }
 
     /**
