@@ -14,6 +14,9 @@ use function Functional\memoize;
  *
  * All methods must either return a single pair, a list of pairs or an aggregate
  * value.
+ *
+ * Most methods on this object maintain an in-memory cache as Money methods are
+ * expensive and $data is immutable anyway.
  */
 class OrderList
 {
@@ -30,7 +33,8 @@ class OrderList
      *
      * @param array $data
      *   Order list data from Bitstamp. Either the 'bids' or 'asks' array from
-     *   a full order book array.
+     *   a full order book array. $data must be immutable to avoid risks
+     *   associated with internal caches on this object.
      */
     public function __construct(array $data)
     {
@@ -57,18 +61,20 @@ class OrderList
     protected function sortUSDAsc()
     {
         if (!isset($this->sortUSDAsc)) {
-            usort($this->data, function($a, $b) {
-                if ($a[self::USD_KEY] == $b[self::USD_KEY]) {
-                    return 0;
-                }
-
-                return $a[self::USD_KEY] < $b[self::USD_KEY] ? -1 : 1;
-            });
+            // Avoiding closures here helps understand the profiler.
+            usort($this->data, [$this, '_sortUSDAscAlgo']);
             $this->sortUSDAsc = $this->data;
         }
         else {
             $this->data = $this->sortUSDAsc;
         }
+    }
+    protected function _sortUSDAscAlgo($a, $b) {
+        if ($a[self::USD_KEY] == $b[self::USD_KEY]) {
+            return 0;
+        }
+
+        return $a[self::USD_KEY] < $b[self::USD_KEY] ? -1 : 1;
     }
     protected $sortUSDAsc;
 
@@ -81,18 +87,20 @@ class OrderList
     protected function sortUSDDesc()
     {
         if (!isset($this->sortUSDDesc)) {
-            usort($this->data, function($a, $b) {
-                if ($a[self::USD_KEY] == $b[self::USD_KEY]) {
-                    return 0;
-                }
-
-                return $a[self::USD_KEY] > $b[self::USD_KEY] ? -1 : 1;
-            });
+            // Avoiding closures here helps understand the profiler.
+            usort($this->data, [$this, '_sortUSDDescAlgo']);
             $this->sortUSDDesc = $this->data;
         }
         else {
             $this->data = $this->sortUSDDesc;
         }
+    }
+    protected function _sortUSDDescAlgo($a, $b) {
+        if ($a[self::USD_KEY] == $b[self::USD_KEY]) {
+            return 0;
+        }
+
+        return $a[self::USD_KEY] > $b[self::USD_KEY] ? -1 : 1;
     }
     protected $sortUSDDesc;
 
@@ -143,13 +151,16 @@ class OrderList
      */
     public function totalVolume()
     {
-        $sum = Money::BTC(0);
-        foreach ($this->data as $datum) {
-            $sum = $sum->add($datum[self::BTC_KEY]);
+        if (!isset($this->totalVolume)) {
+            $volume = array_reduce($this->data, function($carry, $datum) {
+                return $carry->add($datum[self::BTC_KEY]);
+            }, Money::BTC(0));
+            $this->totalVolume = $volume->getAmount();
         }
 
-        return $sum->getAmount();
+        return $this->totalVolume;
     }
+    protected $totalVolume;
 
     /**
      * Calculates total capitalisation of the order list.
@@ -159,81 +170,19 @@ class OrderList
      */
     public function totalCap()
     {
-        $sum = Money::USD(0);
-        foreach ($this->data as $datum) {
-            $sum = $sum->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
+        if (!isset($this->totalCap)) {
+            $cap = array_reduce($this->data, function($carry, $datum) {
+                return $carry->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
+            }, Money::USD(0));
+            $this->totalCap = $cap->getAmount();
         }
 
-        return $sum->getAmount();
+        return $this->totalCap;
     }
+    protected $totalCap;
 
     /**
-     * Calculates a given percentile based off BTC Volumes.
-     *
-     * @see percentileFinder()
-     *
-     * @param float $pc
-     *   Percentile to calculate. Must be between 0 - 1.
-     *
-     * @return int
-     *   An aggregate value representing the USD price of the percentile
-     *   calculated against BTC Volume, in USD cents.
-     */
-    public function percentileBTCVolume($pc)
-    {
-        if (!isset($this->percentileBTCVolumeData)) {
-            $this->sortUSDAsc();
-
-            // Build a data array with USD prices as keys and comparison amounts
-            // as values.
-            $this->percentileBTCVolumeData = array_reduce($this->data, function($carry, $datum) {
-                $last = empty($carry) ? Money::BTC(0) : end($carry);
-                $carry[$datum[self::USD_KEY]->getAmount()] = $last->add($datum[self::BTC_KEY]);
-                return $carry;
-            }, []);
-        }
-
-        $index = Money::BTC((int) ceil($this->totalVolume() * $pc));
-
-        foreach ($this->percentileBTCVolumeData as $usd => $compare) {
-            if ($index->lessThanOrEqual($compare)) {
-                return $usd;
-            }
-        }
-
-        // Catch the edge case where rounding causes $index to overshoot the end
-        // of the data set.
-        return $usd;
-    }
-    protected $percentileBTCVolumeData;
-
-    /**
-     * Calculates a given percentile based off order list capitalisation.
-     *
-     * @see percentileFinder()
-     *
-     * @param float $pc
-     *   Percentile to calculate. Must be between 0 - 1.
-     *
-     * @return int
-     *   An aggregate value representing the USD price of the percentile
-     *   calculated against market cap, in USD cents.
-     */
-    public function percentileCap($pc)
-    {
-        $indexFunction = function($pc) {
-            return Money::USD((int) ceil($this->totalCap() * $pc));
-        };
-        $sumInit = Money::USD(0);
-        $sumFunction = function(array $datum, Money $runningSum) {
-            return $runningSum->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
-        };
-
-        return $this->percentileFinder($pc, $indexFunction, $sumInit, $sumFunction);
-    }
-
-    /**
-     * Calculate a percentile using the "Nearest rank" method.
+     * Calculate a percentiles using the "Nearest rank" method.
      *
      * There are multiple ways to calculate percentiles around, the
      * "Nearest rank" method is as follows:
@@ -256,57 +205,42 @@ class OrderList
      *
      * @see http://study.com/academy/lesson/finding-percentiles-in-a-data-set-formula-examples-quiz.html
      * @see http://en.wikipedia.org/wiki/Percentile
+     */
+
+    /**
+     * Calculates a given percentile based off BTC Volumes.
+     *
+     * Both percentile functions are inlined for speed after profiling.
+     *
+     * @see percentileCap()
      *
      * @param float $pc
-     *   Float between 0 - 1 represending the percentile.
-     *
-     * @param callable $indexFunction
-     *   The function used to calculate the index.
-     *
-     * @param Money $sumInit
-     *   The Money value to start the running sum at. 0 is recommended.
-     *
-     * @param callable $sumFunction
-     *   The function to increment the running sum by for each index comparison.
+     *   Percentile to calculate. Must be between 0 - 1.
      *
      * @return int
-     *   The calculated percentile amount. This is NOT a Money object as a
-     *   percentile is not necessarily money, e.g. a market cap percentile
-     *   calculation.
+     *   An aggregate value representing the USD price of the percentile
+     *   calculated against BTC Volume, in USD cents.
      */
-    protected function percentileFinder($pc, callable $indexFunction, Money $sumInit, callable $sumFunction)
+    public function percentileBTCVolume($pc)
     {
         $pc = Cast::toFloat($pc);
         Ensure::inRange($pc, 0, 1);
 
-        $index = $indexFunction($pc);
-        $this->sortUSDAsc();
+        if (!isset($this->percentileBTCVolumeData)) {
+            $this->sortUSDAsc();
 
-        $runningSum = $sumInit;
-        foreach ($this->data as $datum) {
-            $runningSum = $sumFunction($datum, $runningSum);
-
-            if ($index <= $runningSum) {
-                // We've found the cap percentile, save it and break loop
-                // execution.
-                $return = $datum[self::USD_KEY]->getAmount();
-                break;
-            }
+            // Build a data array with USD prices as keys and comparison amounts
+            // as values.
+            $this->percentileBTCVolumeData = array_reduce($this->data, function($carry, $datum) {
+                $last = [] === $carry ? Money::BTC(0) : end($carry);
+                $carry[$datum[self::USD_KEY]->getAmount()] = $last->add($datum[self::BTC_KEY]);
+                return $carry;
+            }, []);
         }
 
-        // It's possible that because of the ceil() in the index generation, the
-        // index can be 1 larger than the final sum. In this case, set the
-        // percentileCap to the highest data value.
-        if (!isset($return)) {
-            $return = end($this->data)[self::USD_KEY]->getAmount();
-        }
+        $index = Money::BTC((int) ceil($this->totalVolume() * $pc));
 
-        return $return;
-    }
-
-    protected function percentileFinderX($index, $data)
-    {
-        foreach ($data as $usd => $compare) {
+        foreach ($this->percentileBTCVolumeData as $usd => $compare) {
             if ($index->lessThanOrEqual($compare)) {
                 return $usd;
             }
@@ -316,5 +250,50 @@ class OrderList
         // of the data set.
         return $usd;
     }
+    protected $percentileBTCVolumeData;
 
+    /**
+     * Calculates a given percentile based off order list capitalisation.
+     *
+     * Both percentile functions are inlined for speed after profiling.
+     *
+     * @see percentileBTCVolume()
+     *
+     * @param float $pc
+     *   Percentile to calculate. Must be between 0 - 1.
+     *
+     * @return int
+     *   An aggregate value representing the USD price of the percentile
+     *   calculated against market cap, in USD cents.
+     */
+    public function percentileCap($pc)
+    {
+        $pc = Cast::toFloat($pc);
+        Ensure::inRange($pc, 0, 1);
+
+        if (!isset($this->percentileCapData)) {
+            $this->sortUSDAsc();
+
+            // Build a data array with USD prices as keys and comparison cap
+            // amounts as values.
+            $this->percentileCapData = array_reduce($this->data, function ($carry, $datum) {
+                // Get the last sum, so we can add to it for a running total.
+                $last = [] === $carry ? Money::USD(0) : end($carry);
+                $carry[$datum[self::USD_KEY]->getAmount()] = $last->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
+                return $carry;
+            }, []);
+        }
+
+        $index = Money::USD((int) ceil($this->totalCap() * $pc));
+        foreach ($this->percentileCapData as $usd => $compare) {
+            if ($index->lessThanOrEqual($compare)) {
+                return $usd;
+            }
+        }
+
+        // Catch the edge case where rounding causes $index to overshoot the end
+        // of the data set.
+        return $usd;
+    }
+    protected $percentileCapData;
 }
