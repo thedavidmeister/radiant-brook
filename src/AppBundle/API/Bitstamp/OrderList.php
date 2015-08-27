@@ -70,11 +70,11 @@ class OrderList
     }
     protected function _sortUSDAscAlgo($a, $b)
     {
-        if ($a[self::USD_KEY] == $b[self::USD_KEY]) {
+        if ($a[self::USD_KEY]->equals($b[self::USD_KEY])) {
             return 0;
         }
 
-        return $a[self::USD_KEY] < $b[self::USD_KEY] ? -1 : 1;
+        return $a[self::USD_KEY]->lessThan($b[self::USD_KEY]) ? -1 : 1;
     }
     protected $sortUSDAsc;
 
@@ -96,11 +96,11 @@ class OrderList
     }
     protected function _sortUSDDescAlgo($a, $b)
     {
-        if ($a[self::USD_KEY] == $b[self::USD_KEY]) {
+        if ($a[self::USD_KEY]->equals($b[self::USD_KEY])) {
             return 0;
         }
 
-        return $a[self::USD_KEY] > $b[self::USD_KEY] ? -1 : 1;
+        return $a[self::USD_KEY]->greaterThan($b[self::USD_KEY]) ? -1 : 1;
     }
     protected $sortUSDDesc;
 
