@@ -7,8 +7,6 @@ use AppBundle\Ensure;
 use AppBundle\Cast;
 use Money\Money;
 
-use function Functional\memoize;
-
 /**
  * Wraps a list of orders provided by Bitstamp to handle some basic statistics.
  *
