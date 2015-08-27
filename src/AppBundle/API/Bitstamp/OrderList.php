@@ -28,6 +28,8 @@ class OrderList
     const BTC_AMOUNT_DATUM_INDEX = 1;
     const BTC_KEY = 'btc';
 
+    const PERCENTILE_KEY = 'percentile';
+
     /**
      * Constructor.
      *
@@ -232,8 +234,17 @@ class OrderList
             // Build a data array with USD prices as keys and comparison amounts
             // as values.
             $this->percentileBTCVolumeData = array_reduce($this->data, function($carry, $datum) {
-                $last = [] === $carry ? Money::BTC(0) : end($carry);
-                $carry[$datum[self::USD_KEY]->getAmount()] = $last->add($datum[self::BTC_KEY]);
+                // Get the last sum, so we can add a running total.
+                $last = [] === $carry ? Money::BTC(0) : end($carry)[self::PERCENTILE_KEY];
+
+                // Build a simple array we can compare the index against.
+                $compare = [
+                    self::USD_KEY => $datum[self::USD_KEY]->getAmount(),
+                    self::PERCENTILE_KEY => $last->add($datum[self::BTC_KEY]),
+                ];
+
+                // Add to the carry.
+                $carry[] = $compare;
 
                 return $carry;
             }, []);
@@ -241,15 +252,7 @@ class OrderList
 
         $index = Money::BTC((int) ceil($this->totalVolume() * $pc));
 
-        foreach ($this->percentileBTCVolumeData as $usd => $compare) {
-            if ($index->lessThanOrEqual($compare)) {
-                return $usd;
-            }
-        }
-
-        // Catch the edge case where rounding causes $index to overshoot the end
-        // of the data set.
-        return $usd;
+        return $this->percentileIndexCompare($index, $this->percentileBTCVolumeData);
     }
     protected $percentileBTCVolumeData;
 
@@ -279,23 +282,39 @@ class OrderList
             // amounts as values.
             $this->percentileCapData = array_reduce($this->data, function ($carry, $datum) {
                 // Get the last sum, so we can add to it for a running total.
-                $last = [] === $carry ? Money::USD(0) : end($carry);
-                $carry[$datum[self::USD_KEY]->getAmount()] = $last->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
+                $last = [] === $carry ? Money::USD(0) : end($carry)[self::PERCENTILE_KEY];
+
+                // Build a simple array we can compare the index against.
+                $compare = [
+                    self::USD_KEY => $datum[self::USD_KEY]->getAmount(),
+                    self::PERCENTILE_KEY => $last->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount())),
+                ];
+
+                // Add to the carry.
+                $carry[] = $compare;
 
                 return $carry;
             }, []);
         }
 
         $index = Money::USD((int) ceil($this->totalCap() * $pc));
-        foreach ($this->percentileCapData as $usd => $compare) {
-            if ($index->lessThanOrEqual($compare)) {
-                return $usd;
-            }
-        }
 
-        // Catch the edge case where rounding causes $index to overshoot the end
-        // of the data set.
-        return $usd;
+        return $this->percentileIndexCompare($index, $this->percentileCapData);
     }
     protected $percentileCapData;
+
+    protected function percentileIndexCompare($index, $comparisons) {
+        // Ensure index cannot overshoot data set.
+        if ($index->greaterThanOrEqual(end($comparisons)[self::PERCENTILE_KEY])) {
+            $index = end($comparisons)[self::PERCENTILE_KEY];
+        }
+
+        // Remove every element that is below the index.
+        $noBelowIndex = array_filter($comparisons, function ($compare) use ($index) {
+            return $index->lessThanOrEqual($compare[self::PERCENTILE_KEY]);
+        });
+
+        // Return the lowest element remaining.
+        return reset($noBelowIndex)[self::USD_KEY];
+    }
 }
