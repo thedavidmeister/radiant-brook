@@ -303,7 +303,8 @@ class OrderList
     }
     protected $percentileCapData;
 
-    protected function percentileIndexCompare($index, $comparisons) {
+    protected function percentileIndexCompare($index, $comparisons)
+    {
         // Ensure index cannot overshoot data set.
         if ($index->greaterThanOrEqual(end($comparisons)[self::PERCENTILE_KEY])) {
             $index = end($comparisons)[self::PERCENTILE_KEY];
