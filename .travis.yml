@@ -10,6 +10,7 @@ env:
   - TASK=phpcs
 
 before_script:
+ - if [ $TASK!='phpunit:clover' ]; then phpenv config-rm xdebug.ini; fi;
  - wget http://getcomposer.org/composer.phar
  - php composer.phar install --no-interaction
 
