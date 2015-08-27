@@ -30,13 +30,9 @@ class MoneyStrings
 
         Ensure::isNumeric($string);
 
-        // Profiling shows this is ~40% faster than the convenience method.
-        static $usd;
-        if (!isset($usd)) {
-            $usd = new Currency('USD');
-        }
-
-        return new Money((int) round($string * (10 ** MoneyConstants::USD_PRECISION)), $usd);
+        // Avoid the convenience method as profiling shows it to be too slow
+        // here.
+        return new Money((int) round($string * (10 ** MoneyConstants::USD_PRECISION)), new Currency('USD'));
     }
 
     /**
@@ -52,12 +48,9 @@ class MoneyStrings
         Ensure::isString($string);
         Ensure::isNumeric($string);
 
-        static $btc;
-        if (!isset($btc)) {
-            $btc = new Currency('BTC');
-        }
-
-        return new Money((int) round($string * (10 ** MoneyConstants::BTC_PRECISION)), $btc);
+        // Avoid the convenience method as profiling shows it to be too slow
+        // here.
+        return new Money((int) round($string * (10 ** MoneyConstants::BTC_PRECISION)), new Currency('BTC'));
     }
 
     /**
