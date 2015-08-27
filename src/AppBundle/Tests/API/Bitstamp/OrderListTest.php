@@ -105,7 +105,7 @@ class OrderListTest extends WebTestCase
         $this->assertEquals(['usd' => Money::USD(9999900), 'btc' => Money::BTC(2413989060)], $this->asks()->max());
 
         // Make sure to hit the equality.
-        $equalSortChecker = new OrderList([["236.37", "0.21153277"], ["236.37", "0.21153277"]]);
+        $equalSortChecker = new OrderList([['236.37', '0.21153277'], ['236.37', '0.21153277']]);
         $this->assertEquals(['usd' => Money::USD(23637), 'btc' => Money::BTC(21153277)], $equalSortChecker->max());
     }
 
@@ -124,7 +124,7 @@ class OrderListTest extends WebTestCase
         $this->assertEquals(['usd' => Money::USD(23650), 'btc' => Money::BTC(172667249)], $this->asks()->min());
 
         // Make sure to hit the equality.
-        $equalSortChecker = new OrderList([["236.37", "0.21153277"], ["236.37", "0.21153277"]]);
+        $equalSortChecker = new OrderList([['236.37', '0.21153277'], ['236.37', '0.21153277']]);
         $this->assertEquals(['usd' => Money::USD(23637), 'btc' => Money::BTC(21153277)], $equalSortChecker->min());
     }
 
