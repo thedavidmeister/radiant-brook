@@ -102,6 +102,10 @@ class OrderListTest extends WebTestCase
         // Double check these because of the internal sort cache.
         $this->assertEquals(['usd' => Money::USD(23642), 'btc' => Money::BTC(4176785497)], $this->bids()->max());
         $this->assertEquals(['usd' => Money::USD(9999900), 'btc' => Money::BTC(2413989060)], $this->asks()->max());
+
+        $this->bids()->min();
+        $this->asks()->min();
+
         $this->assertEquals(['usd' => Money::USD(23642), 'btc' => Money::BTC(4176785497)], $this->bids()->max());
         $this->assertEquals(['usd' => Money::USD(9999900), 'btc' => Money::BTC(2413989060)], $this->asks()->max());
 
@@ -122,6 +126,10 @@ class OrderListTest extends WebTestCase
         // Double check these because of the internal sort cache.
         $this->assertEquals(['usd' => Money::USD(1), 'btc' => Money::BTC(6050000000000)], $this->bids()->min());
         $this->assertEquals(['usd' => Money::USD(23650), 'btc' => Money::BTC(172667249)], $this->asks()->min());
+
+        $this->bids()->max();
+        $this->asks()->max();
+
         $this->assertEquals(['usd' => Money::USD(1), 'btc' => Money::BTC(6050000000000)], $this->bids()->min());
         $this->assertEquals(['usd' => Money::USD(23650), 'btc' => Money::BTC(172667249)], $this->asks()->min());
 
