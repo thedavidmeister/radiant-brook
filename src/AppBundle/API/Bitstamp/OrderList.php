@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * AppBundle\API\Bitstamp\OrderList
+ */
 
 namespace AppBundle\API\Bitstamp;
 
