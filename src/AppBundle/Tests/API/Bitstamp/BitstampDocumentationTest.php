@@ -51,8 +51,9 @@ class BitstampDocumentationTest extends WebTestCase
     public function testBody()
     {
         $current = $this->extractAPIDocumentation($this->response()->getBody());
+        $hash = md5($current);
         // Hashes are easier to compare than big strings or arrays.
-        $this->assertEquals($this->expectedExtractHash(), md5($current));
+        $this->assertEquals($this->expectedExtractHash(), $hash, 'Hashes do not match. expected: ' . $this->expectedExtractHash() . ' actual: ' . $hash . ' full text: ' . $current);
     }
 
     /**
