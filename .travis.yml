@@ -19,7 +19,7 @@ script:
  - rake $TASK
 
 after_script:
-- if [ "$TASK" = "phpunit:clover" ]; then bash <(curl -s https://codecov.io/bash); fi;
+- if [ $TASK="phpunit:clover" ]; then bash <(curl -s https://codecov.io/bash); fi;
 
 notifications:
   email:
