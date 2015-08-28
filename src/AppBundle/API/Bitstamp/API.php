@@ -26,9 +26,6 @@ class API implements APIInterface
     // Bad Things will happen if you mess with it directly in production code.
     public $client;
 
-    // The DateTime of the last API call.
-    protected $datetime;
-
     // Storage for data().
     protected $data;
 
@@ -218,7 +215,7 @@ class API implements APIInterface
         $logData = $this->logFullResponse ? $data : '-- This endpoint does not have full response logging enabled --';
         $this->logger->info('Response from ' . $this->endpoint(), ['data' => $logData]);
 
-        $this->datetime(new \DateTime());
+        $this->setDatetime(new \DateTime());
 
         return $data;
     }
@@ -254,22 +251,21 @@ class API implements APIInterface
     /**
      * Returns the DateTime of the most recent execution.
      *
-     * @param DateTime $new
-     *   The new DateTime to lodge as last updated time.
-     *
      * @return DateTime
      */
-    public function datetime($new = null)
+    public function datetime()
     {
-        if (isset($new)) {
-            if (!($new instanceof \DateTime)) {
-                throw new \Exception('New datetime must be a DateTime object.');
-            }
-            $this->datetime = $new;
-        }
+        return $this->datetime;
+    }
+
+    protected function setDatetime(\DateTime $new)
+    {
+        $this->datetime = $new;
 
         return $this->datetime;
     }
+    // The DateTime of the last API call.
+    protected $datetime;
 
     /**
      * {@inheritDoc}

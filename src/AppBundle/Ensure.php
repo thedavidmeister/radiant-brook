@@ -302,7 +302,7 @@ final class Ensure
      */
     public static function isString($value)
     {
-        return (is_string($value)) ? $value : self::fail('%s is not a string.', $value);
+        return is_string($value) ? $value : self::fail('%s is not a string.', $value);
     }
 
     /**

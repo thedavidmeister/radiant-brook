@@ -29,42 +29,6 @@ abstract class APITest extends WebTestCase
     }
 
     /**
-     * Data provider for testDatetimeException.
-     *
-     * @return array
-     */
-    public function dataDatetimeException()
-    {
-        return [
-            [true],
-            [false],
-            [[]],
-            ['string'],
-            [123],
-            [0],
-            [1.23],
-        ];
-    }
-
-    /**
-     * Test that datetime provides exceptions when not provided with a DateTime.
-     *
-     * @dataProvider dataDatetimeException
-     * @expectedException Exception
-     * @expectedExceptionMessage New datetime must be a DateTime object.
-     * @group stable
-     *
-     * @param mixed $notTimes
-     *   Things that aren't DateTime objects.
-     */
-    public function testDatetimeException($notTimes)
-    {
-        $class = $this->getClass();
-
-        $class->datetime($notTimes);
-    }
-
-    /**
      * Tests that we can clear the parameters previously set.
      *
      * @group stable
@@ -422,7 +386,6 @@ abstract class APITest extends WebTestCase
     /**
      * Test that timestamp dates are recorded properly.
      *
-     * @group slow
      * @group stable
      */
     public function testDatesData()
@@ -436,12 +399,6 @@ abstract class APITest extends WebTestCase
         // Trigger an API call that should update the internal DateTime.
         $class->data();
         $now = new \DateTime();
-        $this->assertSame($class->datetime()->format('U'), $now->format('U'));
-
-        // Even after a second, and a new data call, datetime should not change as
-        // data() should be cached.
-        sleep(1);
-        $class->data();
         $this->assertSame($class->datetime()->format('U'), $now->format('U'));
     }
 }

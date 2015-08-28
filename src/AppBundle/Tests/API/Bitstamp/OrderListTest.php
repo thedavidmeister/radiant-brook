@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * AppBundle\Tests\API\Bitstamp\OrderListTest
+ */
 
 namespace AppBundle\Tests\API\Bitstamp;
 
@@ -32,13 +36,27 @@ class OrderListTest extends WebTestCase
 
     protected function bids()
     {
-        return new OrderList($this->bidsSample());
+        // This showed up in the Blackfire profiler as super slow so we don't
+        // rebuild every time.
+        if (!isset($this->bids)) {
+            $this->bids = new OrderList($this->bidsSample());
+        }
+
+        return $this->bids;
     }
+    protected $bids;
 
     protected function asks()
     {
-        return new OrderList($this->asksSample());
+        // This showed up in the Blackfire profiler as super slow so we don't
+        // rebuild every time.
+        if (!isset($this->asks)) {
+            $this->asks = new OrderList($this->asksSample());
+        }
+
+        return $this->asks;
     }
+    protected $asks;
 
     /**
      * Test that pair methods return arrays and aggregates return scalars.
@@ -46,6 +64,7 @@ class OrderListTest extends WebTestCase
      * @coversNothing
      *
      * @group stable
+     * @slowThreshold 1000
      */
     public function testReturnFormats()
     {
@@ -61,7 +80,12 @@ class OrderListTest extends WebTestCase
         foreach ($methods as $method) {
             foreach ($expected as $key => $value) {
                 if ($value[0] === 'pair') {
-                    $this->assertTrue(is_array($this->{$method}()->{$key}()));
+                    $check = $this->{$method}()->{$key}();
+                    $this->assertTrue(is_array($check));
+
+                    array_walk($check, function($item) {
+                        $this->assertTrue($item instanceof Money);
+                    });
                 }
                 if ($value[0] === 'aggregate') {
                     $this->assertTrue(!is_array($this->{$method}()->{$key}(isset($value[1]) ? $value[1] : null)));
@@ -73,25 +97,49 @@ class OrderListTest extends WebTestCase
     /**
      * @covers AppBundle\API\Bitstamp\OrderList::max
      * @covers AppBundle\API\Bitstamp\OrderList::sortUSDDesc
+     * @covers AppBundle\API\Bitstamp\OrderList::_sortUSDDescAlgo
      *
      * @group stable
      */
     public function testMax()
     {
+        // Double check these because of the internal sort cache.
         $this->assertEquals(['usd' => Money::USD(23642), 'btc' => Money::BTC(4176785497)], $this->bids()->max());
         $this->assertEquals(['usd' => Money::USD(9999900), 'btc' => Money::BTC(2413989060)], $this->asks()->max());
+
+        $this->bids()->min();
+        $this->asks()->min();
+
+        $this->assertEquals(['usd' => Money::USD(23642), 'btc' => Money::BTC(4176785497)], $this->bids()->max());
+        $this->assertEquals(['usd' => Money::USD(9999900), 'btc' => Money::BTC(2413989060)], $this->asks()->max());
+
+        // Make sure to hit the equality.
+        $equalSortChecker = new OrderList([['236.37', '0.21153277'], ['236.37', '0.21153277']]);
+        $this->assertEquals(['usd' => Money::USD(23637), 'btc' => Money::BTC(21153277)], $equalSortChecker->max());
     }
 
     /**
      * @covers AppBundle\API\Bitstamp\OrderList::min
      * @covers AppBundle\API\Bitstamp\OrderList::sortUSDAsc
+     * @covers AppBundle\API\Bitstamp\OrderList::_sortUSDAscAlgo
      *
      * @group stable
      */
     public function testMin()
     {
+        // Double check these because of the internal sort cache.
         $this->assertEquals(['usd' => Money::USD(1), 'btc' => Money::BTC(6050000000000)], $this->bids()->min());
         $this->assertEquals(['usd' => Money::USD(23650), 'btc' => Money::BTC(172667249)], $this->asks()->min());
+
+        $this->bids()->max();
+        $this->asks()->max();
+
+        $this->assertEquals(['usd' => Money::USD(1), 'btc' => Money::BTC(6050000000000)], $this->bids()->min());
+        $this->assertEquals(['usd' => Money::USD(23650), 'btc' => Money::BTC(172667249)], $this->asks()->min());
+
+        // Make sure to hit the equality.
+        $equalSortChecker = new OrderList([['236.37', '0.21153277'], ['236.37', '0.21153277']]);
+        $this->assertEquals(['usd' => Money::USD(23637), 'btc' => Money::BTC(21153277)], $equalSortChecker->min());
     }
 
     /**
@@ -121,7 +169,7 @@ class OrderListTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\OrderList::percentileBTCVolume
-     * @covers AppBundle\API\Bitstamp\OrderList::percentileFinder
+     * @covers AppBundle\API\Bitstamp\OrderList::percentileIndexCompare
      *
      * @group stable
      */
@@ -165,7 +213,7 @@ class OrderListTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\OrderList::percentileCap
-     * @covers AppBundle\API\Bitstamp\OrderList::percentileFinder
+     * @covers AppBundle\API\Bitstamp\OrderList::percentileIndexCompare
      *
      * @group stable
      */
