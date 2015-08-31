@@ -38,6 +38,9 @@ class PriceProposer implements \Iterator
      * DI Constructor.
      *
      * @param \AppBundle\API\Bitstamp\PublicAPI\OrderBook $orderBook
+     *
+     * @param array $minMaxStep
+     *   An array with 3
      */
     public function __construct(
         \AppBundle\API\Bitstamp\PublicAPI\OrderBook $orderBook,
@@ -50,7 +53,10 @@ class PriceProposer implements \Iterator
         // Secrets.
         $this->secrets = new Secrets();
 
-        // Ensure minMaxStep is all floats.
+        // Ensure minMaxStep is 3 floats.
+        if (count($minMaxStep) !== 3) {
+            throw new \Exception('Min, max, step array is the wrong size. It must be 3 elements long, but is actually ' . count($minMaxStep) . '.');
+        }
         $minMaxStep = array_map(function ($float) {
             return Cast::toFloat($float);
         }, $minMaxStep);
