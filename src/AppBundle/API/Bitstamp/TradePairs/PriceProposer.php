@@ -40,7 +40,8 @@ class PriceProposer implements \Iterator
      * @param \AppBundle\API\Bitstamp\PublicAPI\OrderBook $orderBook
      */
     public function __construct(
-        \AppBundle\API\Bitstamp\PublicAPI\OrderBook $orderBook
+        \AppBundle\API\Bitstamp\PublicAPI\OrderBook $orderBook,
+        array $minMaxStep
     )
     {
         // DI.
@@ -49,10 +50,12 @@ class PriceProposer implements \Iterator
         // Secrets.
         $this->secrets = new Secrets();
 
-        // Init.
-        $this->minPercentile = Cast::toFloat($this->secrets->get(self::MIN_PERCENTILE_SECRET));
-        $this->maxPercentile = Cast::toFloat($this->secrets->get(self::MAX_PERCENTILE_SECRET));
-        $this->stepSize = Cast::toFloat($this->secrets->get(self::STEP_SIZE_SECRET));
+        // Ensure minMaxStep is all floats.
+        $minMaxStep = array_map(function ($float) {
+            return Cast::toFloat($float);
+        }, $minMaxStep);
+
+        list($this->minPercentile, $this->maxPercentile, $this->stepSize) = $minMaxStep;
 
         Ensure::lessThan($this->minPercentile, $this->maxPercentile);
 
