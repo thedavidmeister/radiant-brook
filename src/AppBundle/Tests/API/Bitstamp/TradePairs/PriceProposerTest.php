@@ -63,8 +63,10 @@ class PriceProposerTest extends WebTestCase
     /**
      * Data provider for testMinMaxStepExceptions
      *
+     * @return array
      */
-    public function dataMinMaxStepExceptions() {
+    public function dataMinMaxStepExceptions()
+    {
         return [
             // Anything null is an exception.
             [[null, null, null]],
@@ -89,7 +91,8 @@ class PriceProposerTest extends WebTestCase
      *
      * @group stable
      */
-    public function testMinMaxStepExceptions($minMaxStep) {
+    public function testMinMaxStepExceptions($minMaxStep)
+    {
         $this->setExpectedException('Exception');
 
         new PriceProposer($this->orderbook(), $minMaxStep);
