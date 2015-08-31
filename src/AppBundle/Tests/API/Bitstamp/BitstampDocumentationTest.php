@@ -43,7 +43,7 @@ class BitstampDocumentationTest extends WebTestCase
     /**
      * Tests that the expected and current body represents the same API docs.
      *
-     * group stable
+     * @group stable
      * @group slow
      *
      * @slowThreshold 5000
