@@ -86,7 +86,7 @@ class PriceProposerTest extends WebTestCase
      *
      * @dataProvider dataMinMaxStepExceptions
      *
-     * @param $minMaxStep
+     * @param array $minMaxStep
      *   The minMaxStep array to pass to PriceProposer.
      *
      * @group stable

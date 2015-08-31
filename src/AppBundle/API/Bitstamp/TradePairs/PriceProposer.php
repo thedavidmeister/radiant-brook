@@ -39,7 +39,7 @@ class PriceProposer implements \Iterator
      *
      * @param \AppBundle\API\Bitstamp\PublicAPI\OrderBook $orderBook
      *
-     * @param array $minMaxStep
+     * @param array                                       $minMaxStep
      *   An array with 3
      */
     public function __construct(
