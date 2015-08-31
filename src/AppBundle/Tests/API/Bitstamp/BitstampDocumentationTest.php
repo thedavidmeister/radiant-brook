@@ -80,7 +80,7 @@ class BitstampDocumentationTest extends WebTestCase
         $text = preg_split("@\b@", $text);
         // Kill whitespace and punctuation and stuff.
         $text = array_map(function($word) {
-            return preg_replace('@[-=+?.:/;()\'," \s].*@', '', $word);
+            return preg_replace('@[-=+?.:/;()\'," \s]*@', '', $word);
         }, $text);
         // Kill empty strings.
         $text = array_filter($text);
