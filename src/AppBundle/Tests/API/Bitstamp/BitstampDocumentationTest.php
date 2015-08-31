@@ -78,14 +78,12 @@ class BitstampDocumentationTest extends WebTestCase
 
         // Split on word boundaries.
         $text = preg_split("@\b@", $text);
-        // Trim words.
-        $text = array_map('trim', $text);
+        // Kill whitespace and punctuation and stuff.
+        $text = array_map(function($word) {
+            return preg_replace('@[-=+?.:/;()\'," \s].*@', '', $word);
+        }, $text);
         // Kill empty strings.
         $text = array_filter($text);
-        // Kill punctuation not attached to a word.
-        $text = array_filter($text, function($word) {
-            return !preg_match('@^[-=+?.:/;()\'," \s].*$@', $word);
-        });
 
         $text = implode(' ', $text);
 
