@@ -44,4 +44,8 @@ final class Cast
         // Cast the value to a float, if it's numeric.
         return (float) Ensure::isNumeric($value);
     }
+
+    public static function toBoolean($value) {
+        return (bool) Ensure::isBooleany($value);
+    }
 }

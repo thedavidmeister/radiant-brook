@@ -18,6 +18,11 @@ final class Ensure
         // Do nothing.
     }
 
+    public static function isBooleany($value)
+    {
+        return null !== filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ? $value : fail('%s is not a boolean.');
+    }
+
     /**
      * Ensure that a value is not null.
      *
