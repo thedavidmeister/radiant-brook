@@ -45,7 +45,19 @@ final class Cast
         return (float) Ensure::isNumeric($value);
     }
 
-    public static function toBoolean($value) {
+    /**
+     * Ensures that a value is a boolean.
+     *
+     * Value must be booleany. If it is, it will be cast to a float, otherwise,
+     * fail.
+     *
+     * @param booleany $value
+     *   The value to ensure is a float.
+     *
+     * @return bool $value
+     */
+    public static function toBoolean($value)
+    {
         return (bool) Ensure::isBooleany($value);
     }
 }
