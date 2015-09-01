@@ -66,15 +66,19 @@ class PriceProposerTest extends WebTestCase
     {
         return [
             // Anything null is an exception.
-            [[null, null, null]],
-            [[1, null, null]],
-            [[null, 1, null]],
-            [[null, null, 1]],
-            [[1, 1, null]],
-            [[null, 1, 1]],
-            [[1, null, 1]],
+            [[null, null, null], 'null is not numeric.'],
+            [[1, null, null], 'null is not numeric.'],
+            [[null, 1, null], 'null is not numeric.'],
+            [[null, null, 1], 'null is not numeric.'],
+            [[1, 1, null], 'null is not numeric.'],
+            [[null, 1, 1], 'null is not numeric.'],
+            [[1, null, 1], 'null is not numeric.'],
             // This will throw because min is not less than max.
-            [[1, 1, 1]],
+            [[1, 1, 1], '1 is not less than 1.'],
+            // minMaxStep must be 3 long.
+            [[1, 2], 'Min, max, step array is the wrong size. It must be 3 elements long, but is actually 2.'],
+            [[1], 'Min, max, step array is the wrong size. It must be 3 elements long, but is actually 1.'],
+            [[], 'Min, max, step array is the wrong size. It must be 3 elements long, but is actually 0.'],
         ];
     }
 
@@ -86,11 +90,11 @@ class PriceProposerTest extends WebTestCase
      * @param array $minMaxStep
      *   The minMaxStep array to pass to PriceProposer.
      *
-     * @group stable
+     * group stable
      */
-    public function testMinMaxStepExceptions($minMaxStep)
+    public function testMinMaxStepExceptions($minMaxStep, $message)
     {
-        $this->setExpectedException('Exception');
+        $this->setExpectedException('Exception', $message);
 
         new PriceProposer($this->orderbook(), $minMaxStep);
     }
