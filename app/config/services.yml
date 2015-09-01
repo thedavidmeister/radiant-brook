@@ -46,7 +46,7 @@ services:
 
   bitstamp.price_proposer:
     class: AppBundle\API\Bitstamp\TradePairs\PriceProposer
-    arguments: [@bitstamp.order_book]
+    arguments: [@bitstamp.order_book, '%bitstamp.price_proposer.min_max_step%']
 
   # Private API
   bitstamp.private_api_authenticator:

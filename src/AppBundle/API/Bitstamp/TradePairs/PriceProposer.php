@@ -17,12 +17,6 @@ use Money\Money;
 class PriceProposer implements \Iterator
 {
 
-    const MIN_PERCENTILE_SECRET = 'BITSTAMP_PERCENTILE_MIN';
-
-    const MAX_PERCENTILE_SECRET = 'BITSTAMP_PERCENTILE_MAX';
-
-    const STEP_SIZE_SECRET = 'BITSTAMP_PERCENTILE_STEP';
-
     protected $minPercentile;
 
     protected $maxPercentile;
