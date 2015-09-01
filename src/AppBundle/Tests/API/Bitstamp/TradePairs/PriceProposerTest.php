@@ -4,7 +4,6 @@ namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\API\Bitstamp\TradePairs\PriceProposer;
-use AppBundle\Tests\EnvironmentTestTrait;
 use Money\Money;
 
 /**
@@ -12,8 +11,6 @@ use Money\Money;
  */
 class PriceProposerTest extends WebTestCase
 {
-
-    use EnvironmentTestTrait;
 
     protected function mock($class)
     {
