@@ -90,7 +90,10 @@ class PriceProposerTest extends WebTestCase
      * @param array $minMaxStep
      *   The minMaxStep array to pass to PriceProposer.
      *
-     * group stable
+     * @param string $message
+     *   The expected exception message.
+     *
+     * @group stable
      */
     public function testMinMaxStepExceptions($minMaxStep, $message)
     {
