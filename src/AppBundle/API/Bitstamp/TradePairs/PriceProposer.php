@@ -49,8 +49,9 @@ class PriceProposer implements \Iterator
         $this->secrets = new Secrets();
 
         // Ensure minMaxStep is 3 floats.
-        if (count($minMaxStep) !== 3) {
-            throw new \Exception('Min, max, step array is the wrong size. It must be 3 elements long, but is actually ' . count($minMaxStep) . '.');
+        $minMaxStepSize = count($minMaxStep);
+        if ($minMaxStepSize !== 3) {
+            throw new \Exception('Min, max, step array is the wrong size. It must be 3 elements long, but is actually ' . $minMaxStepSize . '.');
         }
         $minMaxStep = array_map(function ($float) {
             return Cast::toFloat($float);
