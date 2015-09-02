@@ -19,6 +19,42 @@ final class Ensure
     }
 
     /**
+     * Ensure that a value is boolean-y.
+     *
+     * Boolean-y values follow PHP filter rules, 1/0, "yes"/"no", '',
+     * "true"/"false" and true/false are all boolean-y. Objects that cast to one
+     * of these strings via __toString() are boolean-y. Everything else is not.
+     *
+     * @param boolean-y $value
+     *   The value that may or may not be boolean-y.
+     *
+     * @see https://bugs.php.net/bug.php?id=67167
+     *
+     * @return boolean-y $value
+     */
+    public static function isBooleany($value)
+    {
+        // $value is already an actual boolean.
+        if (is_bool($value)) {
+            return $value;
+        }
+
+        // If $value is an object that can be cast to a string, use the string.
+        // Of course, if the object cannot be cast, this will throw.
+        if (is_object($value) && null !== filter_var((string) $value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)) {
+            return $value;
+        }
+
+        // Strings and ints might be boolean-y.
+        if ((is_string($value) || is_int($value)) && null !== filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)) {
+            return $value;
+        }
+
+        // Everything else is not boolean-y.
+        return self::fail('%s is not a boolean.', $value);
+    }
+
+    /**
      * Ensure that a value is not null.
      *
      * @param mixed $value

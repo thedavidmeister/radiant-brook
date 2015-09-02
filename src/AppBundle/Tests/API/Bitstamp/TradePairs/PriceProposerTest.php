@@ -4,7 +4,6 @@ namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\API\Bitstamp\TradePairs\PriceProposer;
-use AppBundle\Tests\EnvironmentTestTrait;
 use Money\Money;
 
 /**
@@ -12,8 +11,6 @@ use Money\Money;
  */
 class PriceProposerTest extends WebTestCase
 {
-
-    use EnvironmentTestTrait;
 
     protected function mock($class)
     {
@@ -61,22 +58,62 @@ class PriceProposerTest extends WebTestCase
     }
 
     /**
+     * Data provider for testMinMaxStepExceptions
+     *
+     * @return array
+     */
+    public function dataMinMaxStepExceptions()
+    {
+        return [
+            // Anything null is an exception.
+            [[null, null, null], 'null is not numeric.'],
+            [[1, null, null], 'null is not numeric.'],
+            [[null, 1, null], 'null is not numeric.'],
+            [[null, null, 1], 'null is not numeric.'],
+            [[1, 1, null], 'null is not numeric.'],
+            [[null, 1, 1], 'null is not numeric.'],
+            [[1, null, 1], 'null is not numeric.'],
+            // This will throw because min is not less than max.
+            [[1, 1, 1], '1 is not less than 1.'],
+            // minMaxStep must be 3 long.
+            [[1, 2], 'Min, max, step array is the wrong size. It must be 3 elements long, but is actually 2.'],
+            [[1], 'Min, max, step array is the wrong size. It must be 3 elements long, but is actually 1.'],
+            [[], 'Min, max, step array is the wrong size. It must be 3 elements long, but is actually 0.'],
+        ];
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::__construct
+     *
+     * @dataProvider dataMinMaxStepExceptions
+     *
+     * @param array  $minMaxStep
+     *   The minMaxStep array to pass to PriceProposer.
+     *
+     * @param string $message
+     *   The expected exception message.
+     *
+     * @group stable
+     */
+    public function testMinMaxStepExceptions($minMaxStep, $message)
+    {
+        $this->setExpectedException('Exception', $message);
+
+        new PriceProposer($this->orderbook(), $minMaxStep);
+    }
+
+    /**
      * @covers AppBundle\API\Bitstamp\TradePairs\PriceProposer::valid
      *
      * @group stable
      */
     public function testValid()
     {
-        $minPercentile = 0.0;
-        $this->setEnv('BITSTAMP_PERCENTILE_MIN', $minPercentile);
+        $minMaxStep = [0.0, 0.2, 0.1];
 
-        $maxPercentile = 0.2;
-        $this->setEnv('BITSTAMP_PERCENTILE_MAX', $maxPercentile);
+        list($minPercentile, $maxPercentile, $stepSize) = $minMaxStep;
 
-        $stepSize = 0.1;
-        $this->setEnv('BITSTAMP_PERCENTILE_STEP', $stepSize);
-
-        $pp = new PriceProposer($this->orderbook());
+        $pp = new PriceProposer($this->orderbook(), $minMaxStep);
 
         // $pp should be valid at the start.
         $this->assertTrue($pp->valid());
@@ -113,16 +150,12 @@ class PriceProposerTest extends WebTestCase
      */
     public function testIteration()
     {
-        $minPercentile = 0.01;
-        $this->setEnv('BITSTAMP_PERCENTILE_MIN', $minPercentile);
+        $minMaxStep = [0.01, 0.1, 0.005];
 
-        $maxPercentile = 0.1;
-        $this->setEnv('BITSTAMP_PERCENTILE_MAX', $maxPercentile);
+        list($minPercentile, $maxPercentile, $stepSize) = $minMaxStep;
 
-        $stepSize = 0.005;
-        $this->setEnv('BITSTAMP_PERCENTILE_STEP', $stepSize);
+        $pp = new PriceProposer($this->orderbook(), $minMaxStep);
 
-        $pp = new PriceProposer($this->orderbook());
         $currentPercentile = $minPercentile;
         foreach ($pp as $key => $value) {
             // Test key().
@@ -162,16 +195,12 @@ class PriceProposerTest extends WebTestCase
     {
         $orderbook = $this->orderbook();
 
-        $minPercentile = 0.05;
-        $this->setEnv('BITSTAMP_PERCENTILE_MIN', $minPercentile);
+        $minMaxStep = [0.05, 0.1, 0.005];
 
-        $maxPercentile = 0.1;
-        $this->setEnv('BITSTAMP_PERCENTILE_MAX', $maxPercentile);
+        list($minPercentile, $maxPercentile, $stepSize) = $minMaxStep;
 
-        $stepSize = 0.005;
-        $this->setEnv('BITSTAMP_PERCENTILE_STEP', $stepSize);
+        $pp = new PriceProposer($orderbook, $minMaxStep);
 
-        $pp = new PriceProposer($orderbook);
         $this->assertSame($minPercentile, $pp->minPercentile());
         $this->assertSame($maxPercentile, $pp->maxPercentile());
         $this->assertSame($stepSize, $pp->stepSize());
@@ -195,22 +224,20 @@ class PriceProposerTest extends WebTestCase
             ['1'],
             ['0'],
         ];
+
+        // Fill in some max and steps.
+        $tests = array_map(function ($item) {
+            return [$item[0], $item[0] + 0.1, $item[0.01]];
+        }, $tests);
+
         array_walk($tests, function($test) {
             $orderbook = $this->orderbook();
 
             $expected = Money::USD((int) ($test[0] * 12345678));
 
-            // New PriceProposers start at BITSTAMP_PERCENTILE_MIN.
-            $this->setEnv('BITSTAMP_PERCENTILE_MIN', $test[0]);
-            // Exceptions without a max.
-            $this->setEnv('BITSTAMP_PERCENTILE_MAX', $test[0] + 0.1);
-            $this->setEnv('BITSTAMP_PERCENTILE_STEP', $test[0] + 0.01);
-
-            $pp = new PriceProposer($orderbook);
+            $pp = new PriceProposer($orderbook, $test);
 
             $this->assertEquals($expected, $pp->askUSDPrice(), 'Testing percentile ' . $test[0]);
-
-            $this->clearEnv('BITSTAMP_PERCENTILE_MIN');
         });
     }
 
@@ -231,6 +258,12 @@ class PriceProposerTest extends WebTestCase
             ['1'],
             ['0'],
         ];
+
+        // Fill in some max and steps.
+        $tests = array_map(function ($item) {
+            return [$item[0], $item[0] + 0.1, $item[0.01]];
+        }, $tests);
+
         array_walk($tests, function($test) {
             // This mocking gets deep...
             $orderbook = $this->orderbook();
@@ -238,13 +271,7 @@ class PriceProposerTest extends WebTestCase
             // bidPrice() passes (1 - $percentile) to percentileCap().
             $expected = Money::USD((int) ((1 - $test[0]) * self::PERCENTILE_CAP_MULTIPLIER_BIDS));
 
-            // New PriceProposers start at BITSTAMP_PERCENTILE_MIN.
-            $this->setEnv('BITSTAMP_PERCENTILE_MIN', $test[0]);
-            // Exceptions without these set.
-            $this->setEnv('BITSTAMP_PERCENTILE_MAX', $test[0] + 0.1);
-            $this->setEnv('BITSTAMP_PERCENTILE_STEP', $test[0] + 0.01);
-
-            $pp = new PriceProposer($orderbook);
+            $pp = new PriceProposer($orderbook, $test);
 
             $this->assertEquals($expected, $pp->bidUSDPrice(), 'Testing percentile ' . $test[0]);
         });

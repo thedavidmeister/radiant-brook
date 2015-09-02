@@ -11,6 +11,77 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class EnsureTest extends WebTestCase
 {
     /**
+     * Data provider for testIsBooleanyExceptions
+     *
+     * @return array
+     */
+    public function dataIsBooleanyExceptions()
+    {
+        $tests = [
+            ['y', '"y" is not a boolean.'],
+            ['n', '"n" is not a boolean.'],
+            [null, 'null is not a boolean.'],
+            [new Mocks\NotBooleanyObject(), '{} is not a boolean.'],
+        ];
+
+        $string = uniqid();
+        $tests[] = [$string, '"' . $string . '" is not a boolean.'];
+
+        $int = mt_rand(2, mt_getrandmax());
+        $tests[] = [$int, $int . ' is not a boolean.'];
+
+        $float = mt_rand() / mt_getrandmax();
+        $tests[] = [$float, $float . ' is not a boolean.'];
+
+        return $tests;
+    }
+
+    /**
+     * @covers AppBundle\Ensure::isBooleany
+     *
+     * @dataProvider dataIsBooleanyExceptions
+     *
+     * @param mixed  $test
+     *   Data that is not boolean-y.
+     *
+     * @param string $message
+     *   The expected exception message.
+     *
+     * @group stable
+     */
+    public function testIsBooleanyExceptions($test, $message)
+    {
+        $this->setExpectedException('Exception', $message);
+        Ensure::isBooleany($test);
+    }
+
+    /**
+     * @covers AppBundle\Ensure::isBooleany
+     *
+     * @group stable
+     */
+    public function testIsBooleany()
+    {
+        $tests = [
+            true,
+            'true',
+            1,
+            'yes',
+            false,
+            'false',
+            0,
+            'no',
+            '',
+        ];
+        array_walk($tests, function($test) {
+            $this->assertSame($test, Ensure::isBooleany($test));
+        });
+
+        $booleanyObject = new Mocks\BooleanyObject();
+        $this->assertSame($booleanyObject, Ensure::isBooleany($booleanyObject));
+    }
+
+    /**
      * Data provider for isNumeric.
      *
      * @return array

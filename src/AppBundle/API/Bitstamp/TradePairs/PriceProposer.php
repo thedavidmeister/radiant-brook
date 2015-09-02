@@ -17,12 +17,6 @@ use Money\Money;
 class PriceProposer implements \Iterator
 {
 
-    const MIN_PERCENTILE_SECRET = 'BITSTAMP_PERCENTILE_MIN';
-
-    const MAX_PERCENTILE_SECRET = 'BITSTAMP_PERCENTILE_MAX';
-
-    const STEP_SIZE_SECRET = 'BITSTAMP_PERCENTILE_STEP';
-
     protected $minPercentile;
 
     protected $maxPercentile;
@@ -38,9 +32,14 @@ class PriceProposer implements \Iterator
      * DI Constructor.
      *
      * @param \AppBundle\API\Bitstamp\PublicAPI\OrderBook $orderBook
+     *
+     * @param array                                       $minMaxStep
+     *   An array with 3 floats representing the minimumPercentile,
+     *   maximumPercentile and stepSize (in that order).
      */
     public function __construct(
-        \AppBundle\API\Bitstamp\PublicAPI\OrderBook $orderBook
+        \AppBundle\API\Bitstamp\PublicAPI\OrderBook $orderBook,
+        array $minMaxStep
     )
     {
         // DI.
@@ -49,10 +48,16 @@ class PriceProposer implements \Iterator
         // Secrets.
         $this->secrets = new Secrets();
 
-        // Init.
-        $this->minPercentile = Cast::toFloat($this->secrets->get(self::MIN_PERCENTILE_SECRET));
-        $this->maxPercentile = Cast::toFloat($this->secrets->get(self::MAX_PERCENTILE_SECRET));
-        $this->stepSize = Cast::toFloat($this->secrets->get(self::STEP_SIZE_SECRET));
+        // Ensure minMaxStep is 3 floats.
+        $minMaxStepSize = count($minMaxStep);
+        if ($minMaxStepSize !== 3) {
+            throw new \Exception('Min, max, step array is the wrong size. It must be 3 elements long, but is actually ' . $minMaxStepSize . '.');
+        }
+        $minMaxStep = array_map(function ($float) {
+            return Cast::toFloat($float);
+        }, $minMaxStep);
+
+        list($this->minPercentile, $this->maxPercentile, $this->stepSize) = $minMaxStep;
 
         Ensure::lessThan($this->minPercentile, $this->maxPercentile);
 
