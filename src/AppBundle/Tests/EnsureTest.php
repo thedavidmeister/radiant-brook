@@ -5,7 +5,15 @@ namespace AppBundle\Tests;
 use AppBundle\Ensure;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class EnsureTestBooleanyString {
+/**
+ * Dummy to test objects that cast to a boolean in testIsBooleany().
+ *
+ * Ignoring coding standards to avoid "multiple classes" warnings.
+ */
+// @codingStandardsIgnoreStart
+class EnsureTestBooleanyString
+{
+    // @codingStandardsIgnoreEnd
     protected $potentialStrings = [
         'true',
         'false',
@@ -14,25 +22,56 @@ class EnsureTestBooleanyString {
         '',
     ];
 
-    function __toString() {
+    /**
+     * Implements __toString().
+     *
+     * The string returned is a random boolean-y string.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
         shuffle($this->potentialStrings);
 
         return reset($this->potentialStrings);
     }
 }
 
-class EnsureTestNotBooleany {
-    function __toString() {
+/**
+ * Dummy to test objects that cast to a non-boolean string in testIsBooleany().
+ *
+ * Ignoring coding standards to avoid "multiple classes" warnings.
+ */
+// @codingStandardsIgnoreStart
+class EnsureTestNotBooleany
+{
+    // @codingStandardsIgnoreEnd
+    /**
+     * Implements __toString().
+     * @return string
+     */
+    public function __toString()
+    {
         return uniqid();
     }
 }
 
 /**
  * Tests \AppBundle\Ensure
+ *
+ * Ignoring coding standards to avoid "multiple classes" warnings.
  */
+// @codingStandardsIgnoreStart
 class EnsureTest extends WebTestCase
 {
-    public function dataIsBooleanyExceptions() {
+    // @codingStandardsIgnoreEnd
+    /**
+     * Data provider for testIsBooleanyExceptions
+     *
+     * @return array
+     */
+    public function dataIsBooleanyExceptions()
+    {
         $tests = [
             ['y', '"y" is not a boolean.'],
             ['n', '"n" is not a boolean.'],
@@ -55,16 +94,23 @@ class EnsureTest extends WebTestCase
     /**
      * @dataProvider dataIsBooleanyExceptions
      *
-     * @param  [type] $test    [description]
-     * @param  [type] $message [description]
-     * @return [type]          [description]
+     * @param mixed  $test
+     *   Data that is not boolean-y.
+     *
+     * @param string $message
+     *   The expected exception message.
      */
-    public function testIsBooleanyExceptions($test, $message) {
+    public function testIsBooleanyExceptions($test, $message)
+    {
         $this->setExpectedException('Exception', $message);
         Ensure::isBooleany($test);
     }
 
-    public function testIsBooleany() {
+    /**
+     * Test values that are boolean-y.
+     */
+    public function testIsBooleany()
+    {
         $tests = [
             true,
             'true',
