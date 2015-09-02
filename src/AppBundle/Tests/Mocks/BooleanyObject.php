@@ -11,6 +11,11 @@ class BooleanyObject
 
     /**
      * {@inheritdoc}
+     *
+     * @param bool|null $truthy
+     *   If a boolean is passed, the string this object casts to will be
+     *   a boolean-y string that matches the passed boolean's truthy-ness. If
+     *   null is passed this object can cast to any boolean-y string.
      */
     public function __construct($truthy = null)
     {
@@ -30,11 +35,7 @@ class BooleanyObject
     }
 
     /**
-     * Implements __toString().
-     *
-     * The string returned is a random boolean-y string.
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function __toString()
     {
