@@ -7,8 +7,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Tests \AppBundle\Ensure
- *
- * Ignoring coding standards to avoid "multiple classes" warnings.
  */
 class EnsureTest extends WebTestCase
 {
