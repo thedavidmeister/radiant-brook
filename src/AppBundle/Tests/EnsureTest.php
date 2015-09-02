@@ -99,6 +99,8 @@ class EnsureTest extends WebTestCase
      *
      * @param string $message
      *   The expected exception message.
+     *
+     * @group stable
      */
     public function testIsBooleanyExceptions($test, $message)
     {
@@ -108,6 +110,8 @@ class EnsureTest extends WebTestCase
 
     /**
      * Test values that are boolean-y.
+     *
+     * @group stable
      */
     public function testIsBooleany()
     {
