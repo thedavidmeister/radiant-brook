@@ -11,7 +11,53 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class CastTest extends WebTestCase
 {
     /**
-     * Test that boolean-y things cast to corresponding boolean values.
+     * Data provider for testToBooleanExceptions().
+     *
+     * @see \AppBundle\Tests\EnsureTest::dataIsBooleanyExceptions
+     *
+     * @return array
+     */
+    public function dataToBooleanExceptions()
+    {
+        $tests = [
+            ['y', '"y" is not a boolean.'],
+            ['n', '"n" is not a boolean.'],
+            [null, 'null is not a boolean.'],
+            [new Mocks\NotBooleanyObject(), '{} is not a boolean.'],
+        ];
+
+        $string = uniqid();
+        $tests[] = [$string, '"' . $string . '" is not a boolean.'];
+
+        $int = mt_rand(2, mt_getrandmax());
+        $tests[] = [$int, $int . ' is not a boolean.'];
+
+        $float = mt_rand() / mt_getrandmax();
+        $tests[] = [$float, $float . ' is not a boolean.'];
+
+        return $tests;
+    }
+
+    /**
+     * @covers AppBundle\Cast::toBoolean
+     *
+     * @dataProvider dataToBooleanExceptions
+     *
+     * @param mixed $value
+     *   Thing that is not boolean-y and cannot be cast.
+     *
+     * @param string $message
+     *   The expected exception message.
+     */
+    public function testToBooleanExceptions($value, $message)
+    {
+        $this->setExpectedException('Exception', $message);
+
+        Cast::toBoolean($value);
+    }
+
+    /**
+     * @covers AppBundle\Cast::toBoolean
      */
     public function testToBoolean()
     {

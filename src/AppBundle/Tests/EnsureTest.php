@@ -10,10 +10,8 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  *
  * Ignoring coding standards to avoid "multiple classes" warnings.
  */
-// @codingStandardsIgnoreStart
 class EnsureTest extends WebTestCase
 {
-    // @codingStandardsIgnoreEnd
     /**
      * Data provider for testIsBooleanyExceptions
      *
@@ -25,7 +23,7 @@ class EnsureTest extends WebTestCase
             ['y', '"y" is not a boolean.'],
             ['n', '"n" is not a boolean.'],
             [null, 'null is not a boolean.'],
-            [new EnsureTestNotBooleany(), '{} is not a boolean.'],
+            [new Mocks\NotBooleanyObject(), '{} is not a boolean.'],
         ];
 
         $string = uniqid();
@@ -41,6 +39,8 @@ class EnsureTest extends WebTestCase
     }
 
     /**
+     * @covers AppBundle\Ensure::isBooleany
+     *
      * @dataProvider dataIsBooleanyExceptions
      *
      * @param mixed  $test
@@ -58,7 +58,7 @@ class EnsureTest extends WebTestCase
     }
 
     /**
-     * Test values that are boolean-y.
+     * @covers AppBundle\Ensure::isBooleany
      *
      * @group stable
      */
@@ -574,24 +574,5 @@ class EnsureTest extends WebTestCase
     {
         $this->setExpectedException('Exception', '"foo" is "bar", but "bing" too! [], "", 1');
         Ensure::fail('%s is %s, but %s too! %s, %s, %s', 'foo', 'bar', 'bing', [], '', 1);
-    }
-}
-
-/**
- * Dummy to test objects that cast to a non-boolean string in testIsBooleany().
- *
- * Ignoring coding standards to avoid "multiple classes" warnings.
- */
-// @codingStandardsIgnoreStart
-class EnsureTestNotBooleany
-{
-    // @codingStandardsIgnoreEnd
-    /**
-     * Implements __toString().
-     * @return string
-     */
-    public function __toString()
-    {
-        return uniqid();
     }
 }
