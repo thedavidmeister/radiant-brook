@@ -3,9 +3,8 @@
 namespace AppBundle\Tests\Mocks;
 
 /**
- * Dummy to test objects that cast to a non-boolean string.
+ * Dummy to test objects that cast to a non-boolean-y string.
  */
-// @codingStandardsIgnoreStart
 class NotBooleanyObject
 {
     /**
