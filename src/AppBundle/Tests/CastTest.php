@@ -48,6 +48,8 @@ class CastTest extends WebTestCase
      *
      * @param string $message
      *   The expected exception message.
+     *
+     * @group stable
      */
     public function testToBooleanExceptions($value, $message)
     {
@@ -58,6 +60,8 @@ class CastTest extends WebTestCase
 
     /**
      * @covers AppBundle\Cast::toBoolean
+     *
+     * @group stable
      */
     public function testToBoolean()
     {
