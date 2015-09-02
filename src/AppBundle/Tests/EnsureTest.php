@@ -6,57 +6,6 @@ use AppBundle\Ensure;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
- * Dummy to test objects that cast to a boolean in testIsBooleany().
- *
- * Ignoring coding standards to avoid "multiple classes" warnings.
- */
-// @codingStandardsIgnoreStart
-class EnsureTestBooleanyString
-{
-    // @codingStandardsIgnoreEnd
-    protected $potentialStrings = [
-        'true',
-        'false',
-        'yes',
-        'no',
-        '',
-    ];
-
-    /**
-     * Implements __toString().
-     *
-     * The string returned is a random boolean-y string.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        shuffle($this->potentialStrings);
-
-        return reset($this->potentialStrings);
-    }
-}
-
-/**
- * Dummy to test objects that cast to a non-boolean string in testIsBooleany().
- *
- * Ignoring coding standards to avoid "multiple classes" warnings.
- */
-// @codingStandardsIgnoreStart
-class EnsureTestNotBooleany
-{
-    // @codingStandardsIgnoreEnd
-    /**
-     * Implements __toString().
-     * @return string
-     */
-    public function __toString()
-    {
-        return uniqid();
-    }
-}
-
-/**
  * Tests \AppBundle\Ensure
  *
  * Ignoring coding standards to avoid "multiple classes" warnings.
@@ -625,5 +574,56 @@ class EnsureTest extends WebTestCase
     {
         $this->setExpectedException('Exception', '"foo" is "bar", but "bing" too! [], "", 1');
         Ensure::fail('%s is %s, but %s too! %s, %s, %s', 'foo', 'bar', 'bing', [], '', 1);
+    }
+}
+
+/**
+ * Dummy to test objects that cast to a boolean in testIsBooleany().
+ *
+ * Ignoring coding standards to avoid "multiple classes" warnings.
+ */
+// @codingStandardsIgnoreStart
+class EnsureTestBooleanyString
+{
+    // @codingStandardsIgnoreEnd
+    protected $potentialStrings = [
+        'true',
+        'false',
+        'yes',
+        'no',
+        '',
+    ];
+
+    /**
+     * Implements __toString().
+     *
+     * The string returned is a random boolean-y string.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        shuffle($this->potentialStrings);
+
+        return reset($this->potentialStrings);
+    }
+}
+
+/**
+ * Dummy to test objects that cast to a non-boolean string in testIsBooleany().
+ *
+ * Ignoring coding standards to avoid "multiple classes" warnings.
+ */
+// @codingStandardsIgnoreStart
+class EnsureTestNotBooleany
+{
+    // @codingStandardsIgnoreEnd
+    /**
+     * Implements __toString().
+     * @return string
+     */
+    public function __toString()
+    {
+        return uniqid();
     }
 }
