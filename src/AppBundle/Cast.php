@@ -58,6 +58,6 @@ final class Cast
      */
     public static function toBoolean($value)
     {
-        return (bool) Ensure::isBooleany($value);
+        return filter_var(Ensure::isBooleany($value), FILTER_VALIDATE_BOOLEAN);
     }
 }

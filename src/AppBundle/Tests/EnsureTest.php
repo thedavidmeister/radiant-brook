@@ -79,7 +79,7 @@ class EnsureTest extends WebTestCase
             $this->assertSame($test, Ensure::isBooleany($test));
         });
 
-        $booleanyObject = new EnsureTestBooleanyString();
+        $booleanyObject = new Mocks\BooleanyObject();
         $this->assertSame($booleanyObject, Ensure::isBooleany($booleanyObject));
     }
 
@@ -574,38 +574,6 @@ class EnsureTest extends WebTestCase
     {
         $this->setExpectedException('Exception', '"foo" is "bar", but "bing" too! [], "", 1');
         Ensure::fail('%s is %s, but %s too! %s, %s, %s', 'foo', 'bar', 'bing', [], '', 1);
-    }
-}
-
-/**
- * Dummy to test objects that cast to a boolean in testIsBooleany().
- *
- * Ignoring coding standards to avoid "multiple classes" warnings.
- */
-// @codingStandardsIgnoreStart
-class EnsureTestBooleanyString
-{
-    // @codingStandardsIgnoreEnd
-    protected $potentialStrings = [
-        'true',
-        'false',
-        'yes',
-        'no',
-        '',
-    ];
-
-    /**
-     * Implements __toString().
-     *
-     * The string returned is a random boolean-y string.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        shuffle($this->potentialStrings);
-
-        return reset($this->potentialStrings);
     }
 }
 

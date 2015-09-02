@@ -11,6 +11,39 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class CastTest extends WebTestCase
 {
     /**
+     * Test that boolean-y things cast to corresponding boolean values.
+     */
+    public function testToBoolean()
+    {
+        $tests = [
+            [true, true],
+            ['true', true],
+            [1, true],
+            ['yes', true],
+            [false, false],
+            // This casts to false because of boolean-y rules. Probably the
+            // biggest surprise here as normal string conversion casts it to
+            // true.
+            ['false', false],
+            [0, false],
+            ['no', false],
+            ['', false],
+        ];
+
+        array_walk($tests, function($test) {
+            list($value, $expected) = $test;
+            $this->assertSame($expected, Cast::toBoolean($value), 'Test does not cast to ' . $expected . '. Value: ' . json_encode($value));
+        });
+
+        $tests = [true, false];
+        array_walk($tests, function ($boolean) {
+            $booleanyObject = new Mocks\BooleanyObject($boolean);
+            $result = Cast::toBoolean($booleanyObject);
+            $this->assertSame($boolean, $result, 'BooleanyObject is not ' . json_encode($boolean) . '. String: ' . $booleanyObject);
+        });
+    }
+
+    /**
      * Data provider for dataToIntExceptions
      *
      * @return array
