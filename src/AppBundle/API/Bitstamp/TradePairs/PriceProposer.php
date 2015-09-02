@@ -34,7 +34,8 @@ class PriceProposer implements \Iterator
      * @param \AppBundle\API\Bitstamp\PublicAPI\OrderBook $orderBook
      *
      * @param array                                       $minMaxStep
-     *   An array with 3
+     *   An array with 3 floats representing the minimumPercentile,
+     *   maximumPercentile and stepSize (in that order).
      */
     public function __construct(
         \AppBundle\API\Bitstamp\PublicAPI\OrderBook $orderBook,
