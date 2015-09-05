@@ -7,9 +7,8 @@
 namespace AppBundle\API\Bitstamp;
 
 use AppBundle\MoneyStrings;
-use AppBundle\Ensure;
-use AppBundle\Cast;
 use Money\Money;
+use Respect\Validation\Validator as v;
 
 /**
  * Wraps a list of orders provided by Bitstamp to handle some basic statistics.
@@ -42,7 +41,7 @@ class OrderList
      */
     public function __construct(array $data)
     {
-        Ensure::notEmpty($data);
+        v::notEmpty()->check($data);
 
         foreach ($data as $datum) {
             $this->data[] = [
@@ -227,8 +226,8 @@ class OrderList
      */
     public function percentileBTCVolume($pc)
     {
-        $pc = Cast::toFloat($pc);
-        Ensure::inRange($pc, 0, 1);
+        v::numeric()->between(0, 1, true)->check($pc);
+        $pc = (float) $pc;
 
         if (!isset($this->percentileBTCVolumeData)) {
             $this->sortUSDAsc();
@@ -274,8 +273,8 @@ class OrderList
      */
     public function percentileCap($pc)
     {
-        $pc = Cast::toFloat($pc);
-        Ensure::inRange($pc, 0, 1);
+        v::numeric()->between(0, 1, true)->check($pc);
+        $pc = (float) $pc;
 
         if (!isset($this->percentileCapData)) {
             $this->sortUSDAsc();

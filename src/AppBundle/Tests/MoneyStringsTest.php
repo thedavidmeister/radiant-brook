@@ -19,16 +19,16 @@ class MoneyStringsTest extends WebTestCase
     public function dataStringToXTypeExceptions()
     {
         return [
-            [1, '"1" must be a string'],
-            [0, '"0" must be a string'],
-            [true, '"1" must be a string'],
-            [false, '"" must be a string'],
-            [[], '"Array" must be a string'],
-            [1.00, '"1" must be a string'],
-            [123, '"123" must be a string'],
-            [100, '"100" must be a string'],
-            [0.1, '"0.1" must be a string'],
-            [05.00, '"5" must be a string'],
+            [1, '1 must be a string'],
+            [0, '0 must be a string'],
+            [true, 'true must be a string'],
+            [false, 'false must be a string'],
+            [[], '{ } must be a string'],
+            [1.00, '1 must be a string'],
+            [123, '123 must be a string'],
+            [100, '100 must be a string'],
+            [0.1, '0.1 must be a string'],
+            [05.00, '5 must be a string'],
         ];
     }
 
@@ -47,18 +47,19 @@ class MoneyStringsTest extends WebTestCase
     public function testStringToBTCTypeExceptions($notString, $message)
     {
         $this->setExpectedException('Exception', $message);
+
         MoneyStrings::stringToBTC($notString);
     }
 
     /**
      * @covers AppBundle\MoneyStrings::stringToBTC
      *
-     * @expectedException Exception
-     * @expectedExceptionMessage "" must be a string
      * @group stable
      */
     public function testStringToBTCNullException()
     {
+        $this->setExpectedException('Exception', 'null must be a string');
+
         MoneyStrings::stringToBTC(null);
     }
 
@@ -77,18 +78,19 @@ class MoneyStringsTest extends WebTestCase
     public function testStringToUSDTypeExceptions($notString, $message)
     {
         $this->setExpectedException('Exception', $message);
+
         MoneyStrings::stringToUSD($notString);
     }
 
     /**
      * @covers AppBundle\MoneyStrings::stringToUSD
      *
-     * @expectedException Exception
-     * @expectedExceptionMessage "" must be a string
      * @group stable
      */
     public function testStringToUSDNullException()
     {
+        $this->setExpectedException('Exception', 'null must be a string');
+
         MoneyStrings::stringToUSD(null);
     }
 
