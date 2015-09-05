@@ -273,6 +273,8 @@ class OrderListTest extends WebTestCase
      * @covers AppBundle\API\Bitstamp\OrderList::percentileIndexCompare
      *
      * @group stable
+     *
+     * @slowThreshold 600
      */
     public function testPercentileCap()
     {
