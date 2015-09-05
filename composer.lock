@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ec9a979c326e337643eedeb89178b210",
+    "hash": "0409b10a803116b62aed23a774138cd3",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -2149,24 +2149,25 @@
         },
         {
             "name": "respect/validation",
-            "version": "0.9.3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Respect/Validation.git",
-                "reference": "403b80e92c9ea3a411bba20fb674c8c67a85647b"
+                "url": "https://github.com/thedavidmeister/Validation.git",
+                "reference": "1a8196681f08dc5ee37b8550683d69dc535553e5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Respect/Validation/zipball/403b80e92c9ea3a411bba20fb674c8c67a85647b",
-                "reference": "403b80e92c9ea3a411bba20fb674c8c67a85647b",
+                "url": "https://api.github.com/repos/thedavidmeister/Validation/zipball/1a8196681f08dc5ee37b8550683d69dc535553e5",
+                "reference": "1a8196681f08dc5ee37b8550683d69dc535553e5",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0"
+                "php": ">=5.3.6"
             },
             "require-dev": {
                 "egulias/email-validator": "~1.2",
                 "malkusch/bav": "~1.0",
+                "mikey179/vfsstream": "^1.5",
                 "phpunit/phpunit": "~4.0",
                 "symfony/validator": "~2.6.9",
                 "zendframework/zend-validator": "~2.3"
@@ -2175,6 +2176,7 @@
                 "egulias/email-validator": "Strict (RFC compliant) email validation",
                 "ext-bcmath": "Arbitrary Precision Mathematics",
                 "ext-mbstring": "Multibyte String Functions",
+                "fabpot/php-cs-fixer": "Fix PSR2 and other coding style issues",
                 "malkusch/bav": "German bank account validation",
                 "symfony/validator": "Use Symfony validator through Respect\\Validation",
                 "zendframework/zend-validator": "Use Zend Framework validator through Respect\\Validation"
@@ -2182,7 +2184,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.9-dev"
+                    "dev-master": "1.0-dev"
                 }
             },
             "autoload": {
@@ -2190,7 +2192,11 @@
                     "Respect\\Validation\\": "library/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "Respect\\Validation\\Test\\": "tests/library/"
+                }
+            },
             "license": [
                 "BSD Style"
             ],
@@ -2207,7 +2213,10 @@
                 "validation",
                 "validator"
             ],
-            "time": "2015-06-06 13:06:25"
+            "support": {
+                "source": "https://github.com/thedavidmeister/Validation/tree/master"
+            },
+            "time": "2015-09-05 11:25:36"
         },
         {
             "name": "satooshi/php-coveralls",
@@ -4070,6 +4079,7 @@
     "stability-flags": {
         "mathiasverraes/money": 20,
         "psy/psysh": 0,
+        "respect/validation": 20,
         "johnkary/phpunit-speedtrap": 20
     },
     "prefer-stable": false,

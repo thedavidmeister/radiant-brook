@@ -4,7 +4,7 @@ namespace AppBundle;
 
 use Dotenv\Dotenv;
 use Dotenv\Loader;
-use AppBundle\Ensure;
+use Respect\Validation\Validator as v;
 
 /**
  * Handles things that need to be secret by reading things from env.
@@ -37,8 +37,8 @@ class Secrets
      */
     public function set($name, $value)
     {
-        Ensure::isValidVariableName($name);
-        Ensure::isString($value);
+        v::PHPLabel()->assert($name);
+        v::string()->assert($value);
 
         // Get a mutable loader.
         $loader = new Loader($this->dotEnvPath());
@@ -55,7 +55,7 @@ class Secrets
      */
     public function clear($name)
     {
-        Ensure::isValidVariableName($name);
+        v::PHPLabel()->assert($name);
 
         putenv($name);
         unset($_ENV[$name]);
@@ -73,7 +73,7 @@ class Secrets
      */
     public function get($name)
     {
-        Ensure::isValidVariableName($name);
+        v::PHPLabel()->assert($name);
 
         $loader = new Loader($this->dotEnvPath());
 

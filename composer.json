@@ -31,7 +31,7 @@
         "lstrojny/functional-php": "^1.0",
         "satooshi/php-coveralls": "^0.6.1",
         "fzaninotto/faker": "~1.5",
-        "respect/validation": "0.9.*"
+        "respect/validation": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
@@ -39,6 +39,12 @@
         "phpunit/phpunit": "4.6.*",
         "johnkary/phpunit-speedtrap": "~1.0@dev"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/thedavidmeister/Validation.git"
+        }
+    ],
     "scripts": {
         "post-root-package-install": [
             "SymfonyStandard\\Composer::hookRootPackageInstall"
