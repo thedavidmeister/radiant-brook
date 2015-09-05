@@ -22,13 +22,18 @@ class MoneyStrings
      */
     public static function stringToUSD($string)
     {
-
-        v::string()->check($string);
+        // Inlined for speed.
+        if (!is_string($string)) {
+            throw new \Exception(json_encode($string) . ' must be a string');
+        }
 
         // USD string may be prepended with a $ char, other symbols should die.
         $string = str_replace('$', '', $string);
 
-        v::numeric()->check($string);
+        // Inlined for speed.
+        if (!is_numeric($string)) {
+            throw new \Exception(json_encode($string) . ' must be numeric');
+        }
 
         // Avoid the convenience method as profiling shows it to be too slow
         // here.
@@ -45,7 +50,14 @@ class MoneyStrings
      */
     public static function stringToBTC($string)
     {
-        v::string()->numeric()->check($string);
+        // Inlined for speed.
+        if (!is_string($string)) {
+            throw new \Exception(json_encode($string) . ' must be a string');
+        }
+
+        if (!is_numeric($string)) {
+            throw new \Exception(json_encode($string) . ' must be numeric');
+        }
 
         // Avoid the convenience method as profiling shows it to be too slow
         // here.

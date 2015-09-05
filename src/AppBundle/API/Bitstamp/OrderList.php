@@ -73,11 +73,11 @@ class OrderList
     }
     protected function _sortUSDAscAlgo($a, $b)
     {
-        if ($a[self::USD_KEY]->equals($b[self::USD_KEY])) {
-            return 0;
-        }
+        // Inlined rather than using Money methods, for speed.
+        $aAmount = $a[self::USD_KEY]->getAmount();
+        $bAmount = $b[self::USD_KEY]->getAmount();
 
-        return $a[self::USD_KEY]->lessThan($b[self::USD_KEY]) ? -1 : 1;
+        return ($aAmount < $bAmount) ? -1 : (($aAmount > $bAmount) ? 1 : 0);
     }
     protected $sortUSDAsc;
 
@@ -99,11 +99,11 @@ class OrderList
     }
     protected function _sortUSDDescAlgo($a, $b)
     {
-        if ($a[self::USD_KEY]->equals($b[self::USD_KEY])) {
-            return 0;
-        }
+        // Inlined rather than using Money methods, for speed.
+        $aAmount = $a[self::USD_KEY]->getAmount();
+        $bAmount = $b[self::USD_KEY]->getAmount();
 
-        return $a[self::USD_KEY]->greaterThan($b[self::USD_KEY]) ? -1 : 1;
+        return ($aAmount > $bAmount) ? -1 : (($aAmount < $bAmount) ? 1 : 0);
     }
     protected $sortUSDDesc;
 

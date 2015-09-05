@@ -23,7 +23,7 @@ class MoneyStringsTest extends WebTestCase
             [0, '0 must be a string'],
             [true, 'true must be a string'],
             [false, 'false must be a string'],
-            [[], '{ } must be a string'],
+            [[], '[] must be a string'],
             [1.00, '1 must be a string'],
             [123, '123 must be a string'],
             [100, '100 must be a string'],
