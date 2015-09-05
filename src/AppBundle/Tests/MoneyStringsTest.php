@@ -19,16 +19,16 @@ class MoneyStringsTest extends WebTestCase
     public function dataStringToXTypeExceptions()
     {
         return [
-            [1, '1 is not a string.'],
-            [0, '0 is not a string.'],
-            [true, 'true is not a string.'],
-            [false, 'false is not a string.'],
-            [[], '[] is not a string.'],
-            [1.00, '1 is not a string.'],
-            [123, '123 is not a string.'],
-            [100, '100 is not a string.'],
-            [0.1, '0.1 is not a string.'],
-            [05.00, '5 is not a string.'],
+            [1, '"1" must be a string'],
+            [0, '"0" must be a string'],
+            [true, '"1" must be a string'],
+            [false, '"" must be a string'],
+            [[], '"Array" must be a string'],
+            [1.00, '"1" must be a string'],
+            [123, '"123" must be a string'],
+            [100, '"100" must be a string'],
+            [0.1, '"0.1" must be a string'],
+            [05.00, '"5" must be a string'],
         ];
     }
 
@@ -54,7 +54,7 @@ class MoneyStringsTest extends WebTestCase
      * @covers AppBundle\MoneyStrings::stringToBTC
      *
      * @expectedException Exception
-     * @expectedExceptionMessage null is not a string.
+     * @expectedExceptionMessage "" must be a string
      * @group stable
      */
     public function testStringToBTCNullException()
@@ -84,7 +84,7 @@ class MoneyStringsTest extends WebTestCase
      * @covers AppBundle\MoneyStrings::stringToUSD
      *
      * @expectedException Exception
-     * @expectedExceptionMessage null is not a string.
+     * @expectedExceptionMessage "" must be a string
      * @group stable
      */
     public function testStringToUSDNullException()
@@ -174,10 +174,10 @@ class MoneyStringsTest extends WebTestCase
     public function dataStringToXExceptions()
     {
         return [
-            ['a1', '"a1" is not numeric.'],
-            ['1a', '"1a" is not numeric.'],
-            ['1,00', '"1,00" is not numeric.'],
-            ['1,000.00', '"1,000.00" is not numeric.'],
+            ['a1', '"a1" must be numeric'],
+            ['1a', '"1a" must be numeric'],
+            ['1,00', '"1,00" must be numeric'],
+            ['1,000.00', '"1,000.00" must be numeric'],
         ];
     }
 
@@ -236,7 +236,7 @@ class MoneyStringsTest extends WebTestCase
      */
     public function dataStringToBTCExceptions()
     {
-        return array_merge($this->dataStringToXExceptions(), [['$100', '"$100" is not numeric.']]);
+        return array_merge($this->dataStringToXExceptions(), [['$100', '"$100" must be numeric']]);
     }
 
     /**
