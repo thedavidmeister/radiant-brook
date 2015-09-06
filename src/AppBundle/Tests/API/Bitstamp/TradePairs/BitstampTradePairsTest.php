@@ -234,6 +234,8 @@ class BitstampTradePairsTest extends WebTestCase
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::reduceReportToActionableTradeProposal
      *
      * @dataProvider dataReduceReportToActionableTradeProposalExceptions
+     *
+     * @group stable
      */
     public function testReduceReportToActionableTradeProposalExceptions($invalidReport, $message)
     {

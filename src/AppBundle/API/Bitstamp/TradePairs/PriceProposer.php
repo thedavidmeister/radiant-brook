@@ -10,6 +10,7 @@ use AppBundle\Secrets;
 use AppBundle\Ensure;
 use AppBundle\Cast;
 use Money\Money;
+use Respect\Validation\Validator as v;
 
 /**
  * Iterate over percentiles straight from the OrderBook.
@@ -49,17 +50,18 @@ class PriceProposer implements \Iterator
         $this->secrets = new Secrets();
 
         // Ensure minMaxStep is 3 floats.
-        $minMaxStepSize = count($minMaxStep);
-        if ($minMaxStepSize !== 3) {
-            throw new \Exception('Min, max, step array is the wrong size. It must be 3 elements long, but is actually ' . $minMaxStepSize . '.');
-        }
-        $minMaxStep = array_map(function ($float) {
-            return Cast::toFloat($float);
-        }, $minMaxStep);
+        v::length(3, 3, true)
+            ->each(v::finite())
+            ->check($minMaxStep);
+
+        // Ensure that the minimum for maxPercentile is minPercentile
+        v::min($minMaxStep[0])->check($minMaxStep[1]);
+
+        // Ensure that the step size is less than min - max.
+        $minMaxDiff = $minMaxStep[1] - $minMaxStep[0];
+        v::max($minMaxDiff, true)->check($minMaxStep[2]);
 
         list($this->minPercentile, $this->maxPercentile, $this->stepSize) = $minMaxStep;
-
-        Ensure::lessThan($this->minPercentile, $this->maxPercentile);
 
         // Start at the start. Auto rewind! Reconsider this if setting
         // percentiles and step sizes rather than using environment variables.

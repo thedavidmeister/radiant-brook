@@ -66,19 +66,22 @@ class PriceProposerTest extends WebTestCase
     {
         return [
             // Anything null is an exception.
-            [[null, null, null], 'null is not numeric.'],
-            [[1, null, null], 'null is not numeric.'],
-            [[null, 1, null], 'null is not numeric.'],
-            [[null, null, 1], 'null is not numeric.'],
-            [[1, 1, null], 'null is not numeric.'],
-            [[null, 1, 1], 'null is not numeric.'],
-            [[1, null, 1], 'null is not numeric.'],
+            [[null, null, null], 'null must be a finite number'],
+            [[1, null, null], 'null must be a finite number'],
+            [[null, 1, null], 'null must be a finite number'],
+            [[null, null, 1], 'null must be a finite number'],
+            [[1, 1, null], 'null must be a finite number'],
+            [[null, 1, 1], 'null must be a finite number'],
+            [[1, null, 1], 'null must be a finite number'],
             // This will throw because min is not less than max.
-            [[1, 1, 1], '1 is not less than 1.'],
+            [[1, 1, 0.5], '1 must be greater than 1'],
+            // Step size must be less than max - min.
+            [[1, 2, 3], '3 must be lower than or equals 1'],
+            // max - min must be cleanly divisible by step size.
             // minMaxStep must be 3 long.
-            [[1, 2], 'Min, max, step array is the wrong size. It must be 3 elements long, but is actually 2.'],
-            [[1], 'Min, max, step array is the wrong size. It must be 3 elements long, but is actually 1.'],
-            [[], 'Min, max, step array is the wrong size. It must be 3 elements long, but is actually 0.'],
+            [[1, 2], '{ 1, 2 } must have a length between 3 and 3'],
+            [[1], '{ 1 } must have a length between 3 and 3'],
+            [[], '{ } must have a length between 3 and 3'],
         ];
     }
 
