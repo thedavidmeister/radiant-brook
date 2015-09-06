@@ -6,6 +6,7 @@ use AppBundle\Secrets;
 use AppBundle\Ensure;
 use Money\Money;
 use AppBundle\API\Bitstamp\TradePairs\PriceProposer;
+use Respect\Validation\Validator as v;
 
 /**
  * Analyses and executes profitable trade pairs.
@@ -104,7 +105,7 @@ class BitstampTradePairs
         $actionable = null;
 
         foreach ($report as $proposal) {
-            Ensure::isInstanceOf($proposal, 'AppBundle\API\Bitstamp\TradePairs\TradeProposal');
+            v::instance('\AppBundle\API\Bitstamp\TradePairs\TradeProposalInterface')->check($proposal);
 
             // Find the first valid proposal to action.
             if ($proposal->isValid()) {
