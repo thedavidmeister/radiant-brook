@@ -76,7 +76,7 @@ class OrderListTest extends WebTestCase
      * @coversNothing
      *
      * @group stable
-     * @slowThreshold 1000
+     * @slowThreshold 750
      */
     public function testReturnFormats()
     {
@@ -198,6 +198,7 @@ class OrderListTest extends WebTestCase
      * @covers AppBundle\API\Bitstamp\OrderList::percentileIndexCompare
      *
      * @group stable
+     * @slowThreshold 750
      */
     public function testPercentileBTCVolume()
     {
@@ -274,7 +275,7 @@ class OrderListTest extends WebTestCase
      *
      * @group stable
      *
-     * @slowThreshold 600
+     * @slowThreshold 750
      */
     public function testPercentileCap()
     {
