@@ -7,7 +7,6 @@
 namespace AppBundle\API\Bitstamp\TradePairs;
 
 use AppBundle\Secrets;
-use AppBundle\Ensure;
 use AppBundle\Cast;
 use AppBundle\MoneyConstants;
 use Money\Money;

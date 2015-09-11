@@ -7,7 +7,6 @@
 namespace AppBundle\API\Bitstamp\TradePairs;
 
 use AppBundle\Secrets;
-use AppBundle\Ensure;
 use AppBundle\Cast;
 use Money\Money;
 use Respect\Validation\Validator as v;

@@ -4,7 +4,6 @@ namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
-use AppBundle\Ensure;
 use Money\Money;
 use AppBundle\Tests\EnvironmentTestTrait;
 use Respect\Validation\Validator as v;

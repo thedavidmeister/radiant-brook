@@ -2,7 +2,6 @@
 
 namespace AppBundle;
 
-use AppBundle\Ensure;
 use Respect\Validation\Validator as v;
 
 /**
