@@ -55,7 +55,9 @@ class PriceProposer implements \Iterator
             ->check($minMaxStep);
 
         // It is easier to compare floats as strings, weirdly.
-        $minMaxStep = array_map(function($item) { return (string) $item; }, $minMaxStep);
+        $minMaxStep = array_map(function($item) {
+            return (string) $item;
+        }, $minMaxStep);
 
         // Ensure that the minimum for maxPercentile is minPercentile
         v::min($minMaxStep[0])->check($minMaxStep[1]);

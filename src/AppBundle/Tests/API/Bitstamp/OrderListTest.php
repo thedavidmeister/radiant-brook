@@ -184,13 +184,19 @@ class OrderListTest extends WebTestCase
      *
      * @dataProvider dataPercentileCapExceptions
      *
+     * @param float  $pc
+     *   The percentage that should trigger an exception.
+     *
+     * @param string $message
+     *   The exception message.
+     *
      * @group stable
      */
     public function testPercentileBTCVolumeExceptions($pc, $message)
     {
-      $this->setExpectedException('Exception', $message);
+        $this->setExpectedException('Exception', $message);
 
-      $this->bids()->percentileBTCVolume($pc);
+        $this->bids()->percentileBTCVolume($pc);
     }
 
     /**
@@ -240,19 +246,21 @@ class OrderListTest extends WebTestCase
 
     /**
      * Data provider for testPercentileCapExceptions.
+     *
+     * @return array
      */
     public function dataPercentileCapExceptions()
     {
-      return [
-        // Things that are not numbers.
-        [[], '{ } must be numeric'],
-        [(object) [], '`[object] (stdClass: { })` must be numeric'],
-        ['foo', 'foo'],
-        // Things that are outside range.
-        [1.1, '1.1 must be lower than or equals 1'],
-        [-1, '-1 must be greater than or equals 0'],
-        [-0.1, '-0.1 must be greater than or equals 0'],
-      ];
+        return [
+            // Things that are not numbers.
+            [[], '{ } must be numeric'],
+            [(object) [], '`[object] (stdClass: { })` must be numeric'],
+            ['foo', 'foo'],
+            // Things that are outside range.
+            [1.1, '1.1 must be lower than or equals 1'],
+            [-1, '-1 must be greater than or equals 0'],
+            [-0.1, '-0.1 must be greater than or equals 0'],
+        ];
     }
 
     /**
@@ -260,13 +268,19 @@ class OrderListTest extends WebTestCase
      *
      * @dataProvider dataPercentileCapExceptions
      *
+     * @param float  $pc
+     *   The percentage that should throw an exception.
+     *
+     * @param string $message
+     *   The exception message.
+     *
      * @group stable
      */
     public function testPercentileCapExceptions($pc, $message)
     {
-      $this->setExpectedException('Exception', $message);
+        $this->setExpectedException('Exception', $message);
 
-      $this->bids()->percentileCap($pc);
+        $this->bids()->percentileCap($pc);
     }
 
     /**

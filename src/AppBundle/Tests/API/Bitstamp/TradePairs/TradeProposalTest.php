@@ -88,6 +88,11 @@ class TradeProposalTest extends WebTestCase
         });
     }
 
+    /**
+     * Data provider for exceptions in __construct.
+     *
+     * @return array
+     */
     public function dataConstructExceptions()
     {
         return [
@@ -98,15 +103,24 @@ class TradeProposalTest extends WebTestCase
             [['bidUSDPrice' => Money::USD(1), 'askUSDPrice' => 1], '1 must be an instance of "Money\\\Money"'],
             [['bidUSDPrice' => Money::USD(0), 'askUSDPrice' => 0], '0 must be an instance of "Money\\\Money"'],
             [['bidUSDPrice' => 0, 'askUSDPrice' => Money::BTC(0)], '0 must be an instance of "Money\\\Money"'],
+            [['bidUSDPrice' => Money::USD(0), 'askUSDPrice' => Money::USD(0), 'foo' => Money::USD(0)], '{ "bidUSDPrice": `[object] (Money\Money: { })`, "askUSDPrice": `[object] (Money\Money: { })`, "foo": `[object] (Money\Money: { })` } must have a length between 2 and 2'],
+            [['bidUSDPrice' => Money::USD(0)], '{ "bidUSDPrice": `[object] (Money\Money: { })` } must have a length between 2 and 2'],
+            [[], '{ } must have a length between 2 and 2'],
         ];
     }
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::__construct
      *
+     * @param array  $notPrices
+     *   An array of things that are not prices.
+     *
+     * @param string $message
+     *   An exception string.
+     *
      * @dataProvider dataConstructExceptions
      */
-    public function testConstructExceptions($notPrices, $message)
+    public function testConstructExceptions(array $notPrices, $message)
     {
         $this->setExpectedException('Exception', $message);
 

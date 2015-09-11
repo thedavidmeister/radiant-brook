@@ -213,6 +213,8 @@ class BitstampTradePairsTest extends WebTestCase
 
     /**
      * Data provider for invalid trade reports.
+     *
+     * @return array
      */
     public function dataReduceReportToActionableTradeProposalExceptions()
     {
@@ -235,9 +237,15 @@ class BitstampTradePairsTest extends WebTestCase
      *
      * @dataProvider dataReduceReportToActionableTradeProposalExceptions
      *
+     * @param array  $invalidReport
+     *   A report array that does not contain a valid report.
+     *
+     * @param string $message
+     *   An exception string.
+     *
      * @group stable
      */
-    public function testReduceReportToActionableTradeProposalExceptions($invalidReport, $message)
+    public function testReduceReportToActionableTradeProposalExceptions(array $invalidReport, $message)
     {
         $this->setExpectedException('Exception', $message);
 
