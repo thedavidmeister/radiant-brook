@@ -101,15 +101,15 @@ class CastTest extends WebTestCase
     public function dataToIntExceptions()
     {
         return [
-            [1.1, '1.1 is not an int.'],
-            ['foo', '"foo" is not an int.'],
-            [null, 'null is not an int.'],
-            [[], '[] is not an int.'],
-            [true, 'true is not an int.'],
-            [false, 'false is not an int.'],
+            [1.1, '1.1 must be an integer number'],
+            ['foo', '"foo" must be an integer number'],
+            [null, 'null must be an integer number'],
+            [[], '{ } must be an integer number'],
+            [true, 'true must be an integer number'],
+            [false, 'false must be an integer number'],
             // Negative scientific notation is not an int.
-            [1e-1, '0.1 is not an int.'],
-            [1e-2, '0.01 is not an int.'],
+            [1e-1, '0.1 must be an integer number'],
+            [1e-2, '0.01 must be an integer number'],
         ];
     }
 

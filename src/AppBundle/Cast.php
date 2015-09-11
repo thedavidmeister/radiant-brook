@@ -3,6 +3,7 @@
 namespace AppBundle;
 
 use AppBundle\Ensure;
+use Respect\Validation\Validator as v;
 
 /**
  * Casts variables to another data type, if it makes sense and is not lossy.
@@ -12,10 +13,7 @@ use AppBundle\Ensure;
 final class Cast
 {
     /**
-     * Ensures that a value is an integer.
-     *
-     * FILTER_VALIDATE_INT is used. If the value is an integer string, it will
-     * be cast to an integer primitive.
+     * Ensures that a value is an integer and casts it.
      *
      * @param mixed $value
      *   The value to ensure is an integer.
@@ -25,7 +23,9 @@ final class Cast
     public static function toInt($value)
     {
         // Cast the value to an int, if it's int-y.
-        return (int) Ensure::isInt($value);
+        v::int()->check($value);
+
+        return (int) $value;
     }
 
     /**
