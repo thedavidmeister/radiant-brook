@@ -42,22 +42,12 @@ final class Cast
     public static function toFloat($value)
     {
         // Cast the value to a float, if it's numeric.
-        return (float) Ensure::isNumeric($value);
-    }
+        v::numeric()->check($value);
+        $value = (string) $value;
 
-    /**
-     * Ensures that a value is a boolean.
-     *
-     * Value must be boolean-y. If it is, it will be cast to a float, otherwise,
-     * fail.
-     *
-     * @param boolean-y $value
-     *   The value to ensure is a float.
-     *
-     * @return bool $value
-     */
-    public static function toBoolean($value)
-    {
-        return filter_var(Ensure::isBooleany($value), FILTER_VALIDATE_BOOLEAN);
+        // No empty strings.
+        v::not(v::equals('', true))->check($value);
+
+        return (float) $value;
     }
 }
