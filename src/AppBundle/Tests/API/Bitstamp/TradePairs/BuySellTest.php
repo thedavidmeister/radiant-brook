@@ -52,13 +52,8 @@ class BuySellTest extends WebTestCase
         return new BuySell($this->buy(), $this->sell(), $this->mockLogger());
     }
 
-    protected function tradeProposal($bidUSDPrice = null, $bidBTCVolume = null, $askUSDPrice = null, $askBTCVolume = null)
+    protected function tradeProposal(Money $bidUSDPrice, Money $bidBTCVolume, Money $askUSDPrice, Money $askBTCVolume)
     {
-        $bidUSDPrice = isset($bidUSDPrice) ? Ensure::isInstanceOf($bidUSDPrice, 'Money\Money') : Money::USD(1);
-        $bidBTCVolume = isset($bidBTCVolume) ? Ensure::isInstanceOf($bidBTCVolume, 'Money\Money') : Money::BTC(1);
-        $askUSDPrice = isset($askUSDPrice) ? Ensure::isInstanceOf($askUSDPrice, 'Money\Money') : Money::USD(1);
-        $askBTCVolume = isset($askBTCVolume) ? Ensure::isInstanceOf($askBTCVolume, 'Money\Money') : Money::BTC(1);
-
         $tradeProposal = $this->prophet->prophesize('\AppBundle\API\Bitstamp\TradePairs\TradeProposal');
 
         $tradeProposal->bidUSDPrice()->willReturn($bidUSDPrice)->shouldBeCalled();
@@ -152,7 +147,7 @@ class BuySellTest extends WebTestCase
 
         $buyfail = new BuySell(new Buy($client, $this->mockLogger(), $this->mockAuthenticator()), $this->sell(), $this->mockLogger());
 
-        $tradeProposal = $this->tradeProposal();
+        $tradeProposal = $this->tradeProposal(Money::USD(1), Money::BTC(1), Money::USD(1), Money::BTC(1));
         $tradeProposal->isValid()->willReturn(true)->shouldBeCalled();
 
         $buyfail->execute($tradeProposal->reveal());
