@@ -87,6 +87,31 @@ class TradeProposalTest extends WebTestCase
         });
     }
 
+    public function dataConstructExceptions()
+    {
+        return [
+            [['bidUSDPrice' => new \StdClass(), 'askUSDPrice' => Money::USD(1)], '`[object] (stdClass: { })` must be an instance of "Money\\\Money"'],
+            [['bidUSDPrice' => Money::BTC(1), 'askUSDPrice' => new \StdClass()], '`[object] (stdClass: { })` must be an instance of "Money\\\Money"'],
+            [['bidUSDPrice' => new \StdClass(), 'askUSDPrice' => new \StdClass()], '`[object] (stdClass: { })` must be an instance of "Money\\\Money"'],
+            [['bidUSDPrice' => 1, 'askUSDPrice' => Money::USD(1)], '1 must be an instance of "Money\\\Money"'],
+            [['bidUSDPrice' => Money::USD(1), 'askUSDPrice' => 1], '1 must be an instance of "Money\\\Money"'],
+            [['bidUSDPrice' => Money::USD(0), 'askUSDPrice' => 0], '0 must be an instance of "Money\\\Money"'],
+            [['bidUSDPrice' => 0, 'askUSDPrice' => Money::BTC(0)], '0 must be an instance of "Money\\\Money"'],
+        ];
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::__construct
+     *
+     * @dataProvider dataConstructExceptions
+     */
+    public function testConstructExceptions($notPrices, $message)
+    {
+        $this->setExpectedException('Exception', $message);
+
+        new TradeProposal($notPrices, $this->fees());
+    }
+
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::isFinal
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::ensureFinal

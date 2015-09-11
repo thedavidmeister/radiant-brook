@@ -11,6 +11,7 @@ use AppBundle\Ensure;
 use AppBundle\Cast;
 use AppBundle\MoneyConstants;
 use Money\Money;
+use Respect\Validation\Validator as v;
 
 /**
  * Wrap one set of proposed prices into a TradeProposalInterface object.
@@ -39,9 +40,11 @@ class TradeProposal implements TradeProposalInterface
         Fees $fees
     )
     {
+        // Ensure that $prices contains money.
+        v::each(v::instance('Money\Money'))->check($prices);
+
         foreach (['bidUSDPrice', 'askUSDPrice'] as $price) {
             $this->{$price} = $prices[$price];
-            Ensure::isInstanceOf($this->{$price}, 'Money\Money');
         }
 
         $this->fees = $fees;
