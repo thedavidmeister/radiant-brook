@@ -7,6 +7,7 @@ use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
 use AppBundle\Ensure;
 use Money\Money;
 use AppBundle\Tests\EnvironmentTestTrait;
+use Respect\Validation\Validator as v;
 
 use function Functional\map;
 use function Functional\each;
@@ -70,9 +71,9 @@ class TradeProposalTest extends WebTestCase
 
     protected function methodRangeArray($method, $start = 0, $end = 5)
     {
-        Ensure::isString($method);
-        Ensure::isInt($start);
-        Ensure::isInt($end);
+        v::string()->check($method);
+        v::int()->check($start);
+        v::int()->check($end);
 
         return map(range($start, $end), function ($times) use ($method) {
             return array_fill(0, $times, $method);
