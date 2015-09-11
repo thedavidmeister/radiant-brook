@@ -54,12 +54,20 @@ class PriceProposer implements \Iterator
             ->each(v::finite())
             ->check($minMaxStep);
 
+        // It is easier to compare floats as strings, weirdly.
+        $minMaxStep = array_map(function($item) { return (string) $item; }, $minMaxStep);
+
         // Ensure that the minimum for maxPercentile is minPercentile
         v::min($minMaxStep[0])->check($minMaxStep[1]);
 
         // Ensure that the step size is less than min - max.
-        $minMaxDiff = $minMaxStep[1] - $minMaxStep[0];
+        $minMaxDiff = (string) ($minMaxStep[1] - $minMaxStep[0]);
         v::max($minMaxDiff, true)->check($minMaxStep[2]);
+
+        $diffStepRatio = $minMaxDiff / $minMaxStep[2];
+        if ((int) (string) $diffStepRatio != (string) $diffStepRatio) {
+            throw new \Exception('Step size ' . $minMaxStep[2] . ' does not divide evenly into ' . $minMaxDiff . '. Ratio ' . $diffStepRatio . ' must be an integer.');
+        }
 
         list($this->minPercentile, $this->maxPercentile, $this->stepSize) = $minMaxStep;
 
