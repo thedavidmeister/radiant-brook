@@ -49,6 +49,10 @@ class TradeProposalTest extends WebTestCase
         return \Faker\Factory::create();
     }
 
+    /**
+     * @param string $checkMethod
+     * @param boolean $expected
+     */
     protected function assertBooleanAfterMethods(array $methods, $checkMethod, $expected)
     {
         $proposal = $this->tradeProposal();
@@ -71,6 +75,9 @@ class TradeProposalTest extends WebTestCase
         $this->assertSame((bool) $expected, $proposal->{$checkMethod}());
     }
 
+    /**
+     * @param string $method
+     */
     protected function methodRangeArray($method, $start = 0, $end = 5)
     {
         v::string()->check($method);
