@@ -104,7 +104,7 @@ class PriceProposer implements \Iterator
      * For bids, we use the cap percentile as it's harder for other users to
      * manipulate and we want 1 - PERCENTILE as bids are decending.
      *
-     * @return Money::USD
+     * @return Money
      */
     public function bidUSDPrice()
     {
@@ -118,7 +118,7 @@ class PriceProposer implements \Iterator
      * to manipulate. Asks are sorted ascending so we can use $percentile
      * directly.
      *
-     * @return Money::USD
+     * @return Money
      */
     public function askUSDPrice()
     {
