@@ -9,7 +9,7 @@ class PrivateAPIAuthenticator
 {
 
     // Last used nonce storage.
-    protected $_nonce;
+    protected $nonce;
 
     // POST parameter storage.
     protected $params;
@@ -73,12 +73,12 @@ class PrivateAPIAuthenticator
         $mt = explode(' ', microtime());
         $nonce = $mt[1] . substr($mt[0], 2, 6);
 
-        $this->_nonce = (int) $nonce;
+        $this->nonce = (int) $nonce;
     }
 
     protected function nonce()
     {
-        return (int) $this->_nonce;
+        return (int) $this->nonce;
     }
 
     /**
