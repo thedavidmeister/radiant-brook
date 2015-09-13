@@ -134,7 +134,7 @@ class SecretsTest extends WebTestCase
      *
      * @return array
      */
-    public function dataSetNameExceptions()
+    public function dataNameExceptions()
     {
         return [
             ['1', '"1" must be a valid PHP label'],
@@ -149,9 +149,27 @@ class SecretsTest extends WebTestCase
     }
 
     /**
+     * @covers AppBundle\Secrets::clear
+     *
+     * @dataProvider dataNameExceptions
+     *
+     * @param mixed $name
+     *   Things that are not valid variable names to clear.
+     *
+     * @param string $message
+     *   The exception message to throw.
+     */
+    public function testCleanNameExceptions($name, $message)
+    {
+        $this->setExpectedException('Exception', $message);
+
+        $this->secrets()->clear($name);
+    }
+
+    /**
      * @covers AppBundle\Secrets::set
      *
-     * @dataProvider dataSetNameExceptions
+     * @dataProvider dataNameExceptions
      *
      * @param mixed $name
      *   Things that are not valid variable names to set.

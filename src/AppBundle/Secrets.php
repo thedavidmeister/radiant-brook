@@ -55,7 +55,7 @@ class Secrets
      */
     public function clear($name)
     {
-        v::PHPLabel()->assert($name);
+        v::PHPLabel()->check($name);
 
         putenv($name);
         unset($_ENV[$name]);
