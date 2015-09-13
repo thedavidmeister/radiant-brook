@@ -81,8 +81,6 @@ class DefaultController extends Controller
      *
      * @codeCoverageIgnore
      *
-     * @param Request $request Symfony request
-     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function tradeAction()
