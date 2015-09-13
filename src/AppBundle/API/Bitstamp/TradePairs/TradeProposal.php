@@ -19,6 +19,8 @@ class TradeProposal implements TradeProposalInterface
 
     protected $fees;
 
+    protected $secrets;
+
     const MIN_USD_VOLUME_SECRET = 'BITSTAMP_MIN_USD_VOLUME';
 
     const MIN_USD_PROFIT_SECRET = 'BITSTAMP_MIN_USD_PROFIT';
@@ -34,7 +36,8 @@ class TradeProposal implements TradeProposalInterface
      */
     public function __construct(
         array $prices,
-        Fees $fees
+        Fees $fees,
+        Secrets $secrets
     )
     {
         // Ensure that $prices contains money.
@@ -46,7 +49,7 @@ class TradeProposal implements TradeProposalInterface
 
         $this->fees = $fees;
 
-        $this->secrets = new Secrets();
+        $this->secrets = $secrets;
     }
 
     /**

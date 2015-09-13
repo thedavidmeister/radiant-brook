@@ -167,7 +167,7 @@ class BitstampTradePairs
     {
         $report = [];
         foreach ($this->proposer as $proposition) {
-            $tradeProposal = new TradeProposal($proposition, $this->fees);
+            $tradeProposal = new TradeProposal($proposition, $this->fees, $this->secrets);
             $report[] = $this->validateTradeProposal($tradeProposal);
         }
 

@@ -4,6 +4,7 @@ namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
 use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
 use AppBundle\Tests\EnvironmentTestTrait;
+use AppBundle\Secrets;
 use Money\Money;
 use Respect\Validation\Validator as v;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -34,9 +35,19 @@ class TradeProposalTest extends WebTestCase
         return $this->mock('\AppBundle\API\Bitstamp\TradePairs\Fees');
     }
 
+    protected function secrets()
+    {
+        return $this->mock('AppBundle\Secrets');
+    }
+
     protected function tradeProposal()
     {
-        return new TradeProposal($this->randomBidAskPrices(), $this->fees());
+        return new TradeProposal($this->randomBidAskPrices(), $this->fees(), $this->secrets());
+    }
+
+    protected function tradeProposalLiveSecrets()
+    {
+        return new TradeProposal($this->randomBidAskPrices(), $this->fees(), new Secrets());
     }
 
     protected function randomBidAskPrices()
@@ -144,7 +155,7 @@ class TradeProposalTest extends WebTestCase
     {
         $this->setExpectedException('Exception', $message);
 
-        new TradeProposal($notPrices, $this->fees());
+        new TradeProposal($notPrices, $this->fees(), $this->secrets());
     }
 
     /**
@@ -363,7 +374,7 @@ class TradeProposalTest extends WebTestCase
     public function testBidUSDPrice()
     {
         $prices = $this->randomBidAskPrices();
-        $tradeProposal = new TradeProposal($prices, $this->fees());
+        $tradeProposal = new TradeProposal($prices, $this->fees(), $this->secrets());
         $this->assertEquals($prices['bidUSDPrice'], $tradeProposal->bidUSDPrice());
     }
 
@@ -377,7 +388,7 @@ class TradeProposalTest extends WebTestCase
         // Check basic functionality.
         $minVolume = mt_rand();
         $this->setEnv('BITSTAMP_MIN_USD_VOLUME', $minVolume);
-        $this->assertEquals(Money::USD($minVolume), $this->tradeProposal()->bidUSDVolumeBase());
+        $this->assertEquals(Money::USD($minVolume), $this->tradeProposalLiveSecrets()->bidUSDVolumeBase());
     }
 
     /**
@@ -394,7 +405,7 @@ class TradeProposalTest extends WebTestCase
         $fees = $this->fees();
         $isoFeeAmount = mt_rand();
         $fees->method('isofeeMaxUSD')->willReturn(Money::USD($isoFeeAmount));
-        $tradeProposal = new TradeProposal($this->randomBidAskPrices(), $fees);
+        $tradeProposal = new TradeProposal($this->randomBidAskPrices(), $fees, new Secrets());
         $this->assertEquals(Money::USD($isoFeeAmount), $tradeProposal->bidUSDVolume());
 
         // Check that the volume for a known isofee is returned. We mock
@@ -411,7 +422,7 @@ class TradeProposalTest extends WebTestCase
                 return $usd->multiply(2);
             }));
 
-            $tradeProposal = new TradeProposal($this->randomBidAskPrices(), $fees);
+            $tradeProposal = new TradeProposal($this->randomBidAskPrices(), $fees, new Secrets());
             $this->assertEquals(Money::USD($test[1]), $tradeProposal->bidUSDVolume());
         });
     }
@@ -444,7 +455,7 @@ class TradeProposalTest extends WebTestCase
             $fees->method('isofeeMaxUSD')->willReturn($test[1]);
 
             // USD bid volume has nothing to do with prices.
-            $tradeProposal = new TradeProposal($this->randomBidAskPrices(), $fees);
+            $tradeProposal = new TradeProposal($this->randomBidAskPrices(), $fees, new Secrets());
 
             $this->assertEquals($test[2], $tradeProposal->bidUSDVolumePlusFees());
         });
@@ -478,7 +489,7 @@ class TradeProposalTest extends WebTestCase
             $fees->method('isofeeMaxUSD')->willReturn(Money::USD($test[0]));
             $prices = ['bidUSDPrice' => Money::USD($test[1]), 'askUSDPrice' => Money::USD(mt_rand())];
 
-            $tradeProposal = new TradeProposal($prices, $fees);
+            $tradeProposal = new TradeProposal($prices, $fees, new Secrets());
             $this->assertEquals(Money::BTC($test[2]), $tradeProposal->bidBTCVolume());
         });
     }
@@ -496,7 +507,7 @@ class TradeProposalTest extends WebTestCase
             'bidUSDPrice' => Money::USD(mt_rand()),
             'askUSDPrice' => $askUSDPrice,
         ];
-        $tp = new TradeProposal($prices, $this->fees());
+        $tp = new TradeProposal($prices, $this->fees(), $this->secrets());
         $this->assertEquals($askUSDPrice, $tp->askUSDPrice());
     }
 
@@ -537,7 +548,7 @@ class TradeProposalTest extends WebTestCase
             $fees->method('asksMultiplier')->willReturn($test[3]);
 
             // The USD volume has nothing to do with the price.
-            $tradeProposal = new TradeProposal($this->randomBidAskPrices(), $fees);
+            $tradeProposal = new TradeProposal($this->randomBidAskPrices(), $fees, new Secrets());
 
             $this->assertEquals($test[4], $tradeProposal->askUSDVolumeCoverFees());
         });
@@ -558,7 +569,7 @@ class TradeProposalTest extends WebTestCase
         ];
         $test = function($scenario) {
             $this->setEnv('BITSTAMP_MIN_BTC_PROFIT', $scenario[0]);
-            $this->assertEquals($scenario[1], $this->tradeProposal()->minProfitBTC());
+            $this->assertEquals($scenario[1], $this->tradeProposalLiveSecrets()->minProfitBTC());
         };
         array_walk($scenarios, $test);
     }
@@ -579,7 +590,7 @@ class TradeProposalTest extends WebTestCase
         ];
         $test = function($scenario) {
             $this->setEnv('BITSTAMP_MIN_USD_PROFIT', $scenario[0]);
-            $this->assertEquals($scenario[1], $this->tradeProposal()->minProfitUSD());
+            $this->assertEquals($scenario[1], $this->tradeProposalLiveSecrets()->minProfitUSD());
         };
         array_walk($scenarios, $test);
     }
