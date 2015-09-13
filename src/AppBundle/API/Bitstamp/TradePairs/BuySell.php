@@ -57,7 +57,7 @@ class BuySell
     /**
      * Read-only access to the protected $buy property.
      *
-     * @return Buy
+     * @return \AppBundle\API\Bitstamp\PrivateAPI\Buy
      */
     public function buy()
     {
@@ -67,7 +67,7 @@ class BuySell
     /**
      * Read-only access to the protected $sell property.
      *
-     * @return Sell
+     * @return \AppBundle\API\Bitstamp\PrivateAPI\Sell
      */
     public function sell()
     {
