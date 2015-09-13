@@ -13,9 +13,9 @@ class BuySell
     /**
      * DI constructor.
      *
-     * @param \AppBundle\API\Bitstamp\PrivateAPI\Buy           $buy
-     * @param \AppBundle\API\Bitstamp\PrivateAPI\Sell          $sell
-     * @param \Psr\Log\LoggerInterface $logger
+     * @param \AppBundle\API\Bitstamp\PrivateAPI\Buy  $buy
+     * @param \AppBundle\API\Bitstamp\PrivateAPI\Sell $sell
+     * @param \Psr\Log\LoggerInterface                $logger
      */
     public function __construct(
         \AppBundle\API\Bitstamp\PrivateAPI\Buy $buy,
