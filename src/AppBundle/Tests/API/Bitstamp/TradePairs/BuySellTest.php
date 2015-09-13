@@ -89,8 +89,8 @@ class BuySellTest extends WebTestCase
             $tradeProposal->isValid()->willReturn(true)->shouldBeCalled();
 
             $buySell->execute($tradeProposal->reveal());
-            $buyRequest = $buySell->buy->client->history->getLastRequest();
-            $sellRequest = $buySell->sell->client->history->getLastRequest();
+            $buyRequest = $buySell->buy()->client->history->getLastRequest();
+            $sellRequest = $buySell->sell()->client->history->getLastRequest();
 
             $this->assertSame($test[4], $buyRequest->getBody()->getField('price'));
             $this->assertSame($test[5], $buyRequest->getBody()->getField('amount'));
@@ -151,7 +151,7 @@ class BuySellTest extends WebTestCase
 
         $buyfail->execute($tradeProposal->reveal());
 
-        $this->assertNotEmpty($buyfail->buy->client->history->getLastRequest());
-        $this->assertNotEmpty($buyfail->sell->client->history->getLastRequest());
+        $this->assertNotEmpty($buyfail->buy()->client->history->getLastRequest());
+        $this->assertNotEmpty($buyfail->sell()->client->history->getLastRequest());
     }
 }

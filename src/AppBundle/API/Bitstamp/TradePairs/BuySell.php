@@ -10,6 +10,12 @@ use Money\Money;
  */
 class BuySell
 {
+    protected $buy;
+
+    protected $sell;
+
+    protected $logger;
+
     /**
      * DI constructor.
      *
@@ -46,6 +52,26 @@ class BuySell
             ->setParam(self::PRICE_KEY, MoneyStrings::USDToString($askPrice))
             ->setParam(self::VOLUME_KEY, MoneyStrings::BTCToString($askVolume))
             ->execute();
+    }
+
+    /**
+     * Read-only access to the protected $buy property.
+     *
+     * @return Buy
+     */
+    public function buy()
+    {
+        return $this->buy;
+    }
+
+    /**
+     * Read-only access to the protected $sell property.
+     *
+     * @return Sell
+     */
+    public function sell()
+    {
+        return $this->sell;
     }
 
     /**
