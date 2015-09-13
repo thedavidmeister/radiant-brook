@@ -1,8 +1,4 @@
 <?php
-/**
-     * @file
-     * AppBundle\Tests\API\Bitstamp\OrderListTest
-     */
 
 namespace AppBundle\Tests\API\Bitstamp;
 
