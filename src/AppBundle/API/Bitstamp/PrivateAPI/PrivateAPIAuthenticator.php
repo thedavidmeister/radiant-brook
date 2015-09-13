@@ -14,6 +14,9 @@ class PrivateAPIAuthenticator
     // POST parameter storage.
     protected $params;
 
+    // Secrets service.
+    protected $secrets;
+
     // Nonce parameter name.
     const NONCE = 'nonce';
 
