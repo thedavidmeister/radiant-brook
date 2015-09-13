@@ -138,10 +138,10 @@ class Fees
      * If Y itself is not an integer, we must floor it or incur the next band of
      * fees for that extra fraction of a cent.
      *
-     * @param Money::USD $USD
+     * @param Money $USD
      *   Some Money to scale to the maximum with the same fee.
      *
-     * @return Money::USD
+     * @return Money
      *   The maximum USD Money on the same isofee as $USD.
      */
     public function isofeeMaxUSD(Money $USD)
