@@ -7,10 +7,10 @@
 namespace AppBundle\API\Bitstamp\TradePairs;
 
 use AppBundle\Secrets;
-use AppBundle\Ensure;
 use AppBundle\Cast;
 use AppBundle\MoneyConstants;
 use Money\Money;
+use Respect\Validation\Validator as v;
 
 /**
  * Wrap one set of proposed prices into a TradeProposalInterface object.
@@ -39,9 +39,11 @@ class TradeProposal implements TradeProposalInterface
         Fees $fees
     )
     {
+        // Ensure that $prices contains money.
+        v::each(v::instance('Money\Money'))->length(2, 2, true)->check($prices);
+
         foreach (['bidUSDPrice', 'askUSDPrice'] as $price) {
             $this->{$price} = $prices[$price];
-            Ensure::isInstanceOf($this->{$price}, 'Money\Money');
         }
 
         $this->fees = $fees;
@@ -73,8 +75,7 @@ class TradeProposal implements TradeProposalInterface
     protected function addReason($reason)
     {
         // Don't allow empty string reasons (although the string '0' is fine).
-        Ensure::notIdentical($reason, '');
-        Ensure::isString($reason);
+        v::string()->not(v::equals(''))->check($reason);
 
         $this->reasons[] = $reason;
     }
@@ -84,7 +85,7 @@ class TradeProposal implements TradeProposalInterface
      */
     public function isValid()
     {
-        Ensure::notNull($this->valid);
+        v::not(v::nullValue())->check($this->valid);
 
         return $this->valid;
     }

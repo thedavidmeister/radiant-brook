@@ -11,89 +11,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class CastTest extends WebTestCase
 {
     /**
-     * Data provider for testToBooleanExceptions().
-     *
-     * @see \AppBundle\Tests\EnsureTest::dataIsBooleanyExceptions
-     *
-     * @return array
-     */
-    public function dataToBooleanExceptions()
-    {
-        $tests = [
-            ['y', '"y" is not a boolean.'],
-            ['n', '"n" is not a boolean.'],
-            [null, 'null is not a boolean.'],
-            [new Mocks\NotBooleanyObject(), '{} is not a boolean.'],
-        ];
-
-        $string = uniqid();
-        $tests[] = [$string, '"' . $string . '" is not a boolean.'];
-
-        $int = mt_rand(2, mt_getrandmax());
-        $tests[] = [$int, $int . ' is not a boolean.'];
-
-        $float = mt_rand() / mt_getrandmax();
-        $tests[] = [$float, $float . ' is not a boolean.'];
-
-        return $tests;
-    }
-
-    /**
-     * @covers AppBundle\Cast::toBoolean
-     *
-     * @dataProvider dataToBooleanExceptions
-     *
-     * @param mixed  $value
-     *   Thing that is not boolean-y and cannot be cast.
-     *
-     * @param string $message
-     *   The expected exception message.
-     *
-     * @group stable
-     */
-    public function testToBooleanExceptions($value, $message)
-    {
-        $this->setExpectedException('Exception', $message);
-
-        Cast::toBoolean($value);
-    }
-
-    /**
-     * @covers AppBundle\Cast::toBoolean
-     *
-     * @group stable
-     */
-    public function testToBoolean()
-    {
-        $tests = [
-            [true, true],
-            ['true', true],
-            [1, true],
-            ['yes', true],
-            [false, false],
-            // This casts to false because of boolean-y rules. Probably the
-            // biggest surprise here as normal string conversion casts it to
-            // true.
-            ['false', false],
-            [0, false],
-            ['no', false],
-            ['', false],
-        ];
-
-        array_walk($tests, function($test) {
-            list($value, $expected) = $test;
-            $this->assertSame($expected, Cast::toBoolean($value), 'Test does not cast to ' . $expected . '. Value: ' . json_encode($value));
-        });
-
-        $tests = [true, false];
-        array_walk($tests, function ($boolean) {
-            $booleanyObject = new Mocks\BooleanyObject($boolean);
-            $result = Cast::toBoolean($booleanyObject);
-            $this->assertSame($boolean, $result, 'BooleanyObject is not ' . json_encode($boolean) . '. String: ' . $booleanyObject);
-        });
-    }
-
-    /**
      * Data provider for dataToIntExceptions
      *
      * @return array
@@ -101,15 +18,15 @@ class CastTest extends WebTestCase
     public function dataToIntExceptions()
     {
         return [
-            [1.1, '1.1 is not an int.'],
-            ['foo', '"foo" is not an int.'],
-            [null, 'null is not an int.'],
-            [[], '[] is not an int.'],
-            [true, 'true is not an int.'],
-            [false, 'false is not an int.'],
+            [1.1, '1.1 must be an integer number'],
+            ['foo', '"foo" must be an integer number'],
+            [null, 'null must be an integer number'],
+            [[], '{ } must be an integer number'],
+            [true, 'true must be an integer number'],
+            [false, 'false must be an integer number'],
             // Negative scientific notation is not an int.
-            [1e-1, '0.1 is not an int.'],
-            [1e-2, '0.01 is not an int.'],
+            [1e-1, '0.1 must be an integer number'],
+            [1e-2, '0.01 must be an integer number'],
         ];
     }
 
@@ -191,13 +108,13 @@ class CastTest extends WebTestCase
     public function dataToFloatExceptions()
     {
         return [
-            [true, 'true is not numeric.'],
-            [false, 'false is not numeric.'],
-            ['foo', '"foo" is not numeric'],
-            [null, 'null is not numeric.'],
-            [[], '[] is not numeric.'],
-            [new \StdClass(), '{} is not numeric.'],
-            ['', '"" is not numeric.'],
+            [true, 'true must be numeric'],
+            [false, 'false must be numeric'],
+            ['foo', '"foo" must be numeric'],
+            [null, 'null must be numeric'],
+            [[], '{ } must be numeric'],
+            [new \StdClass(), '`[object] (stdClass: { })` must be numeric'],
+            ['', 'These rules must pass for ""'],
         ];
     }
 
@@ -217,6 +134,7 @@ class CastTest extends WebTestCase
     public function testToFloatExceptions($value, $message)
     {
         $this->setExpectedException('Exception', $message);
+
         Cast::toFloat($value);
     }
 
@@ -232,6 +150,7 @@ class CastTest extends WebTestCase
         mt_rand(),
         // Float.
         1.5,
+        0,
         0.1,
         -5.0,
         // Numeric string.

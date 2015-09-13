@@ -7,9 +7,8 @@
 namespace AppBundle\API\Bitstamp;
 
 use AppBundle\MoneyStrings;
-use AppBundle\Ensure;
-use AppBundle\Cast;
 use Money\Money;
+use Respect\Validation\Validator as v;
 
 /**
  * Wraps a list of orders provided by Bitstamp to handle some basic statistics.
@@ -42,7 +41,7 @@ class OrderList
      */
     public function __construct(array $data)
     {
-        Ensure::notEmpty($data);
+        v::notEmpty()->check($data);
 
         foreach ($data as $datum) {
             $this->data[] = [
@@ -74,11 +73,11 @@ class OrderList
     }
     protected function _sortUSDAscAlgo($a, $b)
     {
-        if ($a[self::USD_KEY]->equals($b[self::USD_KEY])) {
-            return 0;
-        }
+        // Inlined rather than using Money methods, for speed.
+        $aAmount = $a[self::USD_KEY]->getAmount();
+        $bAmount = $b[self::USD_KEY]->getAmount();
 
-        return $a[self::USD_KEY]->lessThan($b[self::USD_KEY]) ? -1 : 1;
+        return ($aAmount < $bAmount) ? -1 : (($aAmount > $bAmount) ? 1 : 0);
     }
     protected $sortUSDAsc;
 
@@ -100,11 +99,11 @@ class OrderList
     }
     protected function _sortUSDDescAlgo($a, $b)
     {
-        if ($a[self::USD_KEY]->equals($b[self::USD_KEY])) {
-            return 0;
-        }
+        // Inlined rather than using Money methods, for speed.
+        $aAmount = $a[self::USD_KEY]->getAmount();
+        $bAmount = $b[self::USD_KEY]->getAmount();
 
-        return $a[self::USD_KEY]->greaterThan($b[self::USD_KEY]) ? -1 : 1;
+        return ($aAmount > $bAmount) ? -1 : (($aAmount < $bAmount) ? 1 : 0);
     }
     protected $sortUSDDesc;
 
@@ -227,8 +226,8 @@ class OrderList
      */
     public function percentileBTCVolume($pc)
     {
-        $pc = Cast::toFloat($pc);
-        Ensure::inRange($pc, 0, 1);
+        v::numeric()->between(0, 1, true)->check($pc);
+        $pc = (float) $pc;
 
         if (!isset($this->percentileBTCVolumeData)) {
             $this->sortUSDAsc();
@@ -274,8 +273,8 @@ class OrderList
      */
     public function percentileCap($pc)
     {
-        $pc = Cast::toFloat($pc);
-        Ensure::inRange($pc, 0, 1);
+        v::numeric()->between(0, 1, true)->check($pc);
+        $pc = (float) $pc;
 
         if (!isset($this->percentileCapData)) {
             $this->sortUSDAsc();

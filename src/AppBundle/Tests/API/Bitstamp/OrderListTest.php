@@ -59,12 +59,24 @@ class OrderListTest extends WebTestCase
     protected $asks;
 
     /**
+     * @covers AppBundle\API\Bitstamp\OrderList::__construct
+     *
+     * @group stable
+     */
+    public function testConstructExceptions()
+    {
+        $this->setExpectedException('Exception', '{ } must not be empty');
+
+        new OrderList([]);
+    }
+
+    /**
      * Test that pair methods return arrays and aggregates return scalars.
      *
      * @coversNothing
      *
      * @group stable
-     * @slowThreshold 1000
+     * @slowThreshold 750
      */
     public function testReturnFormats()
     {
@@ -169,9 +181,30 @@ class OrderListTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\OrderList::percentileBTCVolume
+     *
+     * @dataProvider dataPercentileCapExceptions
+     *
+     * @param float  $pc
+     *   The percentage that should trigger an exception.
+     *
+     * @param string $message
+     *   The exception message.
+     *
+     * @group stable
+     */
+    public function testPercentileBTCVolumeExceptions($pc, $message)
+    {
+        $this->setExpectedException('Exception', $message);
+
+        $this->bids()->percentileBTCVolume($pc);
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\OrderList::percentileBTCVolume
      * @covers AppBundle\API\Bitstamp\OrderList::percentileIndexCompare
      *
      * @group stable
+     * @slowThreshold 750
      */
     public function testPercentileBTCVolume()
     {
@@ -212,10 +245,51 @@ class OrderListTest extends WebTestCase
     }
 
     /**
+     * Data provider for testPercentileCapExceptions.
+     *
+     * @return array
+     */
+    public function dataPercentileCapExceptions()
+    {
+        return [
+            // Things that are not numbers.
+            [[], '{ } must be numeric'],
+            [(object) [], '`[object] (stdClass: { })` must be numeric'],
+            ['foo', 'foo'],
+            // Things that are outside range.
+            [1.1, '1.1 must be lower than or equals 1'],
+            [-1, '-1 must be greater than or equals 0'],
+            [-0.1, '-0.1 must be greater than or equals 0'],
+        ];
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\OrderList::percentileCap
+     *
+     * @dataProvider dataPercentileCapExceptions
+     *
+     * @param float  $pc
+     *   The percentage that should throw an exception.
+     *
+     * @param string $message
+     *   The exception message.
+     *
+     * @group stable
+     */
+    public function testPercentileCapExceptions($pc, $message)
+    {
+        $this->setExpectedException('Exception', $message);
+
+        $this->bids()->percentileCap($pc);
+    }
+
+    /**
      * @covers AppBundle\API\Bitstamp\OrderList::percentileCap
      * @covers AppBundle\API\Bitstamp\OrderList::percentileIndexCompare
      *
      * @group stable
+     *
+     * @slowThreshold 750
      */
     public function testPercentileCap()
     {

@@ -93,6 +93,7 @@ class DefaultControllerTest extends WebTestCase
      *
      * @covers AppBundle\Controller\DefaultController::indexAction
      * @group stable
+     * @group slow
      */
     public function testIndex()
     {

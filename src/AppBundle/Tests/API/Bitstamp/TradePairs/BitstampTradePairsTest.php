@@ -3,7 +3,7 @@
 namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use AppBundle\API\Bitstamp\Fees;
+use AppBundle\API\Bitstamp\TradePairs\Fees;
 use AppBundle\API\Bitstamp\PrivateAPI\Balance;
 use AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs;
 use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
@@ -209,6 +209,47 @@ class BitstampTradePairsTest extends WebTestCase
             $tp = new BitstampTradePairs($this->fees(), $dupesProphet->reveal(), $this->buysell(), $this->proposer());
             $tp->validateTradeProposal($tradeProposalProphet->reveal());
         });
+    }
+
+    /**
+     * Data provider for invalid trade reports.
+     *
+     * @return array
+     */
+    public function dataReduceReportToActionableTradeProposalExceptions()
+    {
+        $tests = [
+            [['foo'], '"foo" must be an instance of "\\\AppBundle\\\API\\\Bitstamp\\\TradePairs\\\TradeProposalInterface"'],
+            [[[]], '{ } must be an instance of "\\\AppBundle\\\API\\\Bitstamp\\\TradePairs\\\TradeProposalInterface"'],
+            [[new \StdClass()], '`[object] (stdClass: { })` must be an instance of "\\\AppBundle\\\API\\\Bitstamp\\\TradePairs\\\TradeProposalInterface"'],
+        ];
+
+        // Only one of the report elements is invalid.
+        $prophet = new Prophet();
+        $mockProposal = $prophet->prophesize('\AppBundle\API\Bitstamp\TradePairs\TradeProposal');
+        $tests[] = [[$mockProposal->reveal(), 'foo'], '"foo" must be an instance of "\\\AppBundle\\\API\\\Bitstamp\\\TradePairs\\\TradeProposalInterface"'];
+
+        return $tests;
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::reduceReportToActionableTradeProposal
+     *
+     * @dataProvider dataReduceReportToActionableTradeProposalExceptions
+     *
+     * @param array  $invalidReport
+     *   A report array that does not contain a valid report.
+     *
+     * @param string $message
+     *   An exception string.
+     *
+     * @group stable
+     */
+    public function testReduceReportToActionableTradeProposalExceptions(array $invalidReport, $message)
+    {
+        $this->setExpectedException('Exception', $message);
+
+        $this->tp()->reduceReportToActionableTradeProposal($invalidReport);
     }
 
     /**

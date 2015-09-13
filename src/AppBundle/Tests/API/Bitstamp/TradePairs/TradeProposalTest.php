@@ -4,9 +4,9 @@ namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
-use AppBundle\Ensure;
 use Money\Money;
 use AppBundle\Tests\EnvironmentTestTrait;
+use Respect\Validation\Validator as v;
 
 use function Functional\map;
 use function Functional\each;
@@ -70,9 +70,9 @@ class TradeProposalTest extends WebTestCase
 
     protected function methodRangeArray($method, $start = 0, $end = 5)
     {
-        Ensure::isString($method);
-        Ensure::isInt($start);
-        Ensure::isInt($end);
+        v::string()->check($method);
+        v::int()->check($start);
+        v::int()->check($end);
 
         return map(range($start, $end), function ($times) use ($method) {
             return array_fill(0, $times, $method);
@@ -85,6 +85,51 @@ class TradeProposalTest extends WebTestCase
         array_walk($range, function($methods) use ($checkMethod, $expected) {
             $this->assertBooleanAfterMethods($methods, $checkMethod, $expected);
         });
+    }
+
+    /**
+     * Data provider for exceptions in __construct.
+     *
+     * @return array
+     */
+    public function dataConstructExceptions()
+    {
+        return [
+            [['bidUSDPrice' => new \StdClass(), 'askUSDPrice' => Money::USD(1)], '`[object] (stdClass: { })` must be an instance of "Money\\\Money"'],
+            [['bidUSDPrice' => Money::BTC(1), 'askUSDPrice' => new \StdClass()], '`[object] (stdClass: { })` must be an instance of "Money\\\Money"'],
+            [['bidUSDPrice' => new \StdClass(), 'askUSDPrice' => new \StdClass()], '`[object] (stdClass: { })` must be an instance of "Money\\\Money"'],
+            [['bidUSDPrice' => 1, 'askUSDPrice' => Money::USD(1)], '1 must be an instance of "Money\\\Money"'],
+            [['bidUSDPrice' => Money::USD(1), 'askUSDPrice' => 1], '1 must be an instance of "Money\\\Money"'],
+            [['bidUSDPrice' => Money::USD(0), 'askUSDPrice' => 0], '0 must be an instance of "Money\\\Money"'],
+            [['bidUSDPrice' => 0, 'askUSDPrice' => Money::BTC(0)], '0 must be an instance of "Money\\\Money"'],
+            [['bidUSDPrice' => Money::USD(0), 'askUSDPrice' => Money::USD(0), 'foo' => Money::USD(0)], '{ "bidUSDPrice": `[object] (Money\Money: { })`, "askUSDPrice": `[object] (Money\Money: { })`, "foo": `[object] (Money\Money: { })` } must have a length between 2 and 2'],
+            [['bidUSDPrice' => Money::USD(0)], '{ "bidUSDPrice": `[object] (Money\Money: { })` } must have a length between 2 and 2'],
+            [[], '{ } must have a length between 2 and 2'],
+            // Check for null values.
+            [['bidUSDPrice' => null, 'askUSDPrice' => null], 'null must be an instance of "Money\\\Money"'],
+            [['bidUSDPrice' => Money::USD(0), 'askUSDPrice' => null], 'null must be an instance of "Money\\\Money"'],
+            [['bidUSDPrice' => null, 'askUSDPrice' => Money::USD(0)], 'null must be an instance of "Money\\\Money"'],
+        ];
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::__construct
+     *
+     * @param array  $notPrices
+     *   An array of things that are not prices.
+     *
+     * @param string $message
+     *   An exception string.
+     *
+     * @dataProvider dataConstructExceptions
+     *
+     * @group stable
+     */
+    public function testConstructExceptions(array $notPrices, $message)
+    {
+        $this->setExpectedException('Exception', $message);
+
+        new TradeProposal($notPrices, $this->fees());
     }
 
     /**

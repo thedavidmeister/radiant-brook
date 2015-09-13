@@ -4,8 +4,8 @@ namespace AppBundle;
 
 use Money\Money;
 use Money\Currency;
-use AppBundle\Ensure;
 use AppBundle\MoneyConstants;
+use Respect\Validation\Validator as v;
 
 /**
  * Converts strings to Money and vice-versa.
@@ -22,13 +22,18 @@ class MoneyStrings
      */
     public static function stringToUSD($string)
     {
-
-        Ensure::isString($string);
+        // Inlined for speed.
+        if (!is_string($string)) {
+            throw new \Exception(json_encode($string) . ' must be a string');
+        }
 
         // USD string may be prepended with a $ char, other symbols should die.
         $string = str_replace('$', '', $string);
 
-        Ensure::isNumeric($string);
+        // Inlined for speed.
+        if (!is_numeric($string)) {
+            throw new \Exception(json_encode($string) . ' must be numeric');
+        }
 
         // Avoid the convenience method as profiling shows it to be too slow
         // here.
@@ -45,8 +50,14 @@ class MoneyStrings
      */
     public static function stringToBTC($string)
     {
-        Ensure::isString($string);
-        Ensure::isNumeric($string);
+        // Inlined for speed.
+        if (!is_string($string)) {
+            throw new \Exception(json_encode($string) . ' must be a string');
+        }
+
+        if (!is_numeric($string)) {
+            throw new \Exception(json_encode($string) . ' must be numeric');
+        }
 
         // Avoid the convenience method as profiling shows it to be too slow
         // here.

@@ -66,19 +66,24 @@ class PriceProposerTest extends WebTestCase
     {
         return [
             // Anything null is an exception.
-            [[null, null, null], 'null is not numeric.'],
-            [[1, null, null], 'null is not numeric.'],
-            [[null, 1, null], 'null is not numeric.'],
-            [[null, null, 1], 'null is not numeric.'],
-            [[1, 1, null], 'null is not numeric.'],
-            [[null, 1, 1], 'null is not numeric.'],
-            [[1, null, 1], 'null is not numeric.'],
+            [[null, null, null], 'null must be a finite number'],
+            [['1', null, null], 'null must be a finite number'],
+            [[null, '1', null], 'null must be a finite number'],
+            [[null, null, '1'], 'null must be a finite number'],
+            [['1', '1', null], 'null must be a finite number'],
+            [[null, '1', '1'], 'null must be a finite number'],
+            [['1', null, '1'], 'null must be a finite number'],
             // This will throw because min is not less than max.
-            [[1, 1, 1], '1 is not less than 1.'],
+            [['1', '1', '0.5'], '"1" must be greater than "1"'],
+            // Step size must be less than max - min.
+            [['1', '2', '3'], '"3" must be lower than or equals "1"'],
+            // max - min must be cleanly divisible by step size.
             // minMaxStep must be 3 long.
-            [[1, 2], 'Min, max, step array is the wrong size. It must be 3 elements long, but is actually 2.'],
-            [[1], 'Min, max, step array is the wrong size. It must be 3 elements long, but is actually 1.'],
-            [[], 'Min, max, step array is the wrong size. It must be 3 elements long, but is actually 0.'],
+            [['1', '2'], '{ "1", "2" } must have a length between 3 and 3'],
+            [['1'], '{ "1" } must have a length between 3 and 3'],
+            [[], '{ } must have a length between 3 and 3'],
+            // Test for impossible to divide step sizes.
+            [['1', '2', '0.3'], 'Step size 0.3 does not divide evenly into 1. Ratio 3.3333333333333 must be an integer.'],
         ];
     }
 
@@ -109,7 +114,7 @@ class PriceProposerTest extends WebTestCase
      */
     public function testValid()
     {
-        $minMaxStep = [0.0, 0.2, 0.1];
+        $minMaxStep = ['0.0', '0.2', '0.1'];
 
         list($minPercentile, $maxPercentile, $stepSize) = $minMaxStep;
 
@@ -150,7 +155,7 @@ class PriceProposerTest extends WebTestCase
      */
     public function testIteration()
     {
-        $minMaxStep = [0.01, 0.1, 0.005];
+        $minMaxStep = ['0.01', '0.1', '0.005'];
 
         list($minPercentile, $maxPercentile, $stepSize) = $minMaxStep;
 
@@ -195,7 +200,7 @@ class PriceProposerTest extends WebTestCase
     {
         $orderbook = $this->orderbook();
 
-        $minMaxStep = [0.05, 0.1, 0.005];
+        $minMaxStep = ['0.05', '0.1', '0.005'];
 
         list($minPercentile, $maxPercentile, $stepSize) = $minMaxStep;
 
@@ -218,17 +223,12 @@ class PriceProposerTest extends WebTestCase
     {
         // percentile.
         $tests = [
-            ['0.05'],
-            ['0.01'],
-            ['0.5'],
-            ['1'],
-            ['0'],
+            ['0.05', '0.1', '0.05'],
+            ['0.01', '0.07', '0.02'],
+            ['0.5', '1', '0.5'],
+            ['0.9', '1', '0.1'],
+            ['0', '1', '1'],
         ];
-
-        // Fill in some max and steps.
-        $tests = array_map(function ($item) {
-            return [$item[0], $item[0] + 0.1, $item[0.01]];
-        }, $tests);
 
         array_walk($tests, function($test) {
             $orderbook = $this->orderbook();
@@ -252,17 +252,12 @@ class PriceProposerTest extends WebTestCase
     {
         // percentile.
         $tests = [
-            ['0.05'],
-            ['0.01'],
-            ['0.5'],
-            ['1'],
-            ['0'],
+            ['0.05', '0.1', '0.05'],
+            ['0.01', '0.07', '0.02'],
+            ['0.5', '1', '0.5'],
+            ['0.9', '1', '0.1'],
+            ['0', '1', '1'],
         ];
-
-        // Fill in some max and steps.
-        $tests = array_map(function ($item) {
-            return [$item[0], $item[0] + 0.1, $item[0.01]];
-        }, $tests);
 
         array_walk($tests, function($test) {
             // This mocking gets deep...
