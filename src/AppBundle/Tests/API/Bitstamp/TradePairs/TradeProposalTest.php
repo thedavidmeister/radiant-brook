@@ -72,6 +72,7 @@ class TradeProposalTest extends WebTestCase
         $reason = $this->faker()->sentence;
 
         if (!empty($methods)) {
+            $setReturn = null;
             foreach ($methods as $method) {
                 $setReturn = $proposal->{$method}($reason);
             }
