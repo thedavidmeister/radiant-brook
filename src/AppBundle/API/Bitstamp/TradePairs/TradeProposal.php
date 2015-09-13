@@ -31,8 +31,9 @@ class TradeProposal implements TradeProposalInterface
 
     /**
      * DI Constructor.
-     * @param array $prices
-     * @param Fees  $fees
+     * @param array   $prices
+     * @param Fees    $fees
+     * @param Secrets $secrets
      */
     public function __construct(
         array $prices,
