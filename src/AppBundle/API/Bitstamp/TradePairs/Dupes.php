@@ -2,10 +2,9 @@
 
 namespace AppBundle\API\Bitstamp\TradePairs;
 
-use Money\Money;
-use AppBundle\Secrets;
-use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
 use AppBundle\MoneyStrings;
+use AppBundle\Secrets;
+use Money\Money;
 
 /**
  * Search for dupes in OpenOrders against a given ask/bid USD price.
@@ -30,7 +29,7 @@ class Dupes
     /**
      * DI constructor.
      *
-     * @param PrivateAPI\OpenOrders $openOrders
+     * @param \AppBundle\API\Bitstamp\PrivateAPI\OpenOrders $openOrders
      */
     public function __construct(\AppBundle\API\Bitstamp\PrivateAPI\OpenOrders $openOrders)
     {
@@ -44,9 +43,6 @@ class Dupes
      * @param Money $price
      *   The USD Money price to look for dupes of.
      *
-     * @param Money $range
-     *   The absolute USD Money price range to +/- against $price to set the
-     *   dupes range.
      *
      * @param int $type
      *   Bids or Asks type, as per Bitstamp API in open_orders.

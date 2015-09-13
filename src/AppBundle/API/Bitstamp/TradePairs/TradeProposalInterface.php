@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * AppBundle\API\Bitstamp\TradePairs\TradeProposalInterface
- */
 
 namespace AppBundle\API\Bitstamp\TradePairs;
 
@@ -121,6 +117,8 @@ interface TradeProposalInterface
      *
      * @see isCompulsory()
      * @see isValid()
+     * 
+     * @return boolean
      */
     public function isFinal();
 

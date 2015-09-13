@@ -44,7 +44,7 @@ class SnapshotBitstamp
 
     /**
      * Updates the internal state of the snapshot to represent Bitstamp data.
-     * @return this
+     * @return SnapshotBitstamp
      */
     public function updateState()
     {

@@ -14,7 +14,7 @@ class Fees
     /**
      * DI constructor.
      *
-     * @param PrivateAPI\Balance $balance
+     * @param \AppBundle\API\Bitstamp\PrivateAPI\Balance $balance
      */
     public function __construct(\AppBundle\API\Bitstamp\PrivateAPI\Balance $balance)
     {

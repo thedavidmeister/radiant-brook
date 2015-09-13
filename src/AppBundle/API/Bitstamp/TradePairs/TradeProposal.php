@@ -1,14 +1,10 @@
 <?php
-/**
- * @file
- * AppBundle\API\Bitstamp\TradePairs\TradeProposal.
- */
 
 namespace AppBundle\API\Bitstamp\TradePairs;
 
-use AppBundle\Secrets;
 use AppBundle\Cast;
 use AppBundle\MoneyConstants;
+use AppBundle\Secrets;
 use Money\Money;
 use Respect\Validation\Validator as v;
 
@@ -296,7 +292,7 @@ class TradeProposal implements TradeProposalInterface
      * BTC volume is simply the amount of USD we need to sell divided by the
      * USD price per BTC.
      *
-     * @return Money::BTC
+     * @return Money
      */
     public function askBTCVolume()
     {

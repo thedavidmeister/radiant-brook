@@ -2,10 +2,9 @@
 
 namespace AppBundle;
 
-use Money\Money;
-use Money\Currency;
 use AppBundle\MoneyConstants;
-use Respect\Validation\Validator as v;
+use Money\Currency;
+use Money\Money;
 
 /**
  * Converts strings to Money and vice-versa.

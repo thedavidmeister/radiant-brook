@@ -13,13 +13,13 @@ abstract class PrivateAPI extends API
     /**
      * Handles DI.
      *
-     * @param Client                  $client
+     * @param Client                   $client
      *   A Guzzle HTTP compatible client.
      *
-     * @param Logger                  $logger
+     * @param \Psr\Log\LoggerInterface $logger
      *   A PSR3 compatible Logger.
      *
-     * @param PrivateAPIAuthenticator $auth
+     * @param PrivateAPIAuthenticator  $auth
      */
     public function __construct(
         Client $client,
