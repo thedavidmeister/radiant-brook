@@ -19,8 +19,8 @@ class BitstampDocumentationTest extends WebTestCase
     protected function response()
     {
         if (!isset($this->response)) {
-                $client = new Client();
-                $this->response = $client->get(self::BITSTAMP_DOCUMENTATION_URL);
+            $client = new Client();
+            $this->response = $client->get(self::BITSTAMP_DOCUMENTATION_URL);
         }
 
         return $this->response;
