@@ -113,7 +113,7 @@ class PrivateAPIAuthenticator
     /**
      * Handles required authentication parameters for Bitstamp API security.
      *
-     * @return array<string>
+     * @return string[]
      *   An associative array matching Bitstamp required private API key/value
      *   pairs.
      */
@@ -122,10 +122,17 @@ class PrivateAPIAuthenticator
         // Generate a new nonce for this set of params.
         $this->generateNonce();
 
-        return [
+        $params = [
             $this::NONCE => $this->nonce(),
             $this::KEY => $this->key(),
             $this::SIGNATURE => $this->ensureSignature(),
         ];
+
+        // Ensure strings.
+        $params = array_map(function($param) {
+            return (string) $param;
+        }, $params);
+
+        return $params;
     }
 }
