@@ -65,7 +65,7 @@ class PrivateAPIAuthenticatorTest extends WebTestCase
         $this->assertGreaterThan($authParams['nonce'], $laterAuthParams['nonce']);
 
         // Check some basic things about the nonce.
-        $this->assertTrue(is_int($authParams['nonce']));
+        $this->assertTrue((int) $authParams['nonce'] == $authParams['nonce']);
         $this->assertGreaterThan(0, $authParams['nonce']);
 
         $this->assertSame($authParams['key'], $secrets->get('BITSTAMP_KEY'));

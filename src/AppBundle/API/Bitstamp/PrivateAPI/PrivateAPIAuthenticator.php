@@ -78,7 +78,7 @@ class PrivateAPIAuthenticator
 
     protected function nonce()
     {
-        return (int) $this->nonce;
+        return (string) (int) $this->nonce;
     }
 
     /**
@@ -86,7 +86,7 @@ class PrivateAPIAuthenticator
      */
     protected function key()
     {
-        return $this->secrets->get(self::KEY_SECRET);
+        return (string) $this->secrets->get(self::KEY_SECRET);
     }
 
     /**
@@ -107,13 +107,13 @@ class PrivateAPIAuthenticator
     {
         $data = $this->nonce() . $this->secrets->get(self::CLIENT_ID_SECRET) . $this->secrets->get(self::KEY_SECRET);
 
-        return strtoupper(hash_hmac('sha256', $data, $this->secrets->get(self::SECRET_SECRET)));
+        return (string) strtoupper(hash_hmac('sha256', $data, $this->secrets->get(self::SECRET_SECRET)));
     }
 
     /**
      * Handles required authentication parameters for Bitstamp API security.
      *
-     * @return array
+     * @return array<string>
      *   An associative array matching Bitstamp required private API key/value
      *   pairs.
      */
