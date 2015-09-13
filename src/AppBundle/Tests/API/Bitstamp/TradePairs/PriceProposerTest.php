@@ -2,9 +2,9 @@
 
 namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\API\Bitstamp\TradePairs\PriceProposer;
 use Money\Money;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Tests AppBundle\API\Bitstamp\TradePairs\PriceProposer
@@ -12,6 +12,9 @@ use Money\Money;
 class PriceProposerTest extends WebTestCase
 {
 
+    /**
+     * @param string $class
+     */
     protected function mock($class)
     {
         return $this

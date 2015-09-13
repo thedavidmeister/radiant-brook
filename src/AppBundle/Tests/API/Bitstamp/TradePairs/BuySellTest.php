@@ -2,17 +2,17 @@
 
 namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\API\Bitstamp\PrivateAPI\Buy;
 use AppBundle\API\Bitstamp\PrivateAPI\Sell;
 use AppBundle\API\Bitstamp\TradePairs\BuySell;
-use Money\Money;
 use AppBundle\Tests\GuzzleTestTrait;
 use GuzzleHttp\Client;
-use GuzzleHttp\Subscriber\Mock;
-use GuzzleHttp\Subscriber\History;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Stream\Stream;
+use GuzzleHttp\Subscriber\History;
+use GuzzleHttp\Subscriber\Mock;
+use Money\Money;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Tests AppBundle\API\Bitstamp\TradePairs\BuySell
@@ -82,7 +82,7 @@ class BuySellTest extends WebTestCase
             [Money::USD(123), Money::BTC(123), Money::USD(20), Money::BTC(20), '1.23', '0.00000123', '0.20', '0.00000020'],
         ];
 
-        array_walk($tests, function($test){
+        array_walk($tests, function($test) {
             $buySell = $this->buySell();
 
             $tradeProposal = $this->tradeProposal($test[0], $test[1], $test[2], $test[3]);

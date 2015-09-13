@@ -153,7 +153,7 @@ class BitstampTradePairsTest extends WebTestCase
         return (bool) mt_rand(0, 1);
     }
 
-     /**
+    /**
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::validateTradeProposal
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::__construct
      *

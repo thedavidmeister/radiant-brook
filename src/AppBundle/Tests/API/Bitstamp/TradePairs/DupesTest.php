@@ -2,13 +2,13 @@
 
 namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use AppBundle\Tests\GuzzleTestTrait;
-use AppBundle\Tests\EnvironmentTestTrait;
 use AppBundle\API\Bitstamp\PrivateAPI\OpenOrders;
 use AppBundle\API\Bitstamp\TradePairs\Dupes;
 use AppBundle\Secrets;
+use AppBundle\Tests\EnvironmentTestTrait;
+use AppBundle\Tests\GuzzleTestTrait;
 use Money\Money;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Tests AppBundle\API\Bitstamp\TradePairs\Dupes

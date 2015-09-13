@@ -25,7 +25,7 @@ abstract class APITest extends WebTestCase
      */
     protected function getClass($mockType = null)
     {
-          return new $this->className($this->client($mockType), $this->mockLogger());
+        return new $this->className($this->client($mockType), $this->mockLogger());
     }
 
     /**
