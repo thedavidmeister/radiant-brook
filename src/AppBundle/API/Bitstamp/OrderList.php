@@ -71,13 +71,13 @@ class OrderList
             $this->data = $this->sortUSDAsc;
         }
     }
-    protected function sortUSDAscAlgo($a, $b)
+    protected function sortUSDAscAlgo($left, $right)
     {
         // Inlined rather than using Money methods, for speed.
-        $aAmount = $a[self::USD_KEY]->getAmount();
-        $bAmount = $b[self::USD_KEY]->getAmount();
+        $leftAmount = $left[self::USD_KEY]->getAmount();
+        $rightAmount = $right[self::USD_KEY]->getAmount();
 
-        return ($aAmount < $bAmount) ? -1 : (($aAmount > $bAmount) ? 1 : 0);
+        return ($leftAmount < $rightAmount) ? -1 : (($leftAmount > $rightAmount) ? 1 : 0);
     }
     protected $sortUSDAsc;
 
@@ -97,13 +97,13 @@ class OrderList
             $this->data = $this->sortUSDDesc;
         }
     }
-    protected function sortUSDDescAlgo($a, $b)
+    protected function sortUSDDescAlgo($left, $right)
     {
         // Inlined rather than using Money methods, for speed.
-        $aAmount = $a[self::USD_KEY]->getAmount();
-        $bAmount = $b[self::USD_KEY]->getAmount();
+        $leftAmount = $left[self::USD_KEY]->getAmount();
+        $rightAmount = $right[self::USD_KEY]->getAmount();
 
-        return ($aAmount > $bAmount) ? -1 : (($aAmount < $bAmount) ? 1 : 0);
+        return ($leftAmount > $rightAmount) ? -1 : (($leftAmount < $rightAmount) ? 1 : 0);
     }
     protected $sortUSDDesc;
 
