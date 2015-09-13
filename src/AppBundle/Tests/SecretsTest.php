@@ -149,6 +149,24 @@ class SecretsTest extends WebTestCase
     }
 
     /**
+     * @covers AppBundle\Secrets::get
+     *
+     * @dataProvider dataNameExceptions
+     *
+     * @param mixed $name
+     *   Things that are not valid variable names to get.
+     *
+     * @param string $message
+     *   The exception message to throw.
+     */
+    public function testGetNameExceptions($name, $message)
+    {
+        $this->setExpectedException('Exception', $message);
+
+        $this->secrets()->get($name);
+    }
+
+    /**
      * @covers AppBundle\Secrets::clear
      *
      * @dataProvider dataNameExceptions
@@ -159,7 +177,7 @@ class SecretsTest extends WebTestCase
      * @param string $message
      *   The exception message to throw.
      */
-    public function testCleanNameExceptions($name, $message)
+    public function testClearNameExceptions($name, $message)
     {
         $this->setExpectedException('Exception', $message);
 

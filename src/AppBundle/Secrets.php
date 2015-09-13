@@ -73,7 +73,7 @@ class Secrets
      */
     public function get($name)
     {
-        v::PHPLabel()->assert($name);
+        v::PHPLabel()->check($name);
 
         $loader = new Loader($this->dotEnvPath());
 
