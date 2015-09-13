@@ -105,6 +105,10 @@ class TradeProposalTest extends WebTestCase
             [['bidUSDPrice' => Money::USD(0), 'askUSDPrice' => Money::USD(0), 'foo' => Money::USD(0)], '{ "bidUSDPrice": `[object] (Money\Money: { })`, "askUSDPrice": `[object] (Money\Money: { })`, "foo": `[object] (Money\Money: { })` } must have a length between 2 and 2'],
             [['bidUSDPrice' => Money::USD(0)], '{ "bidUSDPrice": `[object] (Money\Money: { })` } must have a length between 2 and 2'],
             [[], '{ } must have a length between 2 and 2'],
+            // Check for null values.
+            [['bidUSDPrice' => null, 'askUSDPrice' => null], 'null must be an instance of "Money\\\Money"'],
+            [['bidUSDPrice' => Money::USD(0), 'askUSDPrice' => null], 'null must be an instance of "Money\\\Money"'],
+            [['bidUSDPrice' => null, 'askUSDPrice' => Money::USD(0)], 'null must be an instance of "Money\\\Money"'],
         ];
     }
 

@@ -43,8 +43,6 @@ class TradeProposal implements TradeProposalInterface
         v::each(v::instance('Money\Money'))->length(2, 2, true)->check($prices);
 
         foreach (['bidUSDPrice', 'askUSDPrice'] as $price) {
-            v::not(v::nullValue())->check($price);
-
             $this->{$price} = $prices[$price];
         }
 
