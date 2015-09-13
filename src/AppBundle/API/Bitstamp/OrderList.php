@@ -281,7 +281,7 @@ class OrderList
 
             // Build a data array with USD prices as keys and comparison cap
             // amounts as values.
-            $this->percentileCapData = array_reduce($this->data, function ($carry, $datum) {
+            $this->percentileCapData = array_reduce($this->data, function($carry, $datum) {
                 // Get the last sum, so we can add to it for a running total.
                 $last = [] === $carry ? Money::USD(0) : end($carry)[self::PERCENTILE_KEY];
 
@@ -312,7 +312,7 @@ class OrderList
         }
 
         // Remove every element that is below the index.
-        $noBelowIndex = array_filter($comparisons, function ($compare) use ($index) {
+        $noBelowIndex = array_filter($comparisons, function($compare) use ($index) {
             return $index->lessThanOrEqual($compare[self::PERCENTILE_KEY]);
         });
 
