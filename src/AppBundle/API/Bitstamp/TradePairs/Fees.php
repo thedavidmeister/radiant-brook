@@ -80,9 +80,9 @@ class Fees
      * @return float
      *   The fees before rounding.
      */
-    protected function absoluteFeeUSDNoRounding(Money $USD)
+    protected function absoluteFeeUSDNoRounding(Money $usd)
     {
-        return $USD->getAmount() * $this->bidsMultiplier();
+        return $usd->getAmount() * $this->bidsMultiplier();
     }
 
     /**
