@@ -2,9 +2,9 @@
 
 namespace AppBundle\Tests\API\Bitstamp;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use GuzzleHttp\Client;
 use Masterminds\HTML5;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Tests that the Bitstamp API documentation has not changed.
@@ -19,8 +19,8 @@ class BitstampDocumentationTest extends WebTestCase
     protected function response()
     {
         if (!isset($this->response)) {
-              $client = new Client();
-              $this->response = $client->get(self::BITSTAMP_DOCUMENTATION_URL);
+                $client = new Client();
+                $this->response = $client->get(self::BITSTAMP_DOCUMENTATION_URL);
         }
 
         return $this->response;

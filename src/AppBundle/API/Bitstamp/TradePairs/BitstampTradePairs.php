@@ -2,9 +2,8 @@
 
 namespace AppBundle\API\Bitstamp\TradePairs;
 
-use AppBundle\Secrets;
-use Money\Money;
 use AppBundle\API\Bitstamp\TradePairs\PriceProposer;
+use AppBundle\Secrets;
 use Respect\Validation\Validator as v;
 
 /**

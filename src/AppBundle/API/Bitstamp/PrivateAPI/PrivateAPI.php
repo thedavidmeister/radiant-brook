@@ -16,7 +16,7 @@ abstract class PrivateAPI extends API
      * @param Client                  $client
      *   A Guzzle HTTP compatible client.
      *
-     * @param Logger                  $logger
+     * @param \Psr\Log\LoggerInterface                  $logger
      *   A PSR3 compatible Logger.
      *
      * @param PrivateAPIAuthenticator $auth

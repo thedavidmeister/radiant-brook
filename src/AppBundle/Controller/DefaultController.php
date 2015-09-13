@@ -2,11 +2,9 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use AppBundle\API\Bitstamp\OrderBook;
-use AppBundle\API\Bitstamp\BitstampTradePairs;
-use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -19,7 +17,7 @@ class DefaultController extends Controller
      *
      * @Route("/", name="index")
      *
-     * @return Response
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function indexAction()
     {
@@ -32,7 +30,7 @@ class DefaultController extends Controller
      *
      * @Route("trade/order_book", name="order_book")
      *
-     * @return Response
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function orderBookAction()
     {
@@ -85,7 +83,7 @@ class DefaultController extends Controller
      *
      * @param Request $request Symfony request
      *
-     * @return Response
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function tradeAction(Request $request)
     {

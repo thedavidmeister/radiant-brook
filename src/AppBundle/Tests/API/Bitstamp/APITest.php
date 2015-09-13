@@ -2,8 +2,8 @@
 
 namespace AppBundle\Tests\API\Bitstamp;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\Tests\GuzzleTestTrait;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Standard tests that can be run on all public API classes.

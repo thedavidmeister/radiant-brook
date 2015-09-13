@@ -2,18 +2,15 @@
 
 namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use AppBundle\API\Bitstamp\TradePairs\Fees;
-use AppBundle\API\Bitstamp\PrivateAPI\Balance;
-use AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs;
-use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
-use AppBundle\Tests\GuzzleTestTrait;
-use AppBundle\Tests\EnvironmentTestTrait;
 use AppBundle\API\Bitstamp\Dupes;
-use AppBundle\Secrets;
+use AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs;
+use AppBundle\API\Bitstamp\TradePairs\Fees;
+use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
+use AppBundle\Tests\EnvironmentTestTrait;
 use Money\Money;
-use Prophecy\Prophet;
 use Prophecy\Argument;
+use Prophecy\Prophet;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Tests for AppBundle\API\Bitstamp\BitstampTradePairs.
@@ -43,6 +40,9 @@ class BitstampTradePairsTest extends WebTestCase
         $this->setEnv('BITSTAMP_MIN_USD_VOLUME', $volume);
     }
 
+    /**
+     * @param string $class
+     */
     protected function mock($class)
     {
         return $this
@@ -51,21 +51,33 @@ class BitstampTradePairsTest extends WebTestCase
             ->getMock();
     }
 
+    /**
+     * @return Fees
+     */
     protected function fees()
     {
         return $this->mock('\AppBundle\API\Bitstamp\TradePairs\Fees');
     }
 
+    /**
+     * @return \AppBundle\API\Bitstamp\TradePairs\Dupes
+     */
     protected function dupes()
     {
         return $this->mock('\AppBundle\API\Bitstamp\TradePairs\Dupes');
     }
 
+    /**
+     * @return \AppBundle\API\Bitstamp\TradePairs\BuySell
+     */
     protected function buysell()
     {
         return $this->mock('\AppBundle\API\Bitstamp\TradePairs\BuySell');
     }
 
+    /**
+     * @return \AppBundle\API\Bitstamp\TradePairs\PriceProposer
+     */
     protected function proposer()
     {
         return $this->mock('\AppBundle\API\Bitstamp\TradePairs\PriceProposer');
@@ -93,7 +105,7 @@ class BitstampTradePairsTest extends WebTestCase
         return $proposal->reveal();
     }
 
-    protected function statefulProposalMockFiller ($isValid = false, $isCompulsory = false, $isFinal = false)
+    protected function statefulProposalMockFiller($isValid = false, $isCompulsory = false, $isFinal = false)
     {
         return array_fill(0, mt_rand(0, 10), $this->statefulProposalMock($isValid, $isCompulsory, $isFinal));
     }
@@ -102,7 +114,7 @@ class BitstampTradePairsTest extends WebTestCase
     {
         $i = 0;
         do {
-            $sequencer = function ($config) {
+            $sequencer = function($config) {
                 // Fill an array with statful mocks based on the config options.
                 $sequence = array_reduce($config, function(array $carry, array $args) {
                     // Merge arrays from the filler together to build the
@@ -120,11 +132,11 @@ class BitstampTradePairsTest extends WebTestCase
             $postSequence = $sequencer($post);
 
             // Convert the expectations config into mocks.
-            $testMocks = array_map(function ($test) {
+            $testMocks = array_map(function($test) {
                 return call_user_func_array([$this, 'statefulProposalMock'], $test);
             }, $tests);
 
-            array_walk($testMocks, function ($expected) use ($preSequence, $postSequence) {
+            array_walk($testMocks, function($expected) use ($preSequence, $postSequence) {
                 $sequence = array_merge($preSequence, [$expected], $postSequence);
 
                 $actionable = $this->tp()->reduceReportToActionableTradeProposal($sequence);

@@ -13,14 +13,14 @@ class BuySell
     /**
      * DI constructor.
      *
-     * @param PrivateAPI\Buy           $buy
-     * @param PrivateAPI\Sell          $sell
+     * @param \AppBundle\API\Bitstamp\PrivateAPI\Buy           $buy
+     * @param \AppBundle\API\Bitstamp\PrivateAPI\Sell          $sell
      * @param \Psr\Log\LoggerInterface $logger
      */
     public function __construct(
-      \AppBundle\API\Bitstamp\PrivateAPI\Buy $buy,
-      \AppBundle\API\Bitstamp\PrivateAPI\Sell $sell,
-      \Psr\Log\LoggerInterface $logger
+        \AppBundle\API\Bitstamp\PrivateAPI\Buy $buy,
+        \AppBundle\API\Bitstamp\PrivateAPI\Sell $sell,
+        \Psr\Log\LoggerInterface $logger
     )
     {
         $this->buy = $buy;

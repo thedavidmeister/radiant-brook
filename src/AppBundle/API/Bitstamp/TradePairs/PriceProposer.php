@@ -1,13 +1,12 @@
 <?php
 /**
- * @file
- * AppBundle\API\Bitstamp\TracePairs\PriceProposer.
- */
+     * @file
+     * AppBundle\API\Bitstamp\TracePairs\PriceProposer.
+     */
 
 namespace AppBundle\API\Bitstamp\TradePairs;
 
 use AppBundle\Secrets;
-use AppBundle\Cast;
 use Money\Money;
 use Respect\Validation\Validator as v;
 
