@@ -17,7 +17,7 @@ class MoneyStrings
      * @param string $string
      *   The string to convert.
      *
-     * @return Money::USD
+     * @return Money
      */
     public static function stringToUSD($string)
     {
@@ -45,7 +45,7 @@ class MoneyStrings
      * @param string $string
      *   The string to convert.
      *
-     * @return Money::BTC
+     * @return Money
      */
     public static function stringToBTC($string)
     {
@@ -66,7 +66,7 @@ class MoneyStrings
     /**
      * Converts Money::USD to a string in XXXX.YY format.
      *
-     * @param Money::USD $USD
+     * @param Money $USD
      *
      * @return string
      *   USD string in XXXX.YY format.
@@ -79,7 +79,7 @@ class MoneyStrings
     /**
      * Converts Money::BTC to a string in XXXX.YYYYYYYY format.
      *
-     * @param Money::BTC $BTC
+     * @param Money $BTC
      *
      * @return string
      *   BTC string in XXXX.YYYYYYYY format.
