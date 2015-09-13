@@ -85,11 +85,9 @@ class DefaultController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function tradeAction(Request $request)
+    public function tradeAction()
     {
         $tp = $this->get('bitstamp.trade_pairs');
-
-        $timeFormat = 'Y-m-d H:i:s';
 
         $stats = [
             '-Facts-' => '',
@@ -100,6 +98,7 @@ class DefaultController extends Controller
 
         $report = $tp->report();
         $statsArrayFromProposal = function(TradeProposal $proposal, $prefix = '') {
+            $stats = [];
             $methods = [
                 'bidUSDPrice',
                 'bidUSDVolumeBase',
