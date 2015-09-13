@@ -72,7 +72,7 @@ abstract class AbstractPrivateAPITest extends AbstractAPITest
      *
      * PrivateAPI needs to mock an authenticator as well as a client.
      *
-     * @return mixed
+     * @return object
      */
     protected function getClass($mockType = null)
     {
