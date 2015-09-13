@@ -3,8 +3,8 @@
 namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
 use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
-use AppBundle\Tests\EnvironmentTestTrait;
 use AppBundle\Secrets;
+use AppBundle\Tests\EnvironmentTestTrait;
 use Money\Money;
 use Respect\Validation\Validator as v;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -35,6 +35,9 @@ class TradeProposalTest extends WebTestCase
         return $this->mock('\AppBundle\API\Bitstamp\TradePairs\Fees');
     }
 
+    /**
+     * @return Secrets
+     */
     protected function secrets()
     {
         return $this->mock('AppBundle\Secrets');
