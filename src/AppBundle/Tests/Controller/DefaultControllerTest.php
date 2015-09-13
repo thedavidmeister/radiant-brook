@@ -3,6 +3,7 @@
 namespace AppBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Respect\Validation\Validator as v;
 
 /**
  * Tests for DefaultController.
@@ -51,24 +52,16 @@ class DefaultControllerTest extends WebTestCase
     }
 
     /**
-     * Asserts the navbar on the page.
-     *
-     * @param \Symfony\Component\DomCrawler\Crawler|null $crawler
-     *   The crawler created from a client.
-     */
-    public function assertNav($crawler)
-    {
-        $this->assertTrue($crawler->filter('a[href="/trade/order_book"]:contains("Order Book data")')->count() > 0);
-        $this->assertTrue($crawler->filter('a[href="/trade/trade"]:contains("Trade data")')->count() > 0);
-    }
-
-    /**
      * Runs a set of tests looking for text on the page and auth checks.
+     *
      * @param string $uri
      * @param string[] $expecteds
      */
     protected function standardTests($uri, $expecteds)
     {
+        v::string()->check($uri);
+        v::each(v::string())->check($expecteds);
+
         $this->assertNoAnonymousAccess($uri);
 
         $authClient = $this->createAuthClient();
@@ -82,8 +75,9 @@ class DefaultControllerTest extends WebTestCase
 
         $this->assertSame(200, $authClient->getResponse()->getStatusCode());
 
-
-        $this->assertNav($crawler);
+        // Assert the navbar on the page.
+        $this->assertTrue($crawler->filter('a[href="/trade/order_book"]:contains("Order Book data")')->count() > 0);
+        $this->assertTrue($crawler->filter('a[href="/trade/trade"]:contains("Trade data")')->count() > 0);
 
         foreach ($expecteds as $expected) {
             $this->assertTrue($crawler->filter('html:contains("' . $expected . '")')->count() > 0, $expected . ' is missing from the page.');
