@@ -167,7 +167,7 @@ class TradeProposal implements TradeProposalInterface
     /**
      * Gets $this->bidUSDPrice.
      *
-     * @return Money::USD
+     * @return Money
      */
     public function bidUSDPrice()
     {
@@ -177,7 +177,7 @@ class TradeProposal implements TradeProposalInterface
     /**
      * The base USD volume from config pre-isofee scaling.
      *
-     * @return Money::USD
+     * @return Money
      */
     public function bidUSDVolumeBase()
     {
@@ -192,7 +192,7 @@ class TradeProposal implements TradeProposalInterface
      * We can simply scale the minimum USD volume allowable using the fee
      * structure as a limit.
      *
-     * @return Money::USD
+     * @return Money
      */
     public function bidUSDVolume()
     {
@@ -204,7 +204,7 @@ class TradeProposal implements TradeProposalInterface
      *
      * We can simply add the fees for this USD volume to the USD volume.
      *
-     * @return Money::USD
+     * @return Money
      */
     public function bidUSDVolumePlusFees()
     {
@@ -217,7 +217,7 @@ class TradeProposal implements TradeProposalInterface
      * The volume of BTC is simply the amount of USD we have to spend divided by
      * the amount we're willing to spend per Satoshi.
      *
-     * @return Money::BTC
+     * @return Money
      */
     public function bidBTCVolume()
     {
@@ -249,7 +249,7 @@ class TradeProposal implements TradeProposalInterface
     /**
      * Gets $this->askUSDPrice.
      *
-     * @return Money::USD
+     * @return Money
      */
     public function askUSDPrice()
     {
@@ -271,7 +271,7 @@ class TradeProposal implements TradeProposalInterface
      *   - B + P = X * Fa
      *   - X = (B + P) / Fa
      *
-     * @return Money::USD
+     * @return Money
      */
     public function askUSDVolumeCoverFees()
     {
@@ -284,7 +284,7 @@ class TradeProposal implements TradeProposalInterface
     /**
      * How much USD can we keep from our sale, post fees?
      *
-     * @return Money::USD
+     * @return Money
      */
     public function askUSDVolumePostFees()
     {
@@ -324,7 +324,7 @@ class TradeProposal implements TradeProposalInterface
     /**
      * Returns the USD profit of the suggested pair.
      *
-     * @return Money::USD
+     * @return Money
      */
     public function profitUSD()
     {
@@ -334,7 +334,7 @@ class TradeProposal implements TradeProposalInterface
     /**
      * Returns the BTC profit of the suggested pair.
      *
-     * @return Money::BTC
+     * @return Money
      */
     public function profitBTC()
     {
@@ -344,7 +344,7 @@ class TradeProposal implements TradeProposalInterface
     /**
      * Returns the minimum acceptable USD profit for a valid pair.
      *
-     * @return Money::USD
+     * @return Money
      */
     public function minProfitUSD()
     {
@@ -356,7 +356,7 @@ class TradeProposal implements TradeProposalInterface
     /**
      * Returns the minimum acceptable BTC profit for a valid pair.
      *
-     * @return Money::BTC
+     * @return Money
      */
     public function minProfitBTC()
     {
