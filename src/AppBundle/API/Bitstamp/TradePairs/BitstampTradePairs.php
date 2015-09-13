@@ -49,19 +49,19 @@ class BitstampTradePairs
     /**
      * Constructor to store services passed by Symfony.
      *
-     * @param Fees              $fees
+     * @param Fees          $fees
      *   Bitstamp Fees service.
      *
-     * @param Dupes             $dupes
+     * @param Dupes         $dupes
      *   Bitstamp Dupes service.
      *
-     * @param BuySell           $buySell
+     * @param BuySell       $buySell
      *   Combined Bitstamp buy/sell service.
      *
-     * @param PriceProposer     $proposer
+     * @param PriceProposer $proposer
      *   Bitstamp proposer service.
      *
-     * @param Secrets           $secrets
+     * @param Secrets       $secrets
      *   The Secrets service.
      */
     public function __construct(
