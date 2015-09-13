@@ -100,6 +100,9 @@ class BitstampTradePairsTest extends WebTestCase
         return new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $this->proposer(), $this->secrets());
     }
 
+    /**
+     * @return ObjectProphecy
+     */
     protected function statefulProposalMockRaw($isValid = false, $isCompulsory = false, $isFinal = false)
     {
         $proposal = $this->prophet->prophesize('\AppBundle\API\Bitstamp\TradePairs\TradeProposal');
