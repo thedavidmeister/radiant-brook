@@ -117,6 +117,7 @@ interface TradeProposalInterface
      *
      * @see isCompulsory()
      * @see isValid()
+     * 
      * @return boolean
      */
     public function isFinal();
