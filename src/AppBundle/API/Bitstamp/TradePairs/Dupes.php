@@ -5,6 +5,7 @@ namespace AppBundle\API\Bitstamp\TradePairs;
 use AppBundle\MoneyStrings;
 use AppBundle\Secrets;
 use Money\Money;
+use Respect\Validation\Validator as v;
 
 /**
  * Search for dupes in OpenOrders against a given ask/bid USD price.
@@ -83,7 +84,7 @@ class Dupes
      * @param Money $price
      *   Price to calculate the bounds for.
      *
-     * @return array
+     * @return array<Money>
      *   Array with keys 'range', 'upper', 'lower', values are Money::USD.
      */
     public function bounds(Money $price)
@@ -93,7 +94,11 @@ class Dupes
         $upperPriceBound = $price->add($range);
         $lowerPriceBound = $price->subtract($range);
 
-        return ['range' => $range, 'upper' => $upperPriceBound, 'lower' => $lowerPriceBound];
+        $return = ['range' => $range, 'upper' => $upperPriceBound, 'lower' => $lowerPriceBound];
+
+        v::each(v::instance('Money\Money'))->check($return);
+
+        return $return;
     }
 
     /**
