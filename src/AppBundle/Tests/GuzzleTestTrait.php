@@ -52,19 +52,16 @@ trait GuzzleTestTrait
                     new Response(200, [], Stream::factory($this->sample)),
                     new Response(200, [], Stream::factory($this->sample2)),
                 ]);
-                break;
 
             case 'error':
                 return new Mock([
                     new Response(200, [], Stream::factory('{"error":"Bitstamp likes to report errors as 200"}')),
                 ]);
-                break;
 
             // The default behaviour can just be setting the response status
             // code to whatever the "type" is.
             default:
                 return new Mock([new Response($type)]);
-                break;
 
         }
     }
