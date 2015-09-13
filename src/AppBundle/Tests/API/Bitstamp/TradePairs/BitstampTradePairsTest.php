@@ -44,6 +44,8 @@ class BitstampTradePairsTest extends WebTestCase
 
     /**
      * @param string $class
+     *
+     * @return mixed
      */
     protected function mock($class)
     {
