@@ -276,10 +276,10 @@ class TradeProposal implements TradeProposalInterface
      */
     public function askUSDVolumeCoverFees()
     {
-        $x = ($this->bidUSDVolumePlusFees()->getAmount() + $this->secrets->get(self::MIN_USD_PROFIT_SECRET)) / $this->fees->asksMultiplier();
+        $askUSDVolumeCoverFees = ($this->bidUSDVolumePlusFees()->getAmount() + $this->secrets->get(self::MIN_USD_PROFIT_SECRET)) / $this->fees->asksMultiplier();
 
         // We have to ceil() $x or risk losing our USD profit to fees.
-        return Money::USD((int) ceil($x));
+        return Money::USD((int) ceil($askUSDVolumeCoverFees));
     }
 
     /**
