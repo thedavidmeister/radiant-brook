@@ -5,7 +5,7 @@ namespace AppBundle\Tests\API\Bitstamp\PrivateAPI;
 /**
  * Tests the Bitstamp OrderStatus class.
  */
-class OrderStatusTest extends PrivateAPITest
+class OrderStatusTest extends AbstractPrivateAPITest
 {
     protected $endpoint = 'order_status';
     // @todo replace these samples with real data.

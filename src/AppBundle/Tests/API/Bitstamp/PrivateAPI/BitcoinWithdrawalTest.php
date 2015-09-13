@@ -5,7 +5,7 @@ namespace AppBundle\Tests\API\Bitstamp\PrivateAPI;
 /**
  * Tests the Bitstamp Sell class.
  */
-class BitcoinWithdrawalTest extends PrivateAPITest
+class BitcoinWithdrawalTest extends AbstractPrivateAPITest
 {
     protected $endpoint = 'bitcoin_withdrawal';
     // @todo replace these samples with real data.

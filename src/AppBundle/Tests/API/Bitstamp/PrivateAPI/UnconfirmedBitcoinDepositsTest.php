@@ -5,7 +5,7 @@ namespace AppBundle\Tests\API\Bitstamp\PrivateAPI;
 /**
  * Tests the Bitstamp UnconfirmedBitcoinDeposits class.
  */
-class UnconfirmedBitcoinDepositsTest extends PrivateAPITest
+class UnconfirmedBitcoinDepositsTest extends AbstractPrivateAPITest
 {
     protected $endpoint = 'unconfirmed_btc';
     // @todo replace these samples with real data.

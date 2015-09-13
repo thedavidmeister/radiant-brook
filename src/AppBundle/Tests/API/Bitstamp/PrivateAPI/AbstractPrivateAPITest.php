@@ -7,7 +7,7 @@ use AppBundle\Tests\API\Bitstamp\AbstractAPITest;
 /**
  * Abstract class for testing bitstamp private API wrappers.
  */
-abstract class PrivateAPITest extends AbstractAPITest
+abstract class AbstractPrivateAPITest extends AbstractAPITest
 {
     protected $requiredParamsFixture;
 
