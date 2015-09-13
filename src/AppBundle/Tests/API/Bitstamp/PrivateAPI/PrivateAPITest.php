@@ -9,6 +9,7 @@ use AppBundle\Tests\API\Bitstamp\APITest;
  */
 abstract class PrivateAPITest extends APITest
 {
+    protected $requiredParamsFixture;
 
     /**
      * Tests that Bitstamp private API executions include auth parameters.
