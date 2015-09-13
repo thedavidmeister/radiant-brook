@@ -1,8 +1,4 @@
 <?php
-/**
-     * @file
-     * AppBundle\API\Bitstamp\TradePairs\TradeProposalInterface
-     */
 
 namespace AppBundle\API\Bitstamp\TradePairs;
 
