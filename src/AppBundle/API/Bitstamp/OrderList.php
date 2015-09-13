@@ -65,13 +65,13 @@ class OrderList
     {
         if (!isset($this->sortUSDAsc)) {
             // Avoiding closures here helps understand the profiler.
-            usort($this->data, [$this, '_sortUSDAscAlgo']);
+            usort($this->data, [$this, 'sortUSDAscAlgo']);
             $this->sortUSDAsc = $this->data;
         } else {
             $this->data = $this->sortUSDAsc;
         }
     }
-    protected function _sortUSDAscAlgo($a, $b)
+    protected function sortUSDAscAlgo($a, $b)
     {
         // Inlined rather than using Money methods, for speed.
         $aAmount = $a[self::USD_KEY]->getAmount();
@@ -91,13 +91,13 @@ class OrderList
     {
         if (!isset($this->sortUSDDesc)) {
             // Avoiding closures here helps understand the profiler.
-            usort($this->data, [$this, '_sortUSDDescAlgo']);
+            usort($this->data, [$this, 'sortUSDDescAlgo']);
             $this->sortUSDDesc = $this->data;
         } else {
             $this->data = $this->sortUSDDesc;
         }
     }
-    protected function _sortUSDDescAlgo($a, $b)
+    protected function sortUSDDescAlgo($a, $b)
     {
         // Inlined rather than using Money methods, for speed.
         $aAmount = $a[self::USD_KEY]->getAmount();

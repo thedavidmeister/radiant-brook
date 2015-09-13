@@ -105,7 +105,7 @@ class OrderListTest extends WebTestCase
     /**
      * @covers AppBundle\API\Bitstamp\OrderList::max
      * @covers AppBundle\API\Bitstamp\OrderList::sortUSDDesc
-     * @covers AppBundle\API\Bitstamp\OrderList::_sortUSDDescAlgo
+     * @covers AppBundle\API\Bitstamp\OrderList::sortUSDDescAlgo
      *
      * @group stable
      */
@@ -129,7 +129,7 @@ class OrderListTest extends WebTestCase
     /**
      * @covers AppBundle\API\Bitstamp\OrderList::min
      * @covers AppBundle\API\Bitstamp\OrderList::sortUSDAsc
-     * @covers AppBundle\API\Bitstamp\OrderList::_sortUSDAscAlgo
+     * @covers AppBundle\API\Bitstamp\OrderList::sortUSDAscAlgo
      *
      * @group stable
      */
