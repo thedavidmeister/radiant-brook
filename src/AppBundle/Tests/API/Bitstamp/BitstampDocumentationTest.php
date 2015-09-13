@@ -15,6 +15,8 @@ class BitstampDocumentationTest extends WebTestCase
 
     /**
      * Fetch and cache a response from the API documentation.
+     *
+     * @return GuzzleHttp\Message\Response
      */
     protected function response()
     {
