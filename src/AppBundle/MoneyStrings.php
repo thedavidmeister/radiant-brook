@@ -66,26 +66,26 @@ class MoneyStrings
     /**
      * Converts Money::USD to a string in XXXX.YY format.
      *
-     * @param Money $USD
+     * @param Money $usd
      *
      * @return string
      *   USD string in XXXX.YY format.
      */
-    public static function USDToString(Money $USD)
+    public static function USDToString(Money $usd)
     {
-        return (string) number_format(round($USD->getAmount() / 10 ** MoneyConstants::USD_PRECISION, MoneyConstants::USD_PRECISION), MoneyConstants::USD_PRECISION);
+        return (string) number_format(round($usd->getAmount() / 10 ** MoneyConstants::USD_PRECISION, MoneyConstants::USD_PRECISION), MoneyConstants::USD_PRECISION);
     }
 
     /**
      * Converts Money::BTC to a string in XXXX.YYYYYYYY format.
      *
-     * @param Money $BTC
+     * @param Money $btc
      *
      * @return string
      *   BTC string in XXXX.YYYYYYYY format.
      */
-    public static function BTCToString(Money $BTC)
+    public static function BTCToString(Money $btc)
     {
-        return (string) number_format(round($BTC->getAmount() / 10 ** MoneyConstants::BTC_PRECISION, MoneyConstants::BTC_PRECISION), MoneyConstants::BTC_PRECISION);
+        return (string) number_format(round($btc->getAmount() / 10 ** MoneyConstants::BTC_PRECISION, MoneyConstants::BTC_PRECISION), MoneyConstants::BTC_PRECISION);
     }
 }
