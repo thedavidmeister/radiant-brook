@@ -118,6 +118,8 @@ class TradeProposalTest extends WebTestCase
      *   An exception string.
      *
      * @dataProvider dataConstructExceptions
+     *
+     * @group stable
      */
     public function testConstructExceptions(array $notPrices, $message)
     {
