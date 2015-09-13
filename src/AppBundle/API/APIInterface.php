@@ -33,12 +33,12 @@ interface APIInterface
      */
     public function url();
 
-     /**
-      * Returns PHP data from an endpoint.
-      *
-      * @return array
-      *   The PHP data from the endpoint.
-      */
+        /**
+         * Returns PHP data from an endpoint.
+         *
+         * @return array
+         *   The PHP data from the endpoint.
+         */
     public function data();
 
 }
