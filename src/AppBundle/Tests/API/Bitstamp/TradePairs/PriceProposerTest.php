@@ -14,6 +14,8 @@ class PriceProposerTest extends WebTestCase
 
     /**
      * @param string $class
+     *
+     * @return mixed
      */
     protected function mock($class)
     {
@@ -27,6 +29,9 @@ class PriceProposerTest extends WebTestCase
 
     const PERCENTILE_CAP_MULTIPLIER_BIDS = 10000000;
 
+    /**
+     * @return OrderBook
+     */
     protected function orderbook()
     {
         $orderbook = $this->mock('\AppBundle\API\Bitstamp\PublicAPI\OrderBook');
