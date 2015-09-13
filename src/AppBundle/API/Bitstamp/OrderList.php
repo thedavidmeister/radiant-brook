@@ -320,8 +320,13 @@ class OrderList
      */
     protected function percentileIndexCompare(Money $index, array $comparisons)
     {
-        v::each(v::instance('Money\Money'))->check(array_map(function ($item) { return $item['percentile']; }, $comparisons));
-        v::each(v::int())->check(array_map(function ($item) { return $item['usd']; }, $comparisons));
+        v::each(v::instance('Money\Money'))->check(array_map(function ($item) {
+            return $item['percentile'];
+        }, $comparisons));
+
+        v::each(v::int())->check(array_map(function ($item) {
+            return $item['usd'];
+        }, $comparisons));
 
         // Ensure index cannot overshoot data set.
         if ($index->greaterThanOrEqual(end($comparisons)[self::PERCENTILE_KEY])) {
