@@ -10,6 +10,8 @@ use GuzzleHttp\Client;
  */
 abstract class PrivateAPI extends API
 {
+    protected $auth;
+
     /**
      * Handles DI.
      *
