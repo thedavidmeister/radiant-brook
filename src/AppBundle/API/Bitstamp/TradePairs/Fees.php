@@ -141,7 +141,7 @@ class Fees
      * If Y itself is not an integer, we must floor it or incur the next band of
      * fees for that extra fraction of a cent.
      *
-     * @param Money $USD
+     * @param Money $usd
      *   Some Money to scale to the maximum with the same fee.
      *
      * @return Money
@@ -149,11 +149,11 @@ class Fees
      */
     public function isofeeMaxUSD(Money $usd)
     {
-        $y = $usd->getAmount() * ($this->absoluteFeeUSD($usd)->getAmount() / $this->absoluteFeeUSDNoRounding($usd));
+        $isoFee = $usd->getAmount() * ($this->absoluteFeeUSD($usd)->getAmount() / $this->absoluteFeeUSDNoRounding($usd));
 
         // Yes, int casting floors things anyway, but this behaviour is clearer.
-        $y = (int) floor($y);
+        $isoFee = (int) floor($isoFee);
 
-        return Money::USD($y);
+        return Money::USD($isoFee);
     }
 }
