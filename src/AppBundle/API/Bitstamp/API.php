@@ -35,6 +35,9 @@ class API implements APIInterface
     // If set to true, the full JSON response will be logged during execute().
     protected $logFullResponse = true;
 
+    // A PSR compatible logger interface.
+    protected $logger;
+
     /**
      * Constructor.
      *
