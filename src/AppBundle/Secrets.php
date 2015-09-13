@@ -85,7 +85,7 @@ class Secrets
                 // Attempt to load environment variables from .env if we didn't
                 // already have what we were looking for in memory.
                 $dotenv = new Dotenv($this->dotEnvPath());
-                $dotenv->load($this->dotEnvPath());
+                $dotenv->load();
 
                 // Try once more to find what we're looking for before giving
                 // up. It is not possible to test this on infrastructure with
