@@ -14,7 +14,7 @@ class DefaultControllerTest extends WebTestCase
      *
      * @see config_test.yml
      *
-     * @return client
+     * @return \Symfony\Bundle\FrameworkBundle\Client
      */
     protected function createAuthClient()
     {
@@ -27,7 +27,7 @@ class DefaultControllerTest extends WebTestCase
     /**
      * Provides an anonymous client.
      *
-     * @return client
+     * @return \Symfony\Bundle\FrameworkBundle\Client
      */
     protected function createAnonClient()
     {
@@ -53,7 +53,7 @@ class DefaultControllerTest extends WebTestCase
     /**
      * Asserts the navbar on the page.
      *
-     * @param crawler $crawler
+     * @param \Symfony\Component\DomCrawler\Crawler|null $crawler
      *   The crawler created from a client.
      */
     public function assertNav($crawler)
@@ -64,6 +64,8 @@ class DefaultControllerTest extends WebTestCase
 
     /**
      * Runs a set of tests looking for text on the page and auth checks.
+     * @param string $uri
+     * @param string[] $expecteds
      */
     protected function standardTests($uri, $expecteds)
     {

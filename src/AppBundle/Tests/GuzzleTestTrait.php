@@ -2,12 +2,12 @@
 
 namespace AppBundle\Tests;
 
+use AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator;
 use GuzzleHttp\Client;
-use GuzzleHttp\Subscriber\Mock;
-use GuzzleHttp\Subscriber\History;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Stream\Stream;
-use AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator;
+use GuzzleHttp\Subscriber\History;
+use GuzzleHttp\Subscriber\Mock;
 
 trait GuzzleTestTrait
 {
@@ -58,7 +58,7 @@ trait GuzzleTestTrait
                 return new Mock([
                     new Response(200, [], Stream::factory('{"error":"Bitstamp likes to report errors as 200"}')),
                 ]);
-              break;
+                break;
 
             // The default behaviour can just be setting the response status
             // code to whatever the "type" is.
@@ -69,6 +69,9 @@ trait GuzzleTestTrait
         }
     }
 
+    /**
+     * @return \Psr\Log\LoggerInterface
+     */
     protected function mockLogger()
     {
         $logger = $this

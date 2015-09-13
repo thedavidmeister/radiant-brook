@@ -147,7 +147,7 @@ class MoneyStringsTest extends WebTestCase
      */
     public function testStringToUSD()
     {
-        $tests =[
+        $tests = [
             [Money::USD(10000), '$100'],
             [Money::USD(10000), '$$100'],
             [Money::USD(10000), '100'],

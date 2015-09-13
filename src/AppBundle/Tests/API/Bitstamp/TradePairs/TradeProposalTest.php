@@ -2,11 +2,11 @@
 
 namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
-use Money\Money;
 use AppBundle\Tests\EnvironmentTestTrait;
+use Money\Money;
 use Respect\Validation\Validator as v;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 use function Functional\map;
 use function Functional\each;
@@ -18,6 +18,9 @@ class TradeProposalTest extends WebTestCase
 {
     use EnvironmentTestTrait;
 
+    /**
+     * @param string $class
+     */
     protected function mock($class)
     {
         return $this
@@ -74,11 +77,16 @@ class TradeProposalTest extends WebTestCase
         v::int()->check($start);
         v::int()->check($end);
 
-        return map(range($start, $end), function ($times) use ($method) {
+        return map(range($start, $end), function($times) use ($method) {
             return array_fill(0, $times, $method);
         });
     }
 
+    /**
+     * @param string $method
+     * @param string $checkMethod
+     * @param boolean $expected
+     */
     protected function assertBooleanAfterMethodRange($method, $checkMethod, $expected, $start = 0, $end = 5)
     {
         $range = $this->methodRangeArray($method, $start, $end);
@@ -274,7 +282,7 @@ class TradeProposalTest extends WebTestCase
     public function dataInvalidReason()
     {
         // Generate some data that is not a string.
-        $data = map(range(0, 10), function ($index) {
+        $data = map(range(0, 10), function($index) {
             $invalidReasonTypes = ['randomDigit', 'randomFloat', 'words', 'dateTime'];
 
             return $this->faker()->{$invalidReasonTypes[$index % count($index)]};
@@ -557,10 +565,10 @@ class TradeProposalTest extends WebTestCase
     {
         // sets, expects.
         $scenarios = [
-          ['0', Money::USD(0)],
-          ['1', Money::USD(1)],
-          ['10', Money::USD(10)],
-          ['100', Money::USD(100)],
+            ['0', Money::USD(0)],
+            ['1', Money::USD(1)],
+            ['10', Money::USD(10)],
+            ['100', Money::USD(100)],
         ];
         $test = function($scenario) {
             $this->setEnv('BITSTAMP_MIN_USD_PROFIT', $scenario[0]);
