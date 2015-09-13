@@ -19,6 +19,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  */
 class BuySellTest extends WebTestCase
 {
+    protected $prophet;
 
     use GuzzleTestTrait;
 

@@ -18,6 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  */
 class BitstampTradePairsTest extends WebTestCase
 {
+    protected $prophet;
 
     use EnvironmentTestTrait;
 
