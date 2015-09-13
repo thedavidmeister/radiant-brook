@@ -26,15 +26,23 @@ class Dupes
     // The secret name for the range multiplier
     const DUPES_RANGE_MULTIPLIER_SECRET = 'DUPES_RANGE_MULTIPLIER';
 
+    protected $openOrders;
+
+    protected $secrets;
+
     /**
      * DI constructor.
      *
      * @param \AppBundle\API\Bitstamp\PrivateAPI\OpenOrders $openOrders
+     * @param \AppBundle\Secrets                            $secrets
      */
-    public function __construct(\AppBundle\API\Bitstamp\PrivateAPI\OpenOrders $openOrders)
+    public function __construct(
+        \AppBundle\API\Bitstamp\PrivateAPI\OpenOrders $openOrders,
+        Secrets $secrets
+    )
     {
         $this->openOrders = $openOrders;
-        $this->secrets = new Secrets();
+        $this->secrets = $secrets;
     }
 
     /**
