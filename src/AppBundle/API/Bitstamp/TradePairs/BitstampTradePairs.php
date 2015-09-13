@@ -61,7 +61,7 @@ class BitstampTradePairs
      * @param PriceProposer     $proposer
      *   Bitstamp proposer service.
      *
-     * @param AppBundle\Secrets $secrets
+     * @param Secrets $secrets
      *   The Secrets service.
      */
     public function __construct(

@@ -3,10 +3,10 @@
 namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
 use AppBundle\API\Bitstamp\Dupes;
-use AppBundle\Secrets;
 use AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs;
 use AppBundle\API\Bitstamp\TradePairs\Fees;
 use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
+use AppBundle\Secrets;
 use AppBundle\Tests\EnvironmentTestTrait;
 use Money\Money;
 use Prophecy\Argument;
@@ -84,6 +84,9 @@ class BitstampTradePairsTest extends WebTestCase
         return $this->mock('\AppBundle\API\Bitstamp\TradePairs\PriceProposer');
     }
 
+    /**
+     * @return Secrets
+     */
     protected function secrets()
     {
         return $this->mock('\AppBundle\Secrets');
