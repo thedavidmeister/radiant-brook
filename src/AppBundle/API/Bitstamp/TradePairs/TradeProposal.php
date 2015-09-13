@@ -17,6 +17,8 @@ class TradeProposal implements TradeProposalInterface
 
     protected $askUSDPrice;
 
+    protected $fees;
+
     const MIN_USD_VOLUME_SECRET = 'BITSTAMP_MIN_USD_VOLUME';
 
     const MIN_USD_PROFIT_SECRET = 'BITSTAMP_MIN_USD_PROFIT';
