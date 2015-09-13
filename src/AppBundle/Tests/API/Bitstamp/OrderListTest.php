@@ -180,7 +180,7 @@ class OrderListTest extends WebTestCase
      *
      * @dataProvider dataPercentileCapExceptions
      *
-     * @param float  $pc
+     * @param float  $percentile
      *   The percentage that should trigger an exception.
      *
      * @param string $message
@@ -188,11 +188,11 @@ class OrderListTest extends WebTestCase
      *
      * @group stable
      */
-    public function testPercentileBTCVolumeExceptions($pc, $message)
+    public function testPercentileBTCVolumeExceptions($percentile, $message)
     {
         $this->setExpectedException('Exception', $message);
 
-        $this->bids()->percentileBTCVolume($pc);
+        $this->bids()->percentileBTCVolume($percentile);
     }
 
     /**
@@ -264,7 +264,7 @@ class OrderListTest extends WebTestCase
      *
      * @dataProvider dataPercentileCapExceptions
      *
-     * @param float  $pc
+     * @param float  $percentile
      *   The percentage that should throw an exception.
      *
      * @param string $message
@@ -272,11 +272,11 @@ class OrderListTest extends WebTestCase
      *
      * @group stable
      */
-    public function testPercentileCapExceptions($pc, $message)
+    public function testPercentileCapExceptions($percentile, $message)
     {
         $this->setExpectedException('Exception', $message);
 
-        $this->bids()->percentileCap($pc);
+        $this->bids()->percentileCap($percentile);
     }
 
     /**

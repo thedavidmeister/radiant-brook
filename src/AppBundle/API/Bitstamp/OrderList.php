@@ -217,17 +217,17 @@ class OrderList
      *
      * @see percentileCap()
      *
-     * @param float $pc
+     * @param float $percentile
      *   Percentile to calculate. Must be between 0 - 1.
      *
      * @return int
      *   An aggregate value representing the USD price of the percentile
      *   calculated against BTC Volume, in USD cents.
      */
-    public function percentileBTCVolume($pc)
+    public function percentileBTCVolume($percentile)
     {
-        v::numeric()->between(0, 1, true)->check($pc);
-        $pc = (float) $pc;
+        v::numeric()->between(0, 1, true)->check($percentile);
+        $percentile = (float) $percentile;
 
         if (!isset($this->percentileBTCVolumeData)) {
             $this->sortUSDAsc();
@@ -251,7 +251,7 @@ class OrderList
             }, []);
         }
 
-        $index = Money::BTC((int) ceil($this->totalVolume() * $pc));
+        $index = Money::BTC((int) ceil($this->totalVolume() * $percentile));
 
         return $this->percentileIndexCompare($index, $this->percentileBTCVolumeData);
     }
@@ -264,17 +264,17 @@ class OrderList
      *
      * @see percentileBTCVolume()
      *
-     * @param float $pc
+     * @param float $percentile
      *   Percentile to calculate. Must be between 0 - 1.
      *
      * @return int
      *   An aggregate value representing the USD price of the percentile
      *   calculated against market cap, in USD cents.
      */
-    public function percentileCap($pc)
+    public function percentileCap($percentile)
     {
-        v::numeric()->between(0, 1, true)->check($pc);
-        $pc = (float) $pc;
+        v::numeric()->between(0, 1, true)->check($percentile);
+        $percentile = (float) $percentile;
 
         if (!isset($this->percentileCapData)) {
             $this->sortUSDAsc();
@@ -298,7 +298,7 @@ class OrderList
             }, []);
         }
 
-        $index = Money::USD((int) ceil($this->totalCap() * $pc));
+        $index = Money::USD((int) ceil($this->totalCap() * $percentile));
 
         return $this->percentileIndexCompare($index, $this->percentileCapData);
     }

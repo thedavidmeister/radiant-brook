@@ -119,7 +119,8 @@ class PriceProposer implements \Iterator
      * The asking USD price in the suggested pair.
      *
      * For asks, we use the BTC volume percentile as it's harder for other users
-     * to manipulate. Asks are sorted ascending so we can use $pc directly.
+     * to manipulate. Asks are sorted ascending so we can use $percentile
+     * directly.
      *
      * @return Money::USD
      */
