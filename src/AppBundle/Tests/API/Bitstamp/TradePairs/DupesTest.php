@@ -107,8 +107,6 @@ class DupesTest extends WebTestCase
      * @group stable
      *
      * @see http://www.mathsisfun.com/algebra/inequality-solving.html
-     *
-     * @return [type] [description]
      */
     public function testDupes()
     {
