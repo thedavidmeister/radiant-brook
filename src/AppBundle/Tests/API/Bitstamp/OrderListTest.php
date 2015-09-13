@@ -1,14 +1,10 @@
 <?php
-/**
- * @file
- * AppBundle\Tests\API\Bitstamp\OrderListTest
- */
 
 namespace AppBundle\Tests\API\Bitstamp;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\API\Bitstamp\OrderList;
 use Money\Money;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Tests AppBundle\API\Bitstamp\OrderList.

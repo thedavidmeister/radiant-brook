@@ -2,14 +2,17 @@
 
 namespace AppBundle\Tests\API\Bitstamp\PrivateAPI;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Tests the Bitstamp Private API authenticator class.
  */
 class PrivateAPIAuthenticatorTest extends WebTestCase
 {
+    /**
+     * @return \AppBundle\Secrets
+     */
     protected function mockSecrets()
     {
         $secrets = $this
