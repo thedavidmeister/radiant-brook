@@ -304,8 +304,25 @@ class OrderList
     }
     protected $percentileCapData;
 
-    protected function percentileIndexCompare($index, $comparisons)
+    /**
+     * Takes an index and an array of comparisons and returns the percentile.
+     *
+     * @param Money $index
+     *   Money to use as the index.
+     *
+     * @param array $comparisons
+     *   A comparison associative array in the format:
+     *     - 'usd' => Scalar amount in cents.
+     *     - 'percentile' => Money object representing a percentile.
+     *
+     * @return int
+     *   The integer result of the index comparison.
+     */
+    protected function percentileIndexCompare(Money $index, array $comparisons)
     {
+        v::each(v::instance('Money\Money'))->check(array_map(function ($item) { return $item['percentile']; }, $comparisons));
+        v::each(v::int())->check(array_map(function ($item) { return $item['usd']; }, $comparisons));
+
         // Ensure index cannot overshoot data set.
         if ($index->greaterThanOrEqual(end($comparisons)[self::PERCENTILE_KEY])) {
             $index = end($comparisons)[self::PERCENTILE_KEY];
