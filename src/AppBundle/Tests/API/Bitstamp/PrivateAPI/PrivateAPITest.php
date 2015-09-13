@@ -2,13 +2,7 @@
 
 namespace AppBundle\Tests\API\Bitstamp\PrivateAPI;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Subscriber\Mock;
-use GuzzleHttp\Message\Response;
-use GuzzleHttp\Stream\Stream;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\Tests\API\Bitstamp\APITest;
-use AppBundle\Secrets;
 
 /**
  * Abstract class for testing bitstamp private API wrappers.
@@ -44,9 +38,9 @@ abstract class PrivateAPITest extends APITest
     public function dataAuthenticationParamsExceptions()
     {
         return [
-          ['key', 'foo'],
-          ['signature', 'foo'],
-          ['nonce', 'foo'],
+            ['key', 'foo'],
+            ['signature', 'foo'],
+            ['nonce', 'foo'],
         ];
     }
 
