@@ -10,6 +10,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class SnapshotBitstampCommand extends Command
 {
+    protected $snapshot;
+
     /**
      * DI Constructor.
      * @param \AppBundle\SnapshotBitstamp $snapshot
@@ -17,6 +19,7 @@ class SnapshotBitstampCommand extends Command
     public function __construct(\AppBundle\SnapshotBitstamp $snapshot)
     {
         $this->snapshot = $snapshot;
+
         parent::__construct();
     }
 
