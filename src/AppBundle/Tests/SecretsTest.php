@@ -114,7 +114,7 @@ class SecretsTest extends WebTestCase
      *
      * @dataProvider dataSetValueExceptions
      *
-     * @param mixed $value
+     * @param mixed  $value
      *   Things that are not valid values for Secrets to set.
      *
      * @param string $message
@@ -153,11 +153,13 @@ class SecretsTest extends WebTestCase
      *
      * @dataProvider dataNameExceptions
      *
-     * @param mixed $name
+     * @param mixed  $name
      *   Things that are not valid variable names to get.
      *
      * @param string $message
      *   The exception message to throw.
+     *
+     * @group stable
      */
     public function testGetNameExceptions($name, $message)
     {
@@ -171,11 +173,13 @@ class SecretsTest extends WebTestCase
      *
      * @dataProvider dataNameExceptions
      *
-     * @param mixed $name
+     * @param mixed  $name
      *   Things that are not valid variable names to clear.
      *
      * @param string $message
      *   The exception message to throw.
+     *
+     * @group stable
      */
     public function testClearNameExceptions($name, $message)
     {
@@ -189,7 +193,7 @@ class SecretsTest extends WebTestCase
      *
      * @dataProvider dataNameExceptions
      *
-     * @param mixed $name
+     * @param mixed  $name
      *   Things that are not valid variable names to set.
      *
      * @param string $message
