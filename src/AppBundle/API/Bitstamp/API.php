@@ -199,17 +199,19 @@ class API implements APIInterface
         $response = $this->sendRequest();
 
         if ($response->getStatusCode() !== 200) {
-            $e = new \Exception('Bitstamp response was not a 200');
+            $exception = new \Exception('Bitstamp response was not a 200');
             $this->logger->error('Bitstamp response was not a 200', ['response' => $response->getStatusCode()]);
-            throw $e;
+
+            throw $exception;
         }
 
         $data = $response->json();
 
         if (!empty($data['error'])) {
-            $e = new \Exception('Bitstamp error: ' . json_encode($data));
-            $this->logger->error('Bitstamp error', ['data' => $data, 'exception' => $e]);
-            throw $e;
+            $exception = new \Exception('Bitstamp error: ' . json_encode($data));
+            $this->logger->error('Bitstamp error', ['data' => $data, 'exception' => $exception]);
+
+            throw $exception;
         }
 
         // Logging all response data is impractical for some endpoints, such as
