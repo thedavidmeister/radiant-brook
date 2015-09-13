@@ -8,7 +8,7 @@ use Money\Money;
 /**
  * Tests Bitstamp order book class.
  */
-class OrderBookTest extends PublicAPITest
+class OrderBookTest extends AbstractPublicAPITest
 {
     protected $endpoint = 'order_book';
     protected $className = 'AppBundle\API\Bitstamp\PublicAPI\OrderBook';
