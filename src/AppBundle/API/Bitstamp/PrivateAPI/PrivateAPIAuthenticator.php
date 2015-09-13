@@ -70,8 +70,8 @@ class PrivateAPIAuthenticator
     {
         // Generate a nonce as microtime, with as-string handling to avoid problems
         // with 32bits systems.
-        $mt = explode(' ', microtime());
-        $nonce = $mt[1] . substr($mt[0], 2, 6);
+        $microtime = explode(' ', microtime());
+        $nonce = $microtime[1] . substr($microtime[0], 2, 6);
 
         $this->nonce = (int) $nonce;
     }
