@@ -41,10 +41,10 @@ class API implements APIInterface
     /**
      * Constructor.
      *
-     * @param Client $client
+     * @param Client                   $client
      *   A Guzzle compatible HTTP client.
      *
-     * @param Logger $logger
+     * @param \Psr\Log\LoggerInterface $logger
      *   A PSR3 compatible Logger.
      */
     public function __construct(Client $client, \Psr\Log\LoggerInterface $logger)
@@ -73,8 +73,8 @@ class API implements APIInterface
      * @param array $array
      *   An associative array of parameters to set.
      *
-     * @return PrivateAPI
-     *   Returns the PrivateAPI object to facilitate method chaining.
+     * @return API
+     *   Returns the API object to facilitate method chaining.
      */
     public function setParams(array $array)
     {
@@ -254,7 +254,7 @@ class API implements APIInterface
     /**
      * Returns the DateTime of the most recent execution.
      *
-     * @return DateTime
+     * @return \DateTime
      */
     public function datetime()
     {
