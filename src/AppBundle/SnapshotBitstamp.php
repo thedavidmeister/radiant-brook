@@ -33,11 +33,11 @@ class SnapshotBitstamp
      * @param API\Bitstamp\PrivateAPI\Balance $balance
      */
     public function __construct(
-    \KeenIO\Client\KeenIOClient $keenio,
-    \Psr\Log\LoggerInterface $logger,
-    Secrets $secrets,
-    API\Bitstamp\PrivateAPI\Balance $balance)
-    {
+        \KeenIO\Client\KeenIOClient $keenio,
+        \Psr\Log\LoggerInterface $logger,
+        Secrets $secrets,
+        API\Bitstamp\PrivateAPI\Balance $balance
+    ) {
         $this->logger = $logger;
         $this->secrets = $secrets;
 
