@@ -22,7 +22,6 @@ class PriceProposer implements \Iterator
 
     protected $orderBook;
 
-
     /**
      * DI Constructor.
      *
@@ -39,9 +38,6 @@ class PriceProposer implements \Iterator
     {
         // DI.
         $this->orderBook = $orderBook;
-
-        // Secrets.
-        $this->secrets = new Secrets();
 
         // Ensure minMaxStep is 3 floats.
         v::length(3, 3, true)
