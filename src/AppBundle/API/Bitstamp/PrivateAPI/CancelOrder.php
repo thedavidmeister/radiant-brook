@@ -7,7 +7,7 @@ namespace AppBundle\API\Bitstamp\PrivateAPI;
  *
  * Returns 'true' if order has been found and canceled.
  */
-class CancelOrder extends PrivateAPI
+class CancelOrder extends AbstractPrivateAPI
 {
     const ENDPOINT = 'cancel_order';
 

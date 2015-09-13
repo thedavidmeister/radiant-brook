@@ -7,7 +7,7 @@ namespace AppBundle\API\Bitstamp\PrivateAPI;
  *
  * This API call is cached for 60 seconds.
  */
-class UnconfirmedBitcoinDeposits extends PrivateAPI
+class UnconfirmedBitcoinDeposits extends AbstractPrivateAPI
 {
     const ENDPOINT = 'unconfirmed_btc';
 }

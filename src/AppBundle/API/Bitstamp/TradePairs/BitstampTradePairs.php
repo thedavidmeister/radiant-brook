@@ -73,6 +73,16 @@ class BitstampTradePairs
     }
 
     /**
+     * Provides read-only access to the protected $fees property.
+     *
+     * @return Fees
+     */
+    public function fees()
+    {
+        return $this->fees;
+    }
+
+    /**
      * Execute the actionable trade pair from the report with Bitstamp.
      *
      * If the report fails validation, the trade pairs will not be executed and

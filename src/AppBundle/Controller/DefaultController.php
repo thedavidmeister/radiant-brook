@@ -93,8 +93,8 @@ class DefaultController extends Controller
 
         $stats = [
             '-Facts-' => '',
-            'Fees bids multiplier' => $tp->fees->bidsMultiplier(),
-            'Fees asks multiplier' => $tp->fees->asksMultiplier(),
+            'Fees bids multiplier' => $tp->fees()->bidsMultiplier(),
+            'Fees asks multiplier' => $tp->fees()->asksMultiplier(),
             'Is trading' => $tp->isTrading(),
         ];
 

@@ -2,12 +2,10 @@
 
 namespace AppBundle\API\Bitstamp\PrivateAPI;
 
-use AppBundle\API\Bitstamp\PrivateAPI\PrivateAPI;
-
 /**
  * Bitstamp sell API endpoint wrapper.
  */
-class Sell extends PrivateAPI
+class Sell extends AbstractPrivateAPI
 {
     const ENDPOINT = 'sell';
 

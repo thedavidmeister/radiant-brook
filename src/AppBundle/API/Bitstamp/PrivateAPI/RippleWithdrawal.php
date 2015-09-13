@@ -7,7 +7,7 @@ namespace AppBundle\API\Bitstamp\PrivateAPI;
  *
  * Returns true if successful.
  */
-class RippleWithdrawal extends PrivateAPI
+class RippleWithdrawal extends AbstractPrivateAPI
 {
     const ENDPOINT = 'ripple_withdrawal';
 

@@ -7,7 +7,7 @@ namespace AppBundle\API\Bitstamp\PrivateAPI;
  *
  * Returns your ripple deposit address.
  */
-class RippleDepositAddress extends PrivateAPI
+class RippleDepositAddress extends AbstractPrivateAPI
 {
     const ENDPOINT = 'ripple_address';
 }

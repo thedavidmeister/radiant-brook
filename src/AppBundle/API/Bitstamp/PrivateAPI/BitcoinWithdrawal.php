@@ -5,7 +5,7 @@ namespace AppBundle\API\Bitstamp\PrivateAPI;
 /**
  * Bitstamp bitcoin withdrawal private API endpoint wrapper.
  */
-class BitcoinWithdrawal extends PrivateAPI
+class BitcoinWithdrawal extends AbstractPrivateAPI
 {
     const ENDPOINT = 'bitcoin_withdrawal';
 

@@ -8,7 +8,7 @@ use GuzzleHttp\Client;
 /**
  * Base class for private Bitstamp API endpoint wrappers.
  */
-abstract class PrivateAPI extends API
+abstract class AbstractPrivateAPI extends API
 {
     protected $auth;
 
