@@ -2,12 +2,12 @@
 
 namespace AppBundle\Tests\API\Bitstamp\PublicAPI;
 
-use AppBundle\Tests\API\Bitstamp\APITest;
+use AppBundle\Tests\API\Bitstamp\AbstractAPITest;
 
 /**
  * Standard tests that can be run on all public API classes.
  */
-abstract class PublicAPITest extends APITest
+abstract class PublicAPITest extends AbstractAPITest
 {
 
 }

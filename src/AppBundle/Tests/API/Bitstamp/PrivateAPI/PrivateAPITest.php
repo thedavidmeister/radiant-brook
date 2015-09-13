@@ -2,12 +2,12 @@
 
 namespace AppBundle\Tests\API\Bitstamp\PrivateAPI;
 
-use AppBundle\Tests\API\Bitstamp\APITest;
+use AppBundle\Tests\API\Bitstamp\AbstractAPITest;
 
 /**
  * Abstract class for testing bitstamp private API wrappers.
  */
-abstract class PrivateAPITest extends APITest
+abstract class PrivateAPITest extends AbstractAPITest
 {
     protected $requiredParamsFixture;
 

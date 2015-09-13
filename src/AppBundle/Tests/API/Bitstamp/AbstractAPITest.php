@@ -9,7 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 /**
  * Standard tests that can be run on all public API classes.
  */
-abstract class APITest extends WebTestCase
+abstract class AbstractAPITest extends WebTestCase
 {
     protected $domain = 'https://www.bitstamp.net/api/';
     protected $serviceNamespace = 'bitstamp';
@@ -26,7 +26,7 @@ abstract class APITest extends WebTestCase
     /**
      * Returns an API object from $this->className with Mocks preconfigured.
      *
-     * @return mixed
+     * @return object
      */
     protected function getClass($mockType = null)
     {
