@@ -101,7 +101,7 @@ class BitstampTradePairsTest extends WebTestCase
     }
 
     /**
-     * @return ObjectProphecy
+     * @return \Prophecy\Prophecy\ObjectProphecy
      */
     protected function statefulProposalMockRaw($isValid = false, $isCompulsory = false, $isFinal = false)
     {
