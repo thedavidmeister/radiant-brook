@@ -41,7 +41,7 @@ class API implements APIInterface
     /**
      * Constructor.
      *
-     * @param Client $client
+     * @param Client                   $client
      *   A Guzzle compatible HTTP client.
      *
      * @param \Psr\Log\LoggerInterface $logger
@@ -74,7 +74,7 @@ class API implements APIInterface
      *   An associative array of parameters to set.
      *
      * @return API
-     *   Returns the PrivateAPI object to facilitate method chaining.
+     *   Returns the API object to facilitate method chaining.
      */
     public function setParams(array $array)
     {
