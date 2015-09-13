@@ -48,6 +48,6 @@ class BooleanyObject
      */
     public function __toString()
     {
-        return reset($this->potentialStrings);
+        return (string) reset($this->potentialStrings);
     }
 }
