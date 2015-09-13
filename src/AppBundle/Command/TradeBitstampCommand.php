@@ -22,8 +22,8 @@ class TradeBitstampCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $tp = $this->getContainer()->get('bitstamp.trade_pairs');
+        $tradePairs = $this->getContainer()->get('bitstamp.trade_pairs');
 
-        $output->writeln($tp->execute());
+        $output->writeln($tradePairs->execute());
     }
 }
