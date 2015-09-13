@@ -70,9 +70,9 @@ class BitstampDocumentationTest extends WebTestCase
     protected function extractAPIDocumentation($html)
     {
         $html5 = new HTML5();
-        $d = $html5->loadHTML((string) $html);
+        $document = $html5->loadHTML((string) $html);
 
-        $xpath = new \DomXPath($d);
+        $xpath = new \DomXPath($document);
         $class = 'content';
         $nodes = $xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' " . $class . " ')]");
 
