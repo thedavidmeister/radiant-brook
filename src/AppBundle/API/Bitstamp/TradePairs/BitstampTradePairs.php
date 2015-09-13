@@ -31,6 +31,18 @@ class BitstampTradePairs
 {
     const IS_TRADING_SECRET = 'BITSTAMP_IS_TRADING';
 
+    // Bitstamp Fees service.
+    protected $fees;
+
+    // Bitstamp Dupes service.
+    protected $dupes;
+
+    // Combined Bitstamp buy/sell service.
+    protected $buySell;
+
+    // Bitstamp proposer service.
+    protected $proposer;
+
     /**
      * Constructor to store services passed by Symfony.
      *
