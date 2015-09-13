@@ -130,25 +130,30 @@ class PriceProposerTest extends WebTestCase
 
         // $pp should be valid at the start.
         $this->assertTrue($pp->valid());
+        $this->assertLessThanOrEqual($maxPercentile, $pp->key());
         $this->assertSame($minPercentile, $pp->key());
 
         // $pp should be valid after one step, so key advances by step.
         $pp->next();
+        $this->assertLessThanOrEqual($maxPercentile, $pp->key());
         $this->assertSame($minPercentile + $stepSize, $pp->key());
         $this->assertTrue($pp->valid());
 
         // $pp is still valid after two steps, so key advances by step.
         $pp->next();
+        $this->assertLessThanOrEqual($maxPercentile, $pp->key());
         $this->assertSame($minPercentile + $stepSize + $stepSize, $pp->key());
         $this->assertTrue($pp->valid());
 
         // $pp is not valid after three steps, so key wraps to start.
         $pp->next();
+        $this->assertGreaterThan($maxPercentile, $pp->key());
         $this->assertSame($minPercentile + $stepSize + $stepSize + $stepSize, $pp->key());
         $this->assertFalse($pp->valid());
 
         // $pp is valid once more after a rewind.
         $pp->rewind();
+        $this->assertLessThanOrEqual($maxPercentile, $pp->key());
         $this->assertSame($minPercentile, $pp->key());
         $this->assertTrue($pp->valid());
     }
