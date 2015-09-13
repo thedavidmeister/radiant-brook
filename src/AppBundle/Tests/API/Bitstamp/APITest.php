@@ -4,6 +4,7 @@ namespace AppBundle\Tests\API\Bitstamp;
 
 use AppBundle\Tests\GuzzleTestTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Respect\Validation\Validator as v;
 
 /**
  * Standard tests that can be run on all public API classes.
@@ -12,6 +13,10 @@ abstract class APITest extends WebTestCase
 {
     protected $domain = 'https://www.bitstamp.net/api/';
     protected $serviceNamespace = 'bitstamp';
+
+    protected $className;
+    protected $sample;
+    protected $sample2;
 
     // These properties must be set on child classes.
     protected $endpoint;
@@ -25,6 +30,8 @@ abstract class APITest extends WebTestCase
      */
     protected function getClass($mockType = null)
     {
+        v::notEmpty()->string()->check($this->className);
+
         return new $this->className($this->client($mockType), $this->mockLogger());
     }
 
@@ -337,6 +344,9 @@ abstract class APITest extends WebTestCase
     {
         $class = $this->getClass();
 
+        v::notEmpty()->string()->check($this->sample);
+        v::notEmpty()->string()->check($this->sample2);
+
         // Guzzle uses the json_decode() method of PHP and uses arrays rather than
         // stdClass objects for objects.
         $expected = $this->objectToArrayRecursive(json_decode($this->sample));
@@ -357,6 +367,8 @@ abstract class APITest extends WebTestCase
     public function testData()
     {
         $class = $this->getClass();
+
+        v::notEmpty()->string()->check($this->sample);
 
         // Guzzle uses the json_decode() method of PHP and uses arrays rather than
         // stdClass objects for objects.
