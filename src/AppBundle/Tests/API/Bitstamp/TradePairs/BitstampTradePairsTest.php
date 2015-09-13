@@ -3,6 +3,7 @@
 namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
 use AppBundle\API\Bitstamp\Dupes;
+use AppBundle\Secrets;
 use AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs;
 use AppBundle\API\Bitstamp\TradePairs\Fees;
 use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
@@ -83,9 +84,14 @@ class BitstampTradePairsTest extends WebTestCase
         return $this->mock('\AppBundle\API\Bitstamp\TradePairs\PriceProposer');
     }
 
+    protected function secrets()
+    {
+        return $this->mock('\AppBundle\Secrets');
+    }
+
     protected function tp()
     {
-        return new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $this->proposer());
+        return new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $this->proposer(), $this->secrets());
     }
 
     protected function statefulProposalMockRaw($isValid = false, $isCompulsory = false, $isFinal = false)
@@ -218,7 +224,7 @@ class BitstampTradePairsTest extends WebTestCase
             $tradeProposalProphet->validate()->shouldBeCalled();
 
             // Attempt validation.
-            $tp = new BitstampTradePairs($this->fees(), $dupesProphet->reveal(), $this->buysell(), $this->proposer());
+            $tp = new BitstampTradePairs($this->fees(), $dupesProphet->reveal(), $this->buysell(), $this->proposer(), $this->secrets());
             $tp->validateTradeProposal($tradeProposalProphet->reveal());
         });
     }
@@ -468,9 +474,10 @@ class BitstampTradePairsTest extends WebTestCase
             ['y', false],
             ['n', false],
         ];
-        array_walk($tests, function($test) {
+        $tpWithLiveSecrets = new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $this->proposer(), new Secrets());
+        array_walk($tests, function($test) use ($tpWithLiveSecrets) {
             $this->setIsTrading($test[0]);
-            $this->assertEquals($test[1], $this->tp()->isTrading());
+            $this->assertEquals($test[1], $tpWithLiveSecrets->isTrading());
         });
     }
 

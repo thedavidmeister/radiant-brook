@@ -43,33 +43,40 @@ class BitstampTradePairs
     // Bitstamp proposer service.
     protected $proposer;
 
+    // The Secrets service.
+    protected $secrets;
+
     /**
      * Constructor to store services passed by Symfony.
      *
-     * @param Fees          $fees
+     * @param Fees              $fees
      *   Bitstamp Fees service.
      *
-     * @param Dupes         $dupes
+     * @param Dupes             $dupes
      *   Bitstamp Dupes service.
      *
-     * @param BuySell       $buySell
+     * @param BuySell           $buySell
      *   Combined Bitstamp buy/sell service.
      *
-     * @param PriceProposer $proposer
+     * @param PriceProposer     $proposer
      *   Bitstamp proposer service.
+     *
+     * @param AppBundle\Secrets $secrets
+     *   The Secrets service.
      */
     public function __construct(
         Fees $fees,
         Dupes $dupes,
         BuySell $buySell,
-        PriceProposer $proposer
+        PriceProposer $proposer,
+        Secrets $secrets
     )
     {
         $this->fees = $fees;
         $this->dupes = $dupes;
         $this->buySell = $buySell;
         $this->proposer = $proposer;
-        $this->secrets = new Secrets();
+        $this->secrets = $secrets;
     }
 
     /**
