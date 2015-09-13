@@ -8,6 +8,14 @@ class SnapshotBitstamp
 {
     protected $state;
 
+    protected $logger;
+
+    protected $secrets;
+
+    protected $keenio;
+
+    protected $balance;
+
     const EVENT_NAME = 'bitstamp_balance';
 
     const PROJECT_ID_SECRET_NAME = 'KEEN_PROJECT_ID';
