@@ -9,7 +9,7 @@ use Money\Money;
 /**
  * Converts strings to Money and vice-versa.
  */
-class MoneyStrings
+class MoneyStringsUtil
 {
     /**
      * Converts a string in USD (not cents) XXXX.YY to Money::USD

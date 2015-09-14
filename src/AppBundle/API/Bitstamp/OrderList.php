@@ -6,7 +6,7 @@
 
 namespace AppBundle\API\Bitstamp;
 
-use AppBundle\MoneyStrings;
+use AppBundle\MoneyStringsUtil;
 use Money\Money;
 use Respect\Validation\Validator as v;
 
@@ -45,8 +45,8 @@ class OrderList
 
         foreach ($data as $datum) {
             $this->data[] = [
-                self::USD_KEY => MoneyStrings::stringToUSD($datum[self::USD_PRICE_DATUM_INDEX]),
-                self::BTC_KEY => MoneyStrings::stringToBTC($datum[self::BTC_AMOUNT_DATUM_INDEX]),
+                self::USD_KEY => MoneyStringsUtil::stringToUSD($datum[self::USD_PRICE_DATUM_INDEX]),
+                self::BTC_KEY => MoneyStringsUtil::stringToBTC($datum[self::BTC_AMOUNT_DATUM_INDEX]),
             ];
         }
     }

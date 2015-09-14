@@ -2,12 +2,12 @@
 
 namespace AppBundle\Tests;
 
-use AppBundle\MoneyStrings;
+use AppBundle\MoneyStringsUtil;
 use Money\Money;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
- * Tests for AppBundle\MoneyStrings
+ * Tests for AppBundle\MoneyStringsUtil
  */
 class MoneyStringsTest extends WebTestCase
 {
@@ -33,7 +33,7 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\MoneyStrings::stringToBTC
+     * @covers AppBundle\MoneyStringsUtil::stringToBTC
      *
      * @dataProvider dataStringToXTypeExceptions
      * @group stable
@@ -48,11 +48,11 @@ class MoneyStringsTest extends WebTestCase
     {
         $this->setExpectedException('Exception', $message);
 
-        MoneyStrings::stringToBTC($notString);
+        MoneyStringsUtil::stringToBTC($notString);
     }
 
     /**
-     * @covers AppBundle\MoneyStrings::stringToBTC
+     * @covers AppBundle\MoneyStringsUtil::stringToBTC
      *
      * @group stable
      */
@@ -60,11 +60,11 @@ class MoneyStringsTest extends WebTestCase
     {
         $this->setExpectedException('Exception', 'null must be a string');
 
-        MoneyStrings::stringToBTC(null);
+        MoneyStringsUtil::stringToBTC(null);
     }
 
     /**
-     * @covers AppBundle\MoneyStrings::stringToUSD
+     * @covers AppBundle\MoneyStringsUtil::stringToUSD
      *
      * @dataProvider dataStringToXTypeExceptions
      * @group stable
@@ -79,11 +79,11 @@ class MoneyStringsTest extends WebTestCase
     {
         $this->setExpectedException('Exception', $message);
 
-        MoneyStrings::stringToUSD($notString);
+        MoneyStringsUtil::stringToUSD($notString);
     }
 
     /**
-     * @covers AppBundle\MoneyStrings::stringToUSD
+     * @covers AppBundle\MoneyStringsUtil::stringToUSD
      *
      * @group stable
      */
@@ -91,11 +91,11 @@ class MoneyStringsTest extends WebTestCase
     {
         $this->setExpectedException('Exception', 'null must be a string');
 
-        MoneyStrings::stringToUSD(null);
+        MoneyStringsUtil::stringToUSD(null);
     }
 
     /**
-     * @covers AppBundle\MoneyStrings::BTCToString
+     * @covers AppBundle\MoneyStringsUtil::BTCToString
      *
      * @group stable
      */
@@ -116,12 +116,12 @@ class MoneyStringsTest extends WebTestCase
         ];
 
         foreach ($tests as $test) {
-            $this->assertSame($test[0], MoneyStrings::BTCToString($test[1]));
+            $this->assertSame($test[0], MoneyStringsUtil::BTCToString($test[1]));
         }
     }
 
     /**
-     * @covers AppBundle\MoneyStrings::USDToString
+     * @covers AppBundle\MoneyStringsUtil::USDToString
      *
      * @group stable
      */
@@ -136,12 +136,12 @@ class MoneyStringsTest extends WebTestCase
         ];
 
         foreach ($tests as $test) {
-            $this->assertSame($test[0], MoneyStrings::USDToString($test[1]));
+            $this->assertSame($test[0], MoneyStringsUtil::USDToString($test[1]));
         }
     }
 
     /**
-     * @covers AppBundle\MoneyStrings::stringToUSD
+     * @covers AppBundle\MoneyStringsUtil::stringToUSD
      *
      * @group stable
      */
@@ -162,7 +162,7 @@ class MoneyStringsTest extends WebTestCase
         ];
 
         foreach ($tests as $test) {
-            $this->assertEquals($test[0], MoneyStrings::stringToUSD($test[1]));
+            $this->assertEquals($test[0], MoneyStringsUtil::stringToUSD($test[1]));
         }
     }
 
@@ -184,7 +184,7 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\MoneyStrings::stringToUSD
+     * @covers AppBundle\MoneyStringsUtil::stringToUSD
      *
      * @dataProvider dataStringToXExceptions
      * @group stable
@@ -198,11 +198,11 @@ class MoneyStringsTest extends WebTestCase
     public function testStringToUSDExceptions($string, $message)
     {
         $this->setExpectedException('Exception', $message);
-        MoneyStrings::stringToUSD($string);
+        MoneyStringsUtil::stringToUSD($string);
     }
 
     /**
-     * @covers AppBundle\MoneyStrings::stringToBTC
+     * @covers AppBundle\MoneyStringsUtil::stringToBTC
      *
      * @group stable
      */
@@ -227,7 +227,7 @@ class MoneyStringsTest extends WebTestCase
         ];
 
         foreach ($tests as $test) {
-            $this->assertEquals($test[0], MoneyStrings::stringToBTC($test[1]));
+            $this->assertEquals($test[0], MoneyStringsUtil::stringToBTC($test[1]));
         }
     }
 
@@ -242,7 +242,7 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\MoneyStrings::stringToBTC
+     * @covers AppBundle\MoneyStringsUtil::stringToBTC
      *
      * @dataProvider dataStringToBTCExceptions
      * @group stable
@@ -256,6 +256,6 @@ class MoneyStringsTest extends WebTestCase
     public function testStringToBTCExceptions($string, $message)
     {
         $this->setExpectedException('Exception', $message);
-        MoneyStrings::stringToBTC($string);
+        MoneyStringsUtil::stringToBTC($string);
     }
 }

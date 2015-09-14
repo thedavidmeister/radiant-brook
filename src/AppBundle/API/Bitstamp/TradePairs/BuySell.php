@@ -2,7 +2,7 @@
 
 namespace AppBundle\API\Bitstamp\TradePairs;
 
-use AppBundle\MoneyStrings;
+use AppBundle\MoneyStringsUtil;
 use Money\Money;
 
 /**
@@ -41,16 +41,16 @@ class BuySell
     protected function doBuy(Money $bidPrice, Money $bidVolume)
     {
         $this->buy
-            ->setParam(self::PRICE_KEY, MoneyStrings::USDToString($bidPrice))
-            ->setParam(self::VOLUME_KEY, MoneyStrings::BTCToString($bidVolume))
+            ->setParam(self::PRICE_KEY, MoneyStringsUtil::USDToString($bidPrice))
+            ->setParam(self::VOLUME_KEY, MoneyStringsUtil::BTCToString($bidVolume))
             ->execute();
     }
 
     protected function doSell(Money $askPrice, Money $askVolume)
     {
         $this->sell
-            ->setParam(self::PRICE_KEY, MoneyStrings::USDToString($askPrice))
-            ->setParam(self::VOLUME_KEY, MoneyStrings::BTCToString($askVolume))
+            ->setParam(self::PRICE_KEY, MoneyStringsUtil::USDToString($askPrice))
+            ->setParam(self::VOLUME_KEY, MoneyStringsUtil::BTCToString($askVolume))
             ->execute();
     }
 

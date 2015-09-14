@@ -2,7 +2,7 @@
 
 namespace AppBundle\API\Bitstamp\TradePairs;
 
-use AppBundle\MoneyStrings;
+use AppBundle\MoneyStringsUtil;
 use AppBundle\Secrets;
 use Money\Money;
 use Respect\Validation\Validator as v;
@@ -69,7 +69,7 @@ class Dupes
             }
 
             // Check upper and lower bounds.
-            $orderPrice = MoneyStrings::stringToUSD($order[self::KEY_PRICE]);
+            $orderPrice = MoneyStringsUtil::stringToUSD($order[self::KEY_PRICE]);
             if ($orderPrice->greaterThan($this->bounds($price)['lower']) && $orderPrice->lessThan($this->bounds($price)['upper'])) {
                 $matches[] = $orderPrice;
             }

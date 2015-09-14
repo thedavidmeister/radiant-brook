@@ -228,7 +228,7 @@ class TradeProposal implements TradeProposalInterface
         // that come out of this equation to avoid any risk of being one satoshi
         // over the limit from Bitstamp's perspective.
         //
-        // For this reason we do NOT use something like MoneyStrings.
+        // For this reason we do NOT use something like MoneyStringsUtil.
         $satoshis = (int) floor(($this->bidUSDVolume()->getAmount() / $this->bidUSDPrice()->getAmount()) * (10 ** MoneyConstants::BTC_PRECISION));
 
         // This must never happen.
