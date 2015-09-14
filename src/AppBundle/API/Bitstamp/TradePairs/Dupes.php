@@ -84,7 +84,7 @@ class Dupes
      * @param Money $price
      *   Price to calculate the bounds for.
      *
-     * @return Money[]
+     * @return array<string,Money>
      *   Array with keys 'range', 'upper', 'lower', values are Money::USD.
      */
     public function bounds(Money $price)
