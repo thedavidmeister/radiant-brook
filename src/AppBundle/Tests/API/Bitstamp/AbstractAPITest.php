@@ -139,7 +139,8 @@ abstract class AbstractAPITest extends WebTestCase
 
     /**
      * Data provider for testResponseErrorHandling.
-     * @return array
+     *
+     * @return integer[][]
      */
     public function badResponseCodes()
     {
