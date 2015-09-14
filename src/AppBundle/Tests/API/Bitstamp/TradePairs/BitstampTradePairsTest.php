@@ -233,8 +233,8 @@ class BitstampTradePairsTest extends WebTestCase
             $tradeProposalProphet->validate()->shouldBeCalled();
 
             // Attempt validation.
-            $tp = new BitstampTradePairs($this->fees(), $dupesProphet->reveal(), $this->buysell(), $this->proposer(), $this->secrets());
-            $tp->validateTradeProposal($tradeProposalProphet->reveal());
+            $tradePairs = new BitstampTradePairs($this->fees(), $dupesProphet->reveal(), $this->buysell(), $this->proposer(), $this->secrets());
+            $tradePairs->validateTradeProposal($tradeProposalProphet->reveal());
         });
     }
 
