@@ -14,7 +14,7 @@ class MoneyStringsTest extends WebTestCase
     /**
      * Data provider for testStringToUSDTypeExceptions().
      *
-     * @return array
+     * @return array[]
      */
     public function dataStringToXTypeExceptions()
     {
@@ -171,7 +171,7 @@ class MoneyStringsTest extends WebTestCase
      *
      * @see dataStringToBTCExceptions()
      *
-     * @return array
+     * @return string[][]
      */
     public function dataStringToXExceptions()
     {
@@ -198,6 +198,7 @@ class MoneyStringsTest extends WebTestCase
     public function testStringToUSDExceptions($string, $message)
     {
         $this->setExpectedException('Exception', $message);
+
         MoneyStringsUtil::stringToUSD($string);
     }
 
@@ -234,7 +235,7 @@ class MoneyStringsTest extends WebTestCase
     /**
      * Data provider for testStringToBTC().
      *
-     * @return array
+     * @return string[][]
      */
     public function dataStringToBTCExceptions()
     {
