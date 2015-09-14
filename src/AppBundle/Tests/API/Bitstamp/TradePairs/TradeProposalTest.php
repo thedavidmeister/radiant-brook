@@ -125,7 +125,7 @@ class TradeProposalTest extends WebTestCase
     /**
      * Data provider for exceptions in __construct.
      *
-     * @return array<array|string>[]
+     * @return array<array|string>
      */
     public function dataConstructExceptions()
     {
