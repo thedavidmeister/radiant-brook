@@ -94,7 +94,7 @@ class SecretsTest extends WebTestCase
     /**
      * Data provider for testSetValueExceptions.
      *
-     * @return array
+     * @return array[]
      */
     public function dataSetValueExceptions()
     {
@@ -132,7 +132,7 @@ class SecretsTest extends WebTestCase
     /**
      * Data provider for testSetNameExceptions
      *
-     * @return array
+     * @return array[]
      */
     public function dataNameExceptions()
     {
