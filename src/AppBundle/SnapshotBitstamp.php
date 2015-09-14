@@ -37,7 +37,8 @@ class SnapshotBitstamp
         \Psr\Log\LoggerInterface $logger,
         Secrets $secrets,
         API\Bitstamp\PrivateAPI\Balance $balance
-    ) {
+    )
+    {
         $this->logger = $logger;
         $this->secrets = $secrets;
 
