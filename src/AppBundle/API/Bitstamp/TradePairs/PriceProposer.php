@@ -80,7 +80,7 @@ class PriceProposer implements \Iterator
     /**
      * Read-only maxPercentile.
      *
-     * @return float
+     * @return integer|double
      */
     public function maxPercentile()
     {
@@ -129,7 +129,7 @@ class PriceProposer implements \Iterator
      *
      * @see http://php.net/manual/en/iterator.current.php
      *
-     * @return mixed
+     * @return Money[]
      */
     public function current()
     {
