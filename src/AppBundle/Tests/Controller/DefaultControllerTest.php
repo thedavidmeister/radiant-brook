@@ -76,11 +76,11 @@ class DefaultControllerTest extends WebTestCase
         $this->assertSame(200, $authClient->getResponse()->getStatusCode());
 
         // Assert the navbar on the page.
-        $this->assertTrue($crawler->filter('a[href="/trade/order_book"]:contains("Order Book data")')->count() > 0);
-        $this->assertTrue($crawler->filter('a[href="/trade/trade"]:contains("Trade data")')->count() > 0);
+        $this->assertGreaterThan(0, $crawler->filter('a[href="/trade/order_book"]:contains("Order Book data")')->count());
+        $this->assertGreaterThan(0, $crawler->filter('a[href="/trade/trade"]:contains("Trade data")')->count());
 
         foreach ($expecteds as $expected) {
-            $this->assertTrue($crawler->filter('html:contains("' . $expected . '")')->count() > 0, $expected . ' is missing from the page.');
+            $this->assertGreaterThan(0, $crawler->filter('html:contains("' . $expected . '")')->count(), $expected . ' is missing from the page.');
         }
     }
 
