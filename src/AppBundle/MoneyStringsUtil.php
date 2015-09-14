@@ -84,7 +84,7 @@ class MoneyStringsUtil
      * @return string
      *   BTC string in XXXX.YYYYYYYY format.
      */
-    public static function BTCToString(Money $btc)
+    public static function btcToString(Money $btc)
     {
         return (string) number_format(round($btc->getAmount() / 10 ** MoneyConstants::BTC_PRECISION, MoneyConstants::BTC_PRECISION), MoneyConstants::BTC_PRECISION);
     }

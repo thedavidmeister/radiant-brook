@@ -42,7 +42,7 @@ class BuySell
     {
         $this->buy
             ->setParam(self::PRICE_KEY, MoneyStringsUtil::usdToString($bidPrice))
-            ->setParam(self::VOLUME_KEY, MoneyStringsUtil::BTCToString($bidVolume))
+            ->setParam(self::VOLUME_KEY, MoneyStringsUtil::btcToString($bidVolume))
             ->execute();
     }
 
@@ -50,7 +50,7 @@ class BuySell
     {
         $this->sell
             ->setParam(self::PRICE_KEY, MoneyStringsUtil::usdToString($askPrice))
-            ->setParam(self::VOLUME_KEY, MoneyStringsUtil::BTCToString($askVolume))
+            ->setParam(self::VOLUME_KEY, MoneyStringsUtil::btcToString($askVolume))
             ->execute();
     }
 

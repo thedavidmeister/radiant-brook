@@ -95,11 +95,11 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\MoneyStringsUtil::BTCToString
+     * @covers AppBundle\MoneyStringsUtil::btcToString
      *
      * @group stable
      */
-    public function testBTCToString()
+    public function testBtcToString()
     {
         $tests = [
             ['0.00000001', Money::BTC(1)],
@@ -116,7 +116,7 @@ class MoneyStringsTest extends WebTestCase
         ];
 
         foreach ($tests as $test) {
-            $this->assertSame($test[0], MoneyStringsUtil::BTCToString($test[1]));
+            $this->assertSame($test[0], MoneyStringsUtil::btcToString($test[1]));
         }
     }
 
