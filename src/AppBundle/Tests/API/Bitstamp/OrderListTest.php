@@ -249,7 +249,7 @@ class OrderListTest extends WebTestCase
     /**
      * Data provider for testPercentileCapExceptions.
      *
-     * @return array
+     * @return array[]
      */
     public function dataPercentileCapExceptions()
     {
