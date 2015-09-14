@@ -32,6 +32,9 @@ class TradeProposalTest extends WebTestCase
             ->getMock();
     }
 
+    /**
+     * @return Fees
+     */
     protected function fees()
     {
         return $this->mock('\AppBundle\API\Bitstamp\TradePairs\Fees');
@@ -122,7 +125,7 @@ class TradeProposalTest extends WebTestCase
     /**
      * Data provider for exceptions in __construct.
      *
-     * @return array
+     * @return array<array|string>[]
      */
     public function dataConstructExceptions()
     {
@@ -301,7 +304,7 @@ class TradeProposalTest extends WebTestCase
     /**
      * Data provider for invalid reasons.
      *
-     * @return void
+     * @return array[]
      */
     public function dataInvalidReason()
     {
@@ -323,7 +326,7 @@ class TradeProposalTest extends WebTestCase
 
         // Wrap each data point in an array.
         $data = map($data, function($item) {
-            return (array) $item;
+            return [$item];
         });
 
         return $data;
