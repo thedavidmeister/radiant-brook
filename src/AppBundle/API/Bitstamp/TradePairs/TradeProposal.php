@@ -96,7 +96,7 @@ class TradeProposal implements TradeProposalInterface
     /**
      * {@inheritdoc}
      */
-    public function validate()
+    public function shouldValidate()
     {
         // Only validate this if it wasn't previously invalidated.
         if ($this->valid !== false) {
@@ -109,7 +109,7 @@ class TradeProposal implements TradeProposalInterface
     /**
      * {@inheritdoc}
      */
-    public function invalidate($reason)
+    public function shouldNotValidate($reason)
     {
         $this->valid = false;
         $this->addReason($reason);
@@ -129,12 +129,12 @@ class TradeProposal implements TradeProposalInterface
     /**
      * {@inheritdoc}
      */
-    public function ensureCompulsory($reason)
+    public function shouldBeCompulsory($reason)
     {
         $this->compulsory = true;
         $this->addReason($reason);
 
-        // Compulsory implies final. Avoid calling ensureFinal() so that we
+        // Compulsory implies final. Avoid calling shouldBeFinal() so that we
         // don't dupe the reason.
         $this->final = true;
 
@@ -153,7 +153,7 @@ class TradeProposal implements TradeProposalInterface
     /**
      * {@inheritdoc}
      */
-    public function ensureFinal($reason)
+    public function shouldBeFinal($reason)
     {
         $this->final = true;
         $this->addReason($reason);

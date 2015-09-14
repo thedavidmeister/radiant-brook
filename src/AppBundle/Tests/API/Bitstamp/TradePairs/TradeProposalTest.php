@@ -169,7 +169,7 @@ class TradeProposalTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::isFinal
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::ensureFinal
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::shouldBeFinal
      *
      * @group stable
      */
@@ -177,13 +177,13 @@ class TradeProposalTest extends WebTestCase
     {
         // No matter how many times we call isFinal, it should be false.
         $this->assertBooleanAfterMethodRange('isFinal', 'isFinal', false);
-        // After calling ensureFinal, isFinal must be true.
-        $this->assertBooleanAfterMethodRange('ensureFinal', 'isFinal', true, 1, 5);
+        // After calling shouldBeFinal, isFinal must be true.
+        $this->assertBooleanAfterMethodRange('shouldBeFinal', 'isFinal', true, 1, 5);
     }
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::isCompulsory
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::ensureCompulsory
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::shouldBeCompulsory
      *
      * @group stable
      */
@@ -191,10 +191,10 @@ class TradeProposalTest extends WebTestCase
     {
         // No matter how many times we call isCompulsory, it should be false.
         $this->assertBooleanAfterMethodRange('isCompulsory', 'isCompulsory', false);
-        // After calling ensureCompulsory, isCompulsory must be true.
-        $this->assertBooleanAfterMethodRange('ensureCompulsory', 'isCompulsory', true, 1, 5);
-        // After calling ensureCompulsory, isFinal must be true.
-        $this->assertBooleanAfterMethodRange('ensureCompulsory', 'isFinal', true, 1, 5);
+        // After calling shouldBeCompulsory, isCompulsory must be true.
+        $this->assertBooleanAfterMethodRange('shouldBeCompulsory', 'isCompulsory', true, 1, 5);
+        // After calling shouldBeCompulsory, isFinal must be true.
+        $this->assertBooleanAfterMethodRange('shouldBeCompulsory', 'isFinal', true, 1, 5);
     }
 
     /**
@@ -220,9 +220,9 @@ class TradeProposalTest extends WebTestCase
         // Generate a random method to test.
         $nextMethod = function() {
             $methods = [
-                'invalidate',
-                'ensureCompulsory',
-                'ensureFinal',
+                'shouldNotValidate',
+                'shouldBeCompulsory',
+                'shouldBeFinal',
             ];
             shuffle($methods);
 
@@ -240,8 +240,8 @@ class TradeProposalTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::isValid
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::validate
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::invalidate
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::shouldValidate
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::shouldNotValidate
      *
      * @group stable
      *
@@ -253,7 +253,7 @@ class TradeProposalTest extends WebTestCase
 
         // Test calling validate a bunch of times and seeing true.
         $validateXTimes = map($range, function($times) {
-            return array_fill(0, $times, 'validate');
+            return array_fill(0, $times, 'shouldValidate');
         });
         shuffle($validateXTimes);
 
@@ -263,7 +263,7 @@ class TradeProposalTest extends WebTestCase
 
         // Test calling invalidate a bunch of times and seeing false.
         $invalidateXTimes = map($range, function($times) {
-            return array_fill(0, $times, 'invalidate');
+            return array_fill(0, $times, 'shouldNotValidate');
         });
         shuffle($invalidateXTimes);
 
@@ -283,10 +283,10 @@ class TradeProposalTest extends WebTestCase
             $this->assertBooleanAfterMethods($invalidated, 'isValid', false);
         });
 
-        $singleValidateInvalidate = ['validate', 'invalidate'];
+        $singleValidateInvalidate = ['shouldValidate', 'shouldNotValidate'];
         $this->assertBooleanAfterMethods($singleValidateInvalidate, 'isValid', false);
 
-        $singleInvalidateValidate = ['invalidate', 'validate'];
+        $singleInvalidateValidate = ['shouldNotValidate', 'shouldValidate'];
         $this->assertBooleanAfterMethods($singleInvalidateValidate, 'isValid', false);
     }
 
@@ -340,10 +340,11 @@ class TradeProposalTest extends WebTestCase
      *
      * @group stable
      */
-    public function testInvalidateInvalidReasonException($invalidReason = null)
+    public function testShouldNotValidateInvalidReasonException($invalidReason = null)
     {
         $this->setExpectedException('Exception');
-        $this->tradeProposal()->invalidate($invalidReason);
+
+        $this->tradeProposal()->shouldNotValidate($invalidReason);
     }
 
     /**
@@ -357,7 +358,8 @@ class TradeProposalTest extends WebTestCase
     public function testCompulsoryInvalidReasonException($invalidReason = null)
     {
         $this->setExpectedException('Exception');
-        $this->tradeProposal()->ensureCompulsory($invalidReason);
+
+        $this->tradeProposal()->shouldBeCompulsory($invalidReason);
     }
 
     /**
@@ -371,7 +373,8 @@ class TradeProposalTest extends WebTestCase
     public function testFinalInvalidReasonException($invalidReason = null)
     {
         $this->setExpectedException('Exception');
-        $this->tradeProposal()->ensureFinal($invalidReason);
+
+        $this->tradeProposal()->shouldBeFinal($invalidReason);
     }
 
     /**
@@ -384,6 +387,7 @@ class TradeProposalTest extends WebTestCase
     {
         $prices = $this->randomBidAskPrices();
         $tradeProposal = new TradeProposal($prices, $this->fees(), $this->secrets());
+
         $this->assertEquals($prices['bidUSDPrice'], $tradeProposal->bidUSDPrice());
     }
 

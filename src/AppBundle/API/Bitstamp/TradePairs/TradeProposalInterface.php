@@ -38,15 +38,15 @@ interface TradeProposalInterface
     /**
      * Sets the TradeProposal as valid, if not previously invalidated.
      *
-     * There is no reason for validate().
+     * There is no reason for shouldValidate().
      *
-     * @see invalidate()
+     * @see shouldNotValidate()
      * @see isValid()
      *
      * @return bool
      *   Returns the result of isValid().
      */
-    public function validate();
+    public function shouldValidate();
 
     /**
      * Sets the TradeProposal as invalid.
@@ -65,7 +65,7 @@ interface TradeProposalInterface
      * @return bool
      *   Returns the result of isValid().
      */
-    public function invalidate($reason);
+    public function shouldNotValidate($reason);
 
     /**
      * Is this TradeProposal compulsory?
@@ -103,7 +103,7 @@ interface TradeProposalInterface
      * @return bool
      *   Returns the value of isCompulsory (which will be true).
      */
-    public function ensureCompulsory($reason);
+    public function shouldBeCompulsory($reason);
 
     /**
      * Is this TradeProposal final?
@@ -117,7 +117,7 @@ interface TradeProposalInterface
      *
      * @see isCompulsory()
      * @see isValid()
-     * 
+     *
      * @return boolean
      */
     public function isFinal();
@@ -138,5 +138,5 @@ interface TradeProposalInterface
      * @return bool
      *   Returns the value of isFinal (which will be true).
      */
-    public function ensureFinal($reason);
+    public function shouldBeFinal($reason);
 }
