@@ -34,7 +34,7 @@ abstract class AbstractPrivateAPITest extends AbstractAPITest
     /**
      * Data provider for testAuthenticationParamsExceptions().
      *
-     * @return array
+     * @return string[][]
      */
     public function dataAuthenticationParamsExceptions()
     {
