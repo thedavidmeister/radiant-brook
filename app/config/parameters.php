@@ -1,7 +1,6 @@
 <?php
 
 use AppBundle\Secrets;
-use AppBundle\Cast;
 
 $secrets = new Secrets();
 

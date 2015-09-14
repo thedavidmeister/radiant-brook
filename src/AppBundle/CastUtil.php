@@ -9,7 +9,7 @@ use Respect\Validation\Validator as v;
  *
  * Lossy or unsafe cast attempts throw exceptions.
  */
-final class Cast
+final class CastUtil
 {
     /**
      * Ensures that a value is an integer and casts it.

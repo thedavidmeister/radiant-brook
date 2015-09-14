@@ -2,7 +2,7 @@
 
 namespace AppBundle\API\Bitstamp\TradePairs;
 
-use AppBundle\Cast;
+use AppBundle\CastUtil;
 use AppBundle\MoneyConstants;
 use AppBundle\Secrets;
 use Money\Money;
@@ -182,7 +182,7 @@ class TradeProposal implements TradeProposalInterface
      */
     public function bidUSDVolumeBase()
     {
-        $minUSDVolumeAmount = Cast::toInt($this->secrets->get(self::MIN_USD_VOLUME_SECRET));
+        $minUSDVolumeAmount = CastUtil::toInt($this->secrets->get(self::MIN_USD_VOLUME_SECRET));
 
         return Money::USD((int) $minUSDVolumeAmount);
     }
@@ -349,7 +349,7 @@ class TradeProposal implements TradeProposalInterface
      */
     public function minProfitUSD()
     {
-        $minProfitUSD = Cast::toInt($this->secrets->get(self::MIN_USD_PROFIT_SECRET));
+        $minProfitUSD = CastUtil::toInt($this->secrets->get(self::MIN_USD_PROFIT_SECRET));
 
         return Money::USD($minProfitUSD);
     }
@@ -361,7 +361,7 @@ class TradeProposal implements TradeProposalInterface
      */
     public function minProfitBTC()
     {
-        $minProfitBTC = Cast::toInt($this->secrets->get(self::MIN_BTC_PROFIT_SECRET));
+        $minProfitBTC = CastUtil::toInt($this->secrets->get(self::MIN_BTC_PROFIT_SECRET));
 
         return Money::BTC($minProfitBTC);
     }
