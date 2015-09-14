@@ -85,16 +85,16 @@ class DefaultController extends Controller
      */
     public function tradeAction()
     {
-        $tp = $this->get('bitstamp.trade_pairs');
+        $tradePairs = $this->get('bitstamp.trade_pairs');
 
         $stats = [
             '-Facts-' => '',
-            'Fees bids multiplier' => $tp->fees()->bidsMultiplier(),
-            'Fees asks multiplier' => $tp->fees()->asksMultiplier(),
-            'Is trading' => $tp->isTrading(),
+            'Fees bids multiplier' => $tradePairs->fees()->bidsMultiplier(),
+            'Fees asks multiplier' => $tradePairs->fees()->asksMultiplier(),
+            'Is trading' => $tradePairs->isTrading(),
         ];
 
-        $report = $tp->report();
+        $report = $tradePairs->report();
         $statsArrayFromProposal = function(TradeProposal $proposal, $prefix = '') {
             $stats = [];
             $methods = [
@@ -135,7 +135,7 @@ class DefaultController extends Controller
         };
 
         $stats['-Actionable proposal-'] = '';
-        $actionable = $tp->reduceReportToActionableTradeProposal($report);
+        $actionable = $tradePairs->reduceReportToActionableTradeProposal($report);
         if (isset($actionable)) {
             $stats += $statsArrayFromProposal($actionable, 'actionable');
         }
