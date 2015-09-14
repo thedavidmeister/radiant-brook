@@ -71,7 +71,7 @@ class MoneyStringsUtil
      * @return string
      *   USD string in XXXX.YY format.
      */
-    public static function USDToString(Money $usd)
+    public static function usdToString(Money $usd)
     {
         return (string) number_format(round($usd->getAmount() / 10 ** MoneyConstants::USD_PRECISION, MoneyConstants::USD_PRECISION), MoneyConstants::USD_PRECISION);
     }

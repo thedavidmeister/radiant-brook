@@ -41,7 +41,7 @@ class BuySell
     protected function doBuy(Money $bidPrice, Money $bidVolume)
     {
         $this->buy
-            ->setParam(self::PRICE_KEY, MoneyStringsUtil::USDToString($bidPrice))
+            ->setParam(self::PRICE_KEY, MoneyStringsUtil::usdToString($bidPrice))
             ->setParam(self::VOLUME_KEY, MoneyStringsUtil::BTCToString($bidVolume))
             ->execute();
     }
@@ -49,7 +49,7 @@ class BuySell
     protected function doSell(Money $askPrice, Money $askVolume)
     {
         $this->sell
-            ->setParam(self::PRICE_KEY, MoneyStringsUtil::USDToString($askPrice))
+            ->setParam(self::PRICE_KEY, MoneyStringsUtil::usdToString($askPrice))
             ->setParam(self::VOLUME_KEY, MoneyStringsUtil::BTCToString($askVolume))
             ->execute();
     }
