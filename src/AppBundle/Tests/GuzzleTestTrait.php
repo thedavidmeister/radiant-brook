@@ -90,6 +90,9 @@ trait GuzzleTestTrait
         return $client;
     }
 
+    /**
+     * @return array
+     */
     protected function objectToArrayRecursive($obj)
     {
         if (is_object($obj)) {
