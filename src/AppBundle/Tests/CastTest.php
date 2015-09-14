@@ -13,7 +13,7 @@ class CastTest extends WebTestCase
     /**
      * Data provider for dataToIntExceptions
      *
-     * @return array
+     * @return array[]
      */
     public function dataToIntExceptions()
     {
@@ -104,7 +104,7 @@ class CastTest extends WebTestCase
     /**
      * Data provider for testToFloatExceptions.
      *
-     * @return array
+     * @return array[]
      */
     public function dataToFloatExceptions()
     {
