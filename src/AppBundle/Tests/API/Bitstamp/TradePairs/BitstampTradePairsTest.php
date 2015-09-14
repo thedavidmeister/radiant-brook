@@ -163,7 +163,7 @@ class BitstampTradePairsTest extends WebTestCase
         } while ($i < 5);
     }
 
-    protected function randomBool()
+    protected function isRandomBool()
     {
         return (bool) mt_rand(0, 1);
     }
@@ -303,7 +303,7 @@ class BitstampTradePairsTest extends WebTestCase
         $second->isFinal()->shouldBeCalled();
 
         // Then whatever.
-        $third = $this->statefulProposalMockRaw($this->randomBool(), $this->randomBool(), $this->randomBool());
+        $third = $this->statefulProposalMockRaw($this->isRandomBool(), $this->isRandomBool(), $this->isRandomBool());
         $third->isValid()->shouldNotBeCalled();
         $third->isCompulsory()->shouldNotBeCalled();
         $third->isFinal()->shouldNotBeCalled();
@@ -344,7 +344,7 @@ class BitstampTradePairsTest extends WebTestCase
         $second->isFinal()->shouldBeCalled();
 
         // Then something else.
-        $third = $this->statefulProposalMockRaw($this->randomBool(), $this->randomBool(), $this->randomBool());
+        $third = $this->statefulProposalMockRaw($this->isRandomBool(), $this->isRandomBool(), $this->isRandomBool());
         // This should not be checked.
         $third->isValid()->shouldNotBeCalled();
         $third->isCompulsory()->shouldNotBeCalled();
