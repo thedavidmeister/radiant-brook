@@ -241,7 +241,7 @@ class BitstampTradePairsTest extends WebTestCase
     /**
      * Data provider for invalid trade reports.
      *
-     * @return array
+     * @return array[]
      */
     public function dataReduceReportToActionableTradeProposalExceptions()
     {
