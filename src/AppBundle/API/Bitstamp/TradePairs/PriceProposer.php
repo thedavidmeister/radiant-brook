@@ -129,7 +129,7 @@ class PriceProposer implements \Iterator
      *
      * @see http://php.net/manual/en/iterator.current.php
      *
-     * @return Money[]
+     * @return array<string,Money>
      */
     public function current()
     {
