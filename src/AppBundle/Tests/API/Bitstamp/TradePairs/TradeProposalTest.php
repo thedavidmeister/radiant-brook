@@ -21,6 +21,8 @@ class TradeProposalTest extends WebTestCase
 
     /**
      * @param string $class
+     *
+     * @return object
      */
     protected function mock($class)
     {
