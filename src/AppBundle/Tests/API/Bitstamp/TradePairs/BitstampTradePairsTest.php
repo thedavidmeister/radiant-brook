@@ -95,7 +95,7 @@ class BitstampTradePairsTest extends WebTestCase
         return $this->mock('\AppBundle\Secrets');
     }
 
-    protected function tp()
+    protected function tradePairs()
     {
         return new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $this->proposer(), $this->secrets());
     }
@@ -154,7 +154,7 @@ class BitstampTradePairsTest extends WebTestCase
             array_walk($testMocks, function($expected) use ($preSequence, $postSequence) {
                 $sequence = array_merge($preSequence, [$expected], $postSequence);
 
-                $actionable = $this->tp()->reduceReportToActionableTradeProposal($sequence);
+                $actionable = $this->tradePairs()->reduceReportToActionableTradeProposal($sequence);
 
                 $this->assertSame($expected, $actionable);
             });
@@ -276,7 +276,7 @@ class BitstampTradePairsTest extends WebTestCase
     {
         $this->setExpectedException('Exception', $message);
 
-        $this->tp()->reduceReportToActionableTradeProposal($invalidReport);
+        $this->tradePairs()->reduceReportToActionableTradeProposal($invalidReport);
     }
 
     /**
@@ -315,7 +315,7 @@ class BitstampTradePairsTest extends WebTestCase
             return $item->reveal();
         }, $sequence);
 
-        $actionable = $this->tp()->reduceReportToActionableTradeProposal($sequence);
+        $actionable = $this->tradePairs()->reduceReportToActionableTradeProposal($sequence);
 
         $this->assertNull($actionable);
     }
@@ -357,7 +357,7 @@ class BitstampTradePairsTest extends WebTestCase
             return $item->reveal();
         }, $sequence);
 
-        $actionable = $this->tp()->reduceReportToActionableTradeProposal($sequence);
+        $actionable = $this->tradePairs()->reduceReportToActionableTradeProposal($sequence);
 
         $this->assertSame($sequence[0], $actionable);
     }
@@ -451,7 +451,7 @@ class BitstampTradePairsTest extends WebTestCase
         }, range(0, 5));
 
         array_walk($tests, function($test) {
-            $actionable = $this->tp()->reduceReportToActionableTradeProposal($test);
+            $actionable = $this->tradePairs()->reduceReportToActionableTradeProposal($test);
             $this->assertNull($actionable);
         });
     }
@@ -499,6 +499,6 @@ class BitstampTradePairsTest extends WebTestCase
     {
         $this->setIsTrading('0');
         $this->setExpectedException('Exception', 'Bitstamp trading is disabled at this time.');
-        $this->tp()->execute();
+        $this->tradePairs()->execute();
     }
 }
