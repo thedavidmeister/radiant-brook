@@ -40,9 +40,13 @@ class DefaultControllerTest extends WebTestCase
      *
      * @param string $uri
      *   The URI to test.
+     *
+     * @see standardTests
      */
-    public function assertNoAnonymousAccess($uri)
+    protected function assertNoAnonymousAccess($uri)
     {
+        v::string()->check($uri);
+
         $client = $this->createAnonClient();
 
         $client->request('GET', $uri);
@@ -52,21 +56,15 @@ class DefaultControllerTest extends WebTestCase
     }
 
     /**
-     * Runs a set of tests looking for text on the page and auth checks.
+     * Asserts that authenticated users see a 200 for the given URI.
      *
-     * @param string $uri
-     * @param string[] $expecteds
+     * @see standardTests
      */
-    protected function standardTests($uri, $expecteds)
+    protected function assertAuth200($uri)
     {
-        v::string()->check($uri);
-        v::each(v::string())->check($expecteds);
-
-        $this->assertNoAnonymousAccess($uri);
-
         $authClient = $this->createAuthClient();
 
-        $crawler = $authClient->request('GET', $uri);
+        $authClient->request('GET', $uri);
 
         // Help debug 500 errors.
         if (200 !== $authClient->getResponse()->getStatusCode()) {
@@ -74,6 +72,18 @@ class DefaultControllerTest extends WebTestCase
         }
 
         $this->assertSame(200, $authClient->getResponse()->getStatusCode());
+    }
+
+    /**
+     * Asserts specific page elements on the given URI for authenticated users.
+     *
+     * @see standardTests
+     */
+    protected function assertAuthPageElements($uri, array $expecteds)
+    {
+        $authClient = $this->createAuthClient();
+
+        $crawler = $authClient->request('GET', $uri);
 
         // Assert the navbar on the page.
         $this->assertGreaterThan(0, $crawler->filter('a[href="/trade/order_book"]:contains("Order Book data")')->count());
@@ -82,6 +92,27 @@ class DefaultControllerTest extends WebTestCase
         foreach ($expecteds as $expected) {
             $this->assertGreaterThan(0, $crawler->filter('html:contains("' . $expected . '")')->count(), $expected . ' is missing from the page.');
         }
+    }
+
+    /**
+     * Runs a set of tests looking for text on the page and auth checks.
+     *
+     * @param string $uri
+     *   The URI to check.
+     *
+     * @param string[] $expecteds
+     *   Strings we expect to see on the page when authenticated.
+     */
+    protected function standardTests($uri, $expecteds)
+    {
+        v::string()->check($uri);
+        v::each(v::string()->notEmpty())->check($expecteds);
+
+        $this->assertNoAnonymousAccess($uri);
+
+        $this->assertAuth200($uri);
+
+        $this->assertAuthPageElements($uri, $expecteds);
     }
 
     /**
