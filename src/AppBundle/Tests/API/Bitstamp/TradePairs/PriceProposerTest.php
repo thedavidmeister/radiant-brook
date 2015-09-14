@@ -68,7 +68,7 @@ class PriceProposerTest extends WebTestCase
     /**
      * Data provider for testMinMaxStepExceptions
      *
-     * @return array<array|string>[]
+     * @return array<array|string>
      */
     public function dataMinMaxStepExceptions()
     {
