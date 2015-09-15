@@ -18,6 +18,8 @@ trait GuzzleTestTrait
      * @param string $className
      *
      * @see Symfony\Bundle\FrameworkBundle\Test\WebTestCase
+     *
+     * @return PHPUnit_Framework_MockObject_MockBuilder
      */
     abstract public function getMockBuilder($className);
 
