@@ -14,6 +14,11 @@ trait GuzzleTestTrait
     // Traits cannot have constants.
     protected static $defaultMockType = 200;
 
+    /**
+     * @param string $className
+     *
+     * @see Symfony\Bundle\FrameworkBundle\Test\WebTestCase
+     */
     abstract public function getMockBuilder($className);
 
     abstract protected function sample();
