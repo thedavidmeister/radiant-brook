@@ -169,6 +169,17 @@ class BitstampTradePairsTest extends WebTestCase
     }
 
     /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::fees
+     */
+    public function testFees()
+    {
+        $fees = $this->fees();
+        $tradePairs = new BitstampTradePairs($fees, $this->dupes(), $this->buysell(), $this->proposer(), $this->secrets());
+
+        $this->assertSame($fees, $tradePairs->fees());
+    }
+
+    /**
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::validateTradeProposal
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::__construct
      *
