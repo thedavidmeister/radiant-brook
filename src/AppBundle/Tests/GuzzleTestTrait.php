@@ -23,8 +23,14 @@ trait GuzzleTestTrait
      */
     abstract public function getMockBuilder($className);
 
+    /**
+     * @return string
+     */
     abstract protected function sample();
 
+    /**
+     * @return string
+     */
     abstract protected function sample2();
 
     /**
