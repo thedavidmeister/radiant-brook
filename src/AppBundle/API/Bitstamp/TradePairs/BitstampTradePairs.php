@@ -188,17 +188,17 @@ class BitstampTradePairs
     public function validateTradeProposal(TradeProposalInterface $tradeProposal)
     {
         // Validate the $tradeProposal so that it has a state.
-        $tradeProposal->validate();
+        $tradeProposal->shouldBeValid();
 
         // This proposition is not profitable, but others may be.
         if (!$tradeProposal->isProfitable()) {
-            $tradeProposal->invalidate('Not a profitable trade proposition.');
+            $tradeProposal->shouldNotBeValid('Not a profitable trade proposition.');
         }
 
         // If we found dupes, we cannot continue trading, ensureFinal.
         if (!empty($this->dupes->bids($tradeProposal->bidUSDPrice()) + $this->dupes->asks($tradeProposal->askUSDPrice()))) {
-            $tradeProposal->invalidate('Duplicate trade pairs found.');
-            $tradeProposal->ensureFinal('Duplicate trade pairs found.');
+            $tradeProposal->shouldNotBeValid('Duplicate trade pairs found.');
+            $tradeProposal->shouldBeFinal('Duplicate trade pairs found.');
         }
 
         return $tradeProposal;

@@ -96,7 +96,7 @@ class TradeProposal implements TradeProposalInterface
     /**
      * {@inheritdoc}
      */
-    public function shouldValidate()
+    public function shouldBeValid()
     {
         // Only validate this if it wasn't previously invalidated.
         if ($this->valid !== false) {
@@ -109,7 +109,7 @@ class TradeProposal implements TradeProposalInterface
     /**
      * {@inheritdoc}
      */
-    public function shouldNotValidate($reason)
+    public function shouldNotBeValid($reason)
     {
         $this->valid = false;
         $this->addReason($reason);

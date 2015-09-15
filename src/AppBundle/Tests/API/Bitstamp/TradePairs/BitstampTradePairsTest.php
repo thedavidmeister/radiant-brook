@@ -195,19 +195,19 @@ class BitstampTradePairsTest extends WebTestCase
             // invalidation.
             $tradeProposalProphet->isProfitable()->willReturn($test[0])->shouldBeCalled();
 
-            // We expect shouldNotValidate to be called if the trade is not
+            // We expect shouldNotBeValid to be called if the trade is not
             // profitable or has dupes.
             $invalid = false;
             if (!$test[0]) {
                 $invalid = true;
-                $tradeProposalProphet->shouldNotValidate($test[3])->shouldBeCalled();
+                $tradeProposalProphet->shouldNotBeValid($test[3])->shouldBeCalled();
             }
             if (!empty($test[1]) || !empty($test[2])) {
                 $invalid = true;
-                $tradeProposalProphet->shouldNotValidate($test[4])->shouldBeCalled();
+                $tradeProposalProphet->shouldNotBeValid($test[4])->shouldBeCalled();
             }
             if (!$invalid) {
-                $tradeProposalProphet->shouldNotValidate(Argument::any())->shouldNotBeCalled();
+                $tradeProposalProphet->shouldNotBeValid(Argument::any())->shouldNotBeCalled();
             }
 
             // We expect the bid and ask USD prices to be called in the search
@@ -222,15 +222,15 @@ class BitstampTradePairsTest extends WebTestCase
 
             // We only expect shouldBeFinal to be called if there is a dupe.
             if (!empty($test[1]) || !empty($test[2])) {
-                $tradeProposalProphet->shouldNotValidate($test[4])->shouldBeCalled();
+                $tradeProposalProphet->shouldNotBeValid($test[4])->shouldBeCalled();
                 $tradeProposalProphet->shouldBeFinal($test[4])->shouldBeCalled();
             } else {
                 $tradeProposalProphet->shouldBeFinal(Argument::any())->shouldNotBeCalled();
             }
 
-            // We expect shouldValidate() to be called unconditionally as it is
+            // We expect shouldBeValid() to be called unconditionally as it is
             // always overridden if appropriate anyway.
-            $tradeProposalProphet->shouldValidate()->shouldBeCalled();
+            $tradeProposalProphet->shouldBeValid()->shouldBeCalled();
 
             // Attempt validation.
             $tradePairs = new BitstampTradePairs($this->fees(), $dupesProphet->reveal(), $this->buysell(), $this->proposer(), $this->secrets());

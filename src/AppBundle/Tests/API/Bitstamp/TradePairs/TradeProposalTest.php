@@ -220,7 +220,7 @@ class TradeProposalTest extends WebTestCase
         // Generate a random method to test.
         $nextMethod = function() {
             $methods = [
-                'shouldNotValidate',
+                'shouldNotBeValid',
                 'shouldBeCompulsory',
                 'shouldBeFinal',
             ];
@@ -240,8 +240,8 @@ class TradeProposalTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::isValid
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::shouldValidate
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::shouldNotValidate
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::shouldBeValid
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::shouldNotBeValid
      *
      * @group stable
      *
@@ -253,7 +253,7 @@ class TradeProposalTest extends WebTestCase
 
         // Test calling validate a bunch of times and seeing true.
         $validateXTimes = map($range, function($times) {
-            return array_fill(0, $times, 'shouldValidate');
+            return array_fill(0, $times, 'shouldBeValid');
         });
         shuffle($validateXTimes);
 
@@ -263,7 +263,7 @@ class TradeProposalTest extends WebTestCase
 
         // Test calling invalidate a bunch of times and seeing false.
         $invalidateXTimes = map($range, function($times) {
-            return array_fill(0, $times, 'shouldNotValidate');
+            return array_fill(0, $times, 'shouldNotBeValid');
         });
         shuffle($invalidateXTimes);
 
@@ -283,10 +283,10 @@ class TradeProposalTest extends WebTestCase
             $this->assertBooleanAfterMethods($invalidated, 'isValid', false);
         });
 
-        $singleValidateInvalidate = ['shouldValidate', 'shouldNotValidate'];
+        $singleValidateInvalidate = ['shouldBeValid', 'shouldNotBeValid'];
         $this->assertBooleanAfterMethods($singleValidateInvalidate, 'isValid', false);
 
-        $singleInvalidateValidate = ['shouldNotValidate', 'shouldValidate'];
+        $singleInvalidateValidate = ['shouldNotBeValid', 'shouldBeValid'];
         $this->assertBooleanAfterMethods($singleInvalidateValidate, 'isValid', false);
     }
 
@@ -340,11 +340,11 @@ class TradeProposalTest extends WebTestCase
      *
      * @group stable
      */
-    public function testShouldNotValidateInvalidReasonException($invalidReason = null)
+    public function testShouldNotBeValidInvalidReasonException($invalidReason = null)
     {
         $this->setExpectedException('Exception');
 
-        $this->tradeProposal()->shouldNotValidate($invalidReason);
+        $this->tradeProposal()->shouldNotBeValid($invalidReason);
     }
 
     /**

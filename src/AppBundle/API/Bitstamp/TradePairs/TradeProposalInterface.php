@@ -38,15 +38,15 @@ interface TradeProposalInterface
     /**
      * Sets the TradeProposal as valid, if not previously invalidated.
      *
-     * There is no reason for shouldValidate().
+     * There is no reason for shouldBeValid().
      *
-     * @see shouldNotValidate()
+     * @see shouldNotBeValid()
      * @see isValid()
      *
      * @return bool
      *   Returns the result of isValid().
      */
-    public function shouldValidate();
+    public function shouldBeValid();
 
     /**
      * Sets the TradeProposal as invalid.
@@ -59,13 +59,13 @@ interface TradeProposalInterface
      * @param string $reason
      *   The reason for the invalidation.
      *
-     * @see validate()
+     * @see shouldBeValid()
      * @see isValid()
      *
      * @return bool
      *   Returns the result of isValid().
      */
-    public function shouldNotValidate($reason);
+    public function shouldNotBeValid($reason);
 
     /**
      * Is this TradeProposal compulsory?
