@@ -16,12 +16,18 @@ abstract class AbstractAPITest extends WebTestCase
 
     protected $className;
 
+    /**
+     * @return string
+     */
     protected function sample()
     {
         return $this->sample;
     }
     protected $sample;
 
+    /**
+     * @return string
+     */
     protected function sample2()
     {
         return $this->sample2;
