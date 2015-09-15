@@ -18,6 +18,16 @@ class DupesTest extends WebTestCase
     use GuzzleTestTrait;
     use EnvironmentTestTrait;
 
+    protected function sample()
+    {
+        return $this->sample;
+    }
+
+    protected function sample2()
+    {
+        return $this->sample2;
+    }
+
     protected $sample = '[{"price":"237.50","amount":"0.03397937","type":1,"id":67290521,"datetime":"2015-05-16 21:30:19"},{"price":"232.95","amount":"0.03434213","type":0,"id":67290522,"datetime":"2015-05-16 21:30:19"},{"price":"241.45","amount":"0.03342358","type":1,"id":67009615,"datetime":"2015-05-14 01:30:54"},{"price":"246.00","amount":"0.03280538","type":1,"id":66672917,"datetime":"2015-05-10 12:17:32"}]';
     protected $sample2 = '[{"price":"241.45","amount":"0.03342358","type":1,"id":67009615,"datetime":"2015-05-14 01:30:54"},{"price":"246.00","amount":"0.03280538","type":1,"id":66672917,"datetime":"2015-05-10 12:17:32"}]';
 

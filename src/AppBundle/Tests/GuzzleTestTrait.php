@@ -14,6 +14,12 @@ trait GuzzleTestTrait
     // Traits cannot have constants.
     protected static $defaultMockType = 200;
 
+    abstract public function getMockBuilder($className);
+
+    abstract protected function sample();
+
+    abstract protected function sample2();
+
     /**
      * Creates a mock authenticator for private API tests.
      *
@@ -49,8 +55,8 @@ trait GuzzleTestTrait
         switch ($type) {
             case 200:
                 return new Mock([
-                    new Response(200, [], Stream::factory($this->sample)),
-                    new Response(200, [], Stream::factory($this->sample2)),
+                    new Response(200, [], Stream::factory($this->sample())),
+                    new Response(200, [], Stream::factory($this->sample2())),
                 ]);
 
             case 'error':

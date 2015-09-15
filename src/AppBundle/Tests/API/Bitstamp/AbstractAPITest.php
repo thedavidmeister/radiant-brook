@@ -15,7 +15,17 @@ abstract class AbstractAPITest extends WebTestCase
     protected $serviceNamespace = 'bitstamp';
 
     protected $className;
+
+    protected function sample()
+    {
+        return $this->sample;
+    }
     protected $sample;
+
+    protected function sample2()
+    {
+        return $this->sample2;
+    }
     protected $sample2;
 
     // These properties must be set on child classes.

@@ -14,7 +14,18 @@ class APIBaseTest extends WebTestCase
     use GuzzleTestTrait;
 
     protected $sample = 'foo';
+
     protected $sample2 = 'bar';
+
+    protected function sample()
+    {
+        return $this->sample;
+    }
+
+    protected function sample2()
+    {
+        return $this->sample2;
+    }
 
     protected function getClass()
     {

@@ -21,6 +21,16 @@ class BuySellTest extends WebTestCase
 {
     protected $prophet;
 
+    protected function sample()
+    {
+        return '{"foo": "bar"}';
+    }
+
+    protected function sample2()
+    {
+        return '{"bing": "baz"}';
+    }
+
     use GuzzleTestTrait;
 
     protected function setup()
@@ -32,10 +42,6 @@ class BuySellTest extends WebTestCase
     {
         $this->prophet->checkPredictions();
     }
-
-    // @todo - replace with real data sample.
-    protected $sample = '{"foo": "bar"}';
-    protected $sample2 = '{"bing": "baz"}';
 
     protected function buy()
     {

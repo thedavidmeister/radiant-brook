@@ -15,6 +15,16 @@ class FeesTest extends WebTestCase
 {
     use GuzzleTestTrait;
 
+    protected function sample()
+    {
+        return $this->sample;
+    }
+
+    protected function sample2()
+    {
+        return $this->sample2;
+    }
+
     protected $sample = '{"btc_reserved":"0.10020833","fee":"0.2500","btc_available":"0.17213602","usd_reserved":"8.02","btc_balance":"0.27234435","usd_balance":"8.51","usd_available":"0.49"}';
     // Same as $sample but with 0.24 fees.
     protected $sample2 = '{"btc_reserved":"0.10020833","fee":"0.2400","btc_available":"0.17213602","usd_reserved":"8.02","btc_balance":"0.27234435","usd_balance":"8.51","usd_available":"0.49"}';
