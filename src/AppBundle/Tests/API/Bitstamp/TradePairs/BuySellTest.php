@@ -71,6 +71,32 @@ class BuySellTest extends WebTestCase
     }
 
     /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\BuySell::buy
+     *
+     * @group stable
+     */
+    public function testBuy()
+    {
+        $buy = $this->buy();
+        $buySell = new BuySell($buy, $this->sell(), $this->mockLogger());
+
+        $this->assertSame($buy, $buySell->buy());
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\BuySell::sell
+     *
+     * @group stable
+     */
+    public function testSell()
+    {
+        $sell = $this->sell();
+        $buySell = new BuySell($this->buy(), $sell, $this->mockLogger());
+
+        $this->assertSame($sell, $buySell->sell());
+    }
+
+    /**
      * @covers AppBundle\API\Bitstamp\TradePairs\BuySell::execute
      * @covers AppBundle\API\Bitstamp\TradePairs\BuySell::doBuy
      * @covers AppBundle\API\Bitstamp\TradePairs\BuySell::doSell
