@@ -25,9 +25,7 @@ class PriceProposerTest extends WebTestCase
             ->getMock();
     }
 
-    const PERCENTILE_CAP_MULTIPLIER_ASKS = 12345678;
-
-    const PERCENTILE_CAP_MULTIPLIER_BIDS = 10000000;
+    const PERCENTILE_CAP_MULTIPLIER = 12345678;
 
     /**
      * @return OrderBook
@@ -36,31 +34,20 @@ class PriceProposerTest extends WebTestCase
     {
         $orderbook = $this->mock('\AppBundle\API\Bitstamp\PublicAPI\OrderBook');
 
-        $orderbook->method('asks')->will($this->returnCallback(function() {
-            $asks = $this
-                ->getMockBuilder('AppBundle\API\Bitstamp\OrderList')
-                ->disableOriginalConstructor()
-                ->getMock();
+        foreach (['bids', 'asks'] as $method) {
+            $orderbook->method($method)->will($this->returnCallback(function() {
+                $mock = $this
+                    ->getMockBuilder('AppBundle\API\Bitstamp\OrderList')
+                    ->disableOriginalConstructor()
+                    ->getMock();
 
-            $asks->method('percentileCap')->will($this->returnCallback(function($percentile) {
-                return (int) ($percentile * self::PERCENTILE_CAP_MULTIPLIER_ASKS);
+                $mock->method('percentileCap')->will($this->returnCallback(function($percentile) {
+                    return (int) ($percentile * self::PERCENTILE_CAP_MULTIPLIER);
+                }));
+
+                return $mock;
             }));
-
-            return $asks;
-        }));
-
-        $orderbook->method('bids')->will($this->returnCallback(function() {
-            $bids = $this
-                ->getMockBuilder('AppBundle\API\Bitstamp\OrderList')
-                ->disableOriginalConstructor()
-                ->getMock();
-
-            $bids->method('percentileCap')->will($this->returnCallback(function($percentile) {
-                return (int) ($percentile * self::PERCENTILE_CAP_MULTIPLIER_BIDS);
-            }));
-
-            return $bids;
-        }));
+        }
 
         return $orderbook;
     }
@@ -182,8 +169,8 @@ class PriceProposerTest extends WebTestCase
 
             // Test current().
             $expectedValue = [
-                'bidUSDPrice' => Money::USD((int) ((1 - $key) * self::PERCENTILE_CAP_MULTIPLIER_BIDS)),
-                'askUSDPrice' => Money::USD((int) ($key * self::PERCENTILE_CAP_MULTIPLIER_ASKS)),
+                'bidUSDPrice' => Money::USD((int) ((1 - $key) * self::PERCENTILE_CAP_MULTIPLIER)),
+                'askUSDPrice' => Money::USD((int) ($key * self::PERCENTILE_CAP_MULTIPLIER)),
             ];
             $this->assertEquals($expectedValue, $value);
 
@@ -196,8 +183,8 @@ class PriceProposerTest extends WebTestCase
         $priceProposer->rewind();
         $this->assertSame($minPercentile, $priceProposer->key());
         $expectedValue = [
-            'bidUSDPrice' => Money::USD((int) ((1 - $priceProposer->key()) * self::PERCENTILE_CAP_MULTIPLIER_BIDS)),
-            'askUSDPrice' => Money::USD((int) ($priceProposer->key() * self::PERCENTILE_CAP_MULTIPLIER_ASKS)),
+            'bidUSDPrice' => Money::USD((int) ((1 - $priceProposer->key()) * self::PERCENTILE_CAP_MULTIPLIER)),
+            'askUSDPrice' => Money::USD((int) ($priceProposer->key() * self::PERCENTILE_CAP_MULTIPLIER)),
         ];
         $this->assertEquals($expectedValue, $priceProposer->current());
     }
@@ -278,7 +265,7 @@ class PriceProposerTest extends WebTestCase
             $orderbook = $this->orderbook();
 
             // bidPrice() passes (1 - $percentile) to percentileCap().
-            $expected = Money::USD((int) ((1 - $test[0]) * self::PERCENTILE_CAP_MULTIPLIER_BIDS));
+            $expected = Money::USD((int) ((1 - $test[0]) * self::PERCENTILE_CAP_MULTIPLIER));
 
             $priceProposer = new PriceProposer($orderbook, $test);
 
