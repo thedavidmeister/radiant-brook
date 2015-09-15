@@ -170,7 +170,8 @@ class PriceProposerTest extends WebTestCase
     {
         $minMaxStep = ['0.01', '0.1', '0.005'];
 
-        list($minPercentile, $maxPercentile, $stepSize) = $minMaxStep;
+        $minPercentile = $minMaxStep[0];
+        $stepSize = $minMaxStep[2];
 
         $priceProposer = new PriceProposer($this->orderbook(), $minMaxStep);
 
