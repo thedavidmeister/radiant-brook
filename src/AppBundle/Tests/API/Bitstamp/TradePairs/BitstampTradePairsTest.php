@@ -170,6 +170,8 @@ class BitstampTradePairsTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::fees
+     *
+     * @group stable
      */
     public function testFees()
     {
