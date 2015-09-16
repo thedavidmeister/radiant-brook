@@ -242,7 +242,7 @@ class OrderList
     public function percentileBTCVolume($percentile)
     {
         $indexFunction = [$this, 'totalVolume'];
-        $compareFunction = function (array $datum, Money $last) {
+        $compareFunction = function(array $datum, Money $last) {
             return $last->add($datum[self::BTC_KEY]);
         };
         $currency = new Currency('BTC');
