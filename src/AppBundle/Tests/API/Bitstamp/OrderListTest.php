@@ -158,6 +158,7 @@ class OrderListTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\OrderList::totalVolume
+     * @covers AppBundle\API\Bitstamp\OrderList::totalCachedReduce
      *
      * @group stable
      */
@@ -170,6 +171,7 @@ class OrderListTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\OrderList::totalCap
+     * @covers AppBundle\API\Bitstamp\OrderList::totalCachedReduce
      *
      * @group stable
      */
