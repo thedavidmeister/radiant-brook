@@ -83,7 +83,7 @@ class SecretsTest extends WebTestCase
                 $_SERVER[$tuple[0]] = $tuple[1];
             },
         ];
-        array_walk($tests, function (callable $setFunc) {
+        array_walk($tests, function(callable $setFunc) {
             // Generate a unique tuple that will not collide with previous sets.
             $tuple = [uniqid('a'), uniqid('a')];
             $setFunc($tuple);
@@ -94,7 +94,7 @@ class SecretsTest extends WebTestCase
     /**
      * Data provider for testSetValueExceptions.
      *
-     * @return array
+     * @return array[]
      */
     public function dataSetValueExceptions()
     {
@@ -132,7 +132,7 @@ class SecretsTest extends WebTestCase
     /**
      * Data provider for testSetNameExceptions
      *
-     * @return array
+     * @return array[]
      */
     public function dataNameExceptions()
     {

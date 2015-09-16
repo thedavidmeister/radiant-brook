@@ -2,11 +2,12 @@
 
 namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
-use Money\Money;
+use AppBundle\Secrets;
 use AppBundle\Tests\EnvironmentTestTrait;
+use Money\Money;
 use Respect\Validation\Validator as v;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 use function Functional\map;
 use function Functional\each;
@@ -18,6 +19,11 @@ class TradeProposalTest extends WebTestCase
 {
     use EnvironmentTestTrait;
 
+    /**
+     * @param string $class
+     *
+     * @return object
+     */
     protected function mock($class)
     {
         return $this
@@ -26,14 +32,30 @@ class TradeProposalTest extends WebTestCase
             ->getMock();
     }
 
+    /**
+     * @return Fees
+     */
     protected function fees()
     {
         return $this->mock('\AppBundle\API\Bitstamp\TradePairs\Fees');
     }
 
+    /**
+     * @return Secrets
+     */
+    protected function secrets()
+    {
+        return $this->mock('AppBundle\Secrets');
+    }
+
     protected function tradeProposal()
     {
-        return new TradeProposal($this->randomBidAskPrices(), $this->fees());
+        return new TradeProposal($this->randomBidAskPrices(), $this->fees(), $this->secrets());
+    }
+
+    protected function tradeProposalLiveSecrets()
+    {
+        return new TradeProposal($this->randomBidAskPrices(), $this->fees(), new Secrets());
     }
 
     protected function randomBidAskPrices()
@@ -46,6 +68,10 @@ class TradeProposalTest extends WebTestCase
         return \Faker\Factory::create();
     }
 
+    /**
+     * @param string $checkMethod
+     * @param boolean $expected
+     */
     protected function assertBooleanAfterMethods(array $methods, $checkMethod, $expected)
     {
         $proposal = $this->tradeProposal();
@@ -54,6 +80,7 @@ class TradeProposalTest extends WebTestCase
         $reason = $this->faker()->sentence;
 
         if (!empty($methods)) {
+            $setReturn = null;
             foreach ($methods as $method) {
                 $setReturn = $proposal->{$method}($reason);
             }
@@ -68,17 +95,25 @@ class TradeProposalTest extends WebTestCase
         $this->assertSame((bool) $expected, $proposal->{$checkMethod}());
     }
 
+    /**
+     * @param string $method
+     */
     protected function methodRangeArray($method, $start = 0, $end = 5)
     {
         v::string()->check($method);
         v::int()->check($start);
         v::int()->check($end);
 
-        return map(range($start, $end), function ($times) use ($method) {
+        return map(range($start, $end), function($times) use ($method) {
             return array_fill(0, $times, $method);
         });
     }
 
+    /**
+     * @param string $method
+     * @param string $checkMethod
+     * @param boolean $expected
+     */
     protected function assertBooleanAfterMethodRange($method, $checkMethod, $expected, $start = 0, $end = 5)
     {
         $range = $this->methodRangeArray($method, $start, $end);
@@ -90,7 +125,7 @@ class TradeProposalTest extends WebTestCase
     /**
      * Data provider for exceptions in __construct.
      *
-     * @return array
+     * @return array<array|string>
      */
     public function dataConstructExceptions()
     {
@@ -129,12 +164,12 @@ class TradeProposalTest extends WebTestCase
     {
         $this->setExpectedException('Exception', $message);
 
-        new TradeProposal($notPrices, $this->fees());
+        new TradeProposal($notPrices, $this->fees(), $this->secrets());
     }
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::isFinal
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::ensureFinal
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::shouldBeFinal
      *
      * @group stable
      */
@@ -142,13 +177,13 @@ class TradeProposalTest extends WebTestCase
     {
         // No matter how many times we call isFinal, it should be false.
         $this->assertBooleanAfterMethodRange('isFinal', 'isFinal', false);
-        // After calling ensureFinal, isFinal must be true.
-        $this->assertBooleanAfterMethodRange('ensureFinal', 'isFinal', true, 1, 5);
+        // After calling shouldBeFinal, isFinal must be true.
+        $this->assertBooleanAfterMethodRange('shouldBeFinal', 'isFinal', true, 1, 5);
     }
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::isCompulsory
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::ensureCompulsory
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::shouldBeCompulsory
      *
      * @group stable
      */
@@ -156,10 +191,10 @@ class TradeProposalTest extends WebTestCase
     {
         // No matter how many times we call isCompulsory, it should be false.
         $this->assertBooleanAfterMethodRange('isCompulsory', 'isCompulsory', false);
-        // After calling ensureCompulsory, isCompulsory must be true.
-        $this->assertBooleanAfterMethodRange('ensureCompulsory', 'isCompulsory', true, 1, 5);
-        // After calling ensureCompulsory, isFinal must be true.
-        $this->assertBooleanAfterMethodRange('ensureCompulsory', 'isFinal', true, 1, 5);
+        // After calling shouldBeCompulsory, isCompulsory must be true.
+        $this->assertBooleanAfterMethodRange('shouldBeCompulsory', 'isCompulsory', true, 1, 5);
+        // After calling shouldBeCompulsory, isFinal must be true.
+        $this->assertBooleanAfterMethodRange('shouldBeCompulsory', 'isFinal', true, 1, 5);
     }
 
     /**
@@ -185,9 +220,9 @@ class TradeProposalTest extends WebTestCase
         // Generate a random method to test.
         $nextMethod = function() {
             $methods = [
-                'invalidate',
-                'ensureCompulsory',
-                'ensureFinal',
+                'shouldNotBeValid',
+                'shouldBeCompulsory',
+                'shouldBeFinal',
             ];
             shuffle($methods);
 
@@ -205,8 +240,8 @@ class TradeProposalTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::isValid
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::validate
-     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::invalidate
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::shouldBeValid
+     * @covers AppBundle\API\Bitstamp\TradePairs\TradeProposal::shouldNotBeValid
      *
      * @group stable
      *
@@ -218,7 +253,7 @@ class TradeProposalTest extends WebTestCase
 
         // Test calling validate a bunch of times and seeing true.
         $validateXTimes = map($range, function($times) {
-            return array_fill(0, $times, 'validate');
+            return array_fill(0, $times, 'shouldBeValid');
         });
         shuffle($validateXTimes);
 
@@ -228,7 +263,7 @@ class TradeProposalTest extends WebTestCase
 
         // Test calling invalidate a bunch of times and seeing false.
         $invalidateXTimes = map($range, function($times) {
-            return array_fill(0, $times, 'invalidate');
+            return array_fill(0, $times, 'shouldNotBeValid');
         });
         shuffle($invalidateXTimes);
 
@@ -248,10 +283,10 @@ class TradeProposalTest extends WebTestCase
             $this->assertBooleanAfterMethods($invalidated, 'isValid', false);
         });
 
-        $singleValidateInvalidate = ['validate', 'invalidate'];
+        $singleValidateInvalidate = ['shouldBeValid', 'shouldNotBeValid'];
         $this->assertBooleanAfterMethods($singleValidateInvalidate, 'isValid', false);
 
-        $singleInvalidateValidate = ['invalidate', 'validate'];
+        $singleInvalidateValidate = ['shouldNotBeValid', 'shouldBeValid'];
         $this->assertBooleanAfterMethods($singleInvalidateValidate, 'isValid', false);
     }
 
@@ -269,12 +304,12 @@ class TradeProposalTest extends WebTestCase
     /**
      * Data provider for invalid reasons.
      *
-     * @return void
+     * @return array[]
      */
     public function dataInvalidReason()
     {
         // Generate some data that is not a string.
-        $data = map(range(0, 10), function ($index) {
+        $data = map(range(0, 10), function($index) {
             $invalidReasonTypes = ['randomDigit', 'randomFloat', 'words', 'dateTime'];
 
             return $this->faker()->{$invalidReasonTypes[$index % count($index)]};
@@ -291,7 +326,7 @@ class TradeProposalTest extends WebTestCase
 
         // Wrap each data point in an array.
         $data = map($data, function($item) {
-            return (array) $item;
+            return [$item];
         });
 
         return $data;
@@ -305,10 +340,11 @@ class TradeProposalTest extends WebTestCase
      *
      * @group stable
      */
-    public function testInvalidateInvalidReasonException($invalidReason = null)
+    public function testShouldNotBeValidInvalidReasonException($invalidReason = null)
     {
         $this->setExpectedException('Exception');
-        $this->tradeProposal()->invalidate($invalidReason);
+
+        $this->tradeProposal()->shouldNotBeValid($invalidReason);
     }
 
     /**
@@ -322,7 +358,8 @@ class TradeProposalTest extends WebTestCase
     public function testCompulsoryInvalidReasonException($invalidReason = null)
     {
         $this->setExpectedException('Exception');
-        $this->tradeProposal()->ensureCompulsory($invalidReason);
+
+        $this->tradeProposal()->shouldBeCompulsory($invalidReason);
     }
 
     /**
@@ -336,7 +373,8 @@ class TradeProposalTest extends WebTestCase
     public function testFinalInvalidReasonException($invalidReason = null)
     {
         $this->setExpectedException('Exception');
-        $this->tradeProposal()->ensureFinal($invalidReason);
+
+        $this->tradeProposal()->shouldBeFinal($invalidReason);
     }
 
     /**
@@ -348,7 +386,8 @@ class TradeProposalTest extends WebTestCase
     public function testBidUSDPrice()
     {
         $prices = $this->randomBidAskPrices();
-        $tradeProposal = new TradeProposal($prices, $this->fees());
+        $tradeProposal = new TradeProposal($prices, $this->fees(), $this->secrets());
+
         $this->assertEquals($prices['bidUSDPrice'], $tradeProposal->bidUSDPrice());
     }
 
@@ -362,7 +401,7 @@ class TradeProposalTest extends WebTestCase
         // Check basic functionality.
         $minVolume = mt_rand();
         $this->setEnv('BITSTAMP_MIN_USD_VOLUME', $minVolume);
-        $this->assertEquals(Money::USD($minVolume), $this->tradeProposal()->bidUSDVolumeBase());
+        $this->assertEquals(Money::USD($minVolume), $this->tradeProposalLiveSecrets()->bidUSDVolumeBase());
     }
 
     /**
@@ -379,7 +418,7 @@ class TradeProposalTest extends WebTestCase
         $fees = $this->fees();
         $isoFeeAmount = mt_rand();
         $fees->method('isofeeMaxUSD')->willReturn(Money::USD($isoFeeAmount));
-        $tradeProposal = new TradeProposal($this->randomBidAskPrices(), $fees);
+        $tradeProposal = new TradeProposal($this->randomBidAskPrices(), $fees, new Secrets());
         $this->assertEquals(Money::USD($isoFeeAmount), $tradeProposal->bidUSDVolume());
 
         // Check that the volume for a known isofee is returned. We mock
@@ -396,7 +435,7 @@ class TradeProposalTest extends WebTestCase
                 return $usd->multiply(2);
             }));
 
-            $tradeProposal = new TradeProposal($this->randomBidAskPrices(), $fees);
+            $tradeProposal = new TradeProposal($this->randomBidAskPrices(), $fees, new Secrets());
             $this->assertEquals(Money::USD($test[1]), $tradeProposal->bidUSDVolume());
         });
     }
@@ -429,7 +468,7 @@ class TradeProposalTest extends WebTestCase
             $fees->method('isofeeMaxUSD')->willReturn($test[1]);
 
             // USD bid volume has nothing to do with prices.
-            $tradeProposal = new TradeProposal($this->randomBidAskPrices(), $fees);
+            $tradeProposal = new TradeProposal($this->randomBidAskPrices(), $fees, new Secrets());
 
             $this->assertEquals($test[2], $tradeProposal->bidUSDVolumePlusFees());
         });
@@ -463,7 +502,7 @@ class TradeProposalTest extends WebTestCase
             $fees->method('isofeeMaxUSD')->willReturn(Money::USD($test[0]));
             $prices = ['bidUSDPrice' => Money::USD($test[1]), 'askUSDPrice' => Money::USD(mt_rand())];
 
-            $tradeProposal = new TradeProposal($prices, $fees);
+            $tradeProposal = new TradeProposal($prices, $fees, new Secrets());
             $this->assertEquals(Money::BTC($test[2]), $tradeProposal->bidBTCVolume());
         });
     }
@@ -481,7 +520,7 @@ class TradeProposalTest extends WebTestCase
             'bidUSDPrice' => Money::USD(mt_rand()),
             'askUSDPrice' => $askUSDPrice,
         ];
-        $tp = new TradeProposal($prices, $this->fees());
+        $tp = new TradeProposal($prices, $this->fees(), $this->secrets());
         $this->assertEquals($askUSDPrice, $tp->askUSDPrice());
     }
 
@@ -522,7 +561,7 @@ class TradeProposalTest extends WebTestCase
             $fees->method('asksMultiplier')->willReturn($test[3]);
 
             // The USD volume has nothing to do with the price.
-            $tradeProposal = new TradeProposal($this->randomBidAskPrices(), $fees);
+            $tradeProposal = new TradeProposal($this->randomBidAskPrices(), $fees, new Secrets());
 
             $this->assertEquals($test[4], $tradeProposal->askUSDVolumeCoverFees());
         });
@@ -543,7 +582,7 @@ class TradeProposalTest extends WebTestCase
         ];
         $test = function($scenario) {
             $this->setEnv('BITSTAMP_MIN_BTC_PROFIT', $scenario[0]);
-            $this->assertEquals($scenario[1], $this->tradeProposal()->minProfitBTC());
+            $this->assertEquals($scenario[1], $this->tradeProposalLiveSecrets()->minProfitBTC());
         };
         array_walk($scenarios, $test);
     }
@@ -557,14 +596,14 @@ class TradeProposalTest extends WebTestCase
     {
         // sets, expects.
         $scenarios = [
-          ['0', Money::USD(0)],
-          ['1', Money::USD(1)],
-          ['10', Money::USD(10)],
-          ['100', Money::USD(100)],
+            ['0', Money::USD(0)],
+            ['1', Money::USD(1)],
+            ['10', Money::USD(10)],
+            ['100', Money::USD(100)],
         ];
         $test = function($scenario) {
             $this->setEnv('BITSTAMP_MIN_USD_PROFIT', $scenario[0]);
-            $this->assertEquals($scenario[1], $this->tradeProposal()->minProfitUSD());
+            $this->assertEquals($scenario[1], $this->tradeProposalLiveSecrets()->minProfitUSD());
         };
         array_walk($scenarios, $test);
     }

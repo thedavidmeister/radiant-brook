@@ -6,7 +6,7 @@
 
 namespace AppBundle\API\Bitstamp;
 
-use AppBundle\MoneyStrings;
+use AppBundle\MoneyStringsUtil;
 use Money\Money;
 use Respect\Validation\Validator as v;
 
@@ -45,8 +45,8 @@ class OrderList
 
         foreach ($data as $datum) {
             $this->data[] = [
-                self::USD_KEY => MoneyStrings::stringToUSD($datum[self::USD_PRICE_DATUM_INDEX]),
-                self::BTC_KEY => MoneyStrings::stringToBTC($datum[self::BTC_AMOUNT_DATUM_INDEX]),
+                self::USD_KEY => MoneyStringsUtil::stringToUSD($datum[self::USD_PRICE_DATUM_INDEX]),
+                self::BTC_KEY => MoneyStringsUtil::stringToBTC($datum[self::BTC_AMOUNT_DATUM_INDEX]),
             ];
         }
     }
@@ -65,19 +65,19 @@ class OrderList
     {
         if (!isset($this->sortUSDAsc)) {
             // Avoiding closures here helps understand the profiler.
-            usort($this->data, [$this, '_sortUSDAscAlgo']);
+            usort($this->data, [$this, 'sortUSDAscAlgo']);
             $this->sortUSDAsc = $this->data;
         } else {
             $this->data = $this->sortUSDAsc;
         }
     }
-    protected function _sortUSDAscAlgo($a, $b)
+    protected function sortUSDAscAlgo($left, $right)
     {
         // Inlined rather than using Money methods, for speed.
-        $aAmount = $a[self::USD_KEY]->getAmount();
-        $bAmount = $b[self::USD_KEY]->getAmount();
+        $leftAmount = $left[self::USD_KEY]->getAmount();
+        $rightAmount = $right[self::USD_KEY]->getAmount();
 
-        return ($aAmount < $bAmount) ? -1 : (($aAmount > $bAmount) ? 1 : 0);
+        return ($leftAmount < $rightAmount) ? -1 : (($leftAmount > $rightAmount) ? 1 : 0);
     }
     protected $sortUSDAsc;
 
@@ -91,19 +91,19 @@ class OrderList
     {
         if (!isset($this->sortUSDDesc)) {
             // Avoiding closures here helps understand the profiler.
-            usort($this->data, [$this, '_sortUSDDescAlgo']);
+            usort($this->data, [$this, 'sortUSDDescAlgo']);
             $this->sortUSDDesc = $this->data;
         } else {
             $this->data = $this->sortUSDDesc;
         }
     }
-    protected function _sortUSDDescAlgo($a, $b)
+    protected function sortUSDDescAlgo($left, $right)
     {
         // Inlined rather than using Money methods, for speed.
-        $aAmount = $a[self::USD_KEY]->getAmount();
-        $bAmount = $b[self::USD_KEY]->getAmount();
+        $leftAmount = $left[self::USD_KEY]->getAmount();
+        $rightAmount = $right[self::USD_KEY]->getAmount();
 
-        return ($aAmount > $bAmount) ? -1 : (($aAmount < $bAmount) ? 1 : 0);
+        return ($leftAmount > $rightAmount) ? -1 : (($leftAmount < $rightAmount) ? 1 : 0);
     }
     protected $sortUSDDesc;
 
@@ -217,17 +217,17 @@ class OrderList
      *
      * @see percentileCap()
      *
-     * @param float $pc
+     * @param float $percentile
      *   Percentile to calculate. Must be between 0 - 1.
      *
      * @return int
      *   An aggregate value representing the USD price of the percentile
      *   calculated against BTC Volume, in USD cents.
      */
-    public function percentileBTCVolume($pc)
+    public function percentileBTCVolume($percentile)
     {
-        v::numeric()->between(0, 1, true)->check($pc);
-        $pc = (float) $pc;
+        v::numeric()->between(0, 1, true)->check($percentile);
+        $percentile = (float) $percentile;
 
         if (!isset($this->percentileBTCVolumeData)) {
             $this->sortUSDAsc();
@@ -251,7 +251,7 @@ class OrderList
             }, []);
         }
 
-        $index = Money::BTC((int) ceil($this->totalVolume() * $pc));
+        $index = Money::BTC((int) ceil($this->totalVolume() * $percentile));
 
         return $this->percentileIndexCompare($index, $this->percentileBTCVolumeData);
     }
@@ -264,24 +264,24 @@ class OrderList
      *
      * @see percentileBTCVolume()
      *
-     * @param float $pc
+     * @param float $percentile
      *   Percentile to calculate. Must be between 0 - 1.
      *
      * @return int
      *   An aggregate value representing the USD price of the percentile
      *   calculated against market cap, in USD cents.
      */
-    public function percentileCap($pc)
+    public function percentileCap($percentile)
     {
-        v::numeric()->between(0, 1, true)->check($pc);
-        $pc = (float) $pc;
+        v::numeric()->between(0, 1, true)->check($percentile);
+        $percentile = (float) $percentile;
 
         if (!isset($this->percentileCapData)) {
             $this->sortUSDAsc();
 
             // Build a data array with USD prices as keys and comparison cap
             // amounts as values.
-            $this->percentileCapData = array_reduce($this->data, function ($carry, $datum) {
+            $this->percentileCapData = array_reduce($this->data, function($carry, $datum) {
                 // Get the last sum, so we can add to it for a running total.
                 $last = [] === $carry ? Money::USD(0) : end($carry)[self::PERCENTILE_KEY];
 
@@ -298,21 +298,43 @@ class OrderList
             }, []);
         }
 
-        $index = Money::USD((int) ceil($this->totalCap() * $pc));
+        $index = Money::USD((int) ceil($this->totalCap() * $percentile));
 
         return $this->percentileIndexCompare($index, $this->percentileCapData);
     }
     protected $percentileCapData;
 
-    protected function percentileIndexCompare($index, $comparisons)
+    /**
+     * Takes an index and an array of comparisons and returns the percentile.
+     *
+     * @param Money $index
+     *   Money to use as the index.
+     *
+     * @param array $comparisons
+     *   A comparison associative array in the format:
+     *     - 'usd' => Scalar amount in cents.
+     *     - 'percentile' => Money object representing a percentile.
+     *
+     * @return int
+     *   The integer result of the index comparison.
+     */
+    protected function percentileIndexCompare(Money $index, array $comparisons)
     {
+        v::each(v::instance('Money\Money'))->check(array_map(function($item) {
+            return $item['percentile'];
+        }, $comparisons));
+
+        v::each(v::int())->check(array_map(function($item) {
+            return $item['usd'];
+        }, $comparisons));
+
         // Ensure index cannot overshoot data set.
         if ($index->greaterThanOrEqual(end($comparisons)[self::PERCENTILE_KEY])) {
             $index = end($comparisons)[self::PERCENTILE_KEY];
         }
 
         // Remove every element that is below the index.
-        $noBelowIndex = array_filter($comparisons, function ($compare) use ($index) {
+        $noBelowIndex = array_filter($comparisons, function($compare) use ($index) {
             return $index->lessThanOrEqual($compare[self::PERCENTILE_KEY]);
         });
 

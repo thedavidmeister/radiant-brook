@@ -9,7 +9,7 @@ namespace AppBundle\API\Bitstamp\PrivateAPI;
  *
  * Returns 'true' if all orders have been canceled, false if it failed.
  */
-class CancelAllOrders extends PrivateAPI
+class CancelAllOrders extends AbstractPrivateAPI
 {
     const ENDPOINT = 'cancel_all_orders';
 }

@@ -2,9 +2,9 @@
 
 namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\API\Bitstamp\TradePairs\PriceProposer;
 use Money\Money;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Tests AppBundle\API\Bitstamp\TradePairs\PriceProposer
@@ -12,6 +12,11 @@ use Money\Money;
 class PriceProposerTest extends WebTestCase
 {
 
+    /**
+     * @param string $class
+     *
+     * @return mixed
+     */
     protected function mock($class)
     {
         return $this
@@ -20,39 +25,29 @@ class PriceProposerTest extends WebTestCase
             ->getMock();
     }
 
-    const PERCENTILE_CAP_MULTIPLIER_ASKS = 12345678;
+    const PERCENTILE_CAP_MULTIPLIER = 12345678;
 
-    const PERCENTILE_CAP_MULTIPLIER_BIDS = 10000000;
-
+    /**
+     * @return OrderBook
+     */
     protected function orderbook()
     {
         $orderbook = $this->mock('\AppBundle\API\Bitstamp\PublicAPI\OrderBook');
 
-        $orderbook->method('asks')->will($this->returnCallback(function() {
-            $asks = $this
-                ->getMockBuilder('AppBundle\API\Bitstamp\OrderList')
-                ->disableOriginalConstructor()
-                ->getMock();
+        foreach (['bids', 'asks'] as $method) {
+            $orderbook->method($method)->will($this->returnCallback(function() {
+                $mock = $this
+                    ->getMockBuilder('AppBundle\API\Bitstamp\OrderList')
+                    ->disableOriginalConstructor()
+                    ->getMock();
 
-            $asks->method('percentileCap')->will($this->returnCallback(function($percentile) {
-                return (int) ($percentile * self::PERCENTILE_CAP_MULTIPLIER_ASKS);
+                $mock->method('percentileCap')->will($this->returnCallback(function($percentile) {
+                    return (int) ($percentile * self::PERCENTILE_CAP_MULTIPLIER);
+                }));
+
+                return $mock;
             }));
-
-            return $asks;
-        }));
-
-        $orderbook->method('bids')->will($this->returnCallback(function() {
-            $bids = $this
-                ->getMockBuilder('AppBundle\API\Bitstamp\OrderList')
-                ->disableOriginalConstructor()
-                ->getMock();
-
-            $bids->method('percentileCap')->will($this->returnCallback(function($percentile) {
-                return (int) ($percentile * self::PERCENTILE_CAP_MULTIPLIER_BIDS);
-            }));
-
-            return $bids;
-        }));
+        }
 
         return $orderbook;
     }
@@ -60,7 +55,7 @@ class PriceProposerTest extends WebTestCase
     /**
      * Data provider for testMinMaxStepExceptions
      *
-     * @return array
+     * @return array<array|string>
      */
     public function dataMinMaxStepExceptions()
     {
@@ -118,31 +113,36 @@ class PriceProposerTest extends WebTestCase
 
         list($minPercentile, $maxPercentile, $stepSize) = $minMaxStep;
 
-        $pp = new PriceProposer($this->orderbook(), $minMaxStep);
+        $priceProposer = new PriceProposer($this->orderbook(), $minMaxStep);
 
-        // $pp should be valid at the start.
-        $this->assertTrue($pp->valid());
-        $this->assertSame($minPercentile, $pp->key());
+        // $priceProposer should be valid at the start.
+        $this->assertTrue($priceProposer->valid());
+        $this->assertLessThanOrEqual($maxPercentile, $priceProposer->key());
+        $this->assertSame($minPercentile, $priceProposer->key());
 
-        // $pp should be valid after one step, so key advances by step.
-        $pp->next();
-        $this->assertSame($minPercentile + $stepSize, $pp->key());
-        $this->assertTrue($pp->valid());
+        // $priceProposer should be valid after one step, so key advances by step.
+        $priceProposer->next();
+        $this->assertLessThanOrEqual($maxPercentile, $priceProposer->key());
+        $this->assertSame($minPercentile + $stepSize, $priceProposer->key());
+        $this->assertTrue($priceProposer->valid());
 
-        // $pp is still valid after two steps, so key advances by step.
-        $pp->next();
-        $this->assertSame($minPercentile + $stepSize + $stepSize, $pp->key());
-        $this->assertTrue($pp->valid());
+        // $priceProposer is still valid after two steps, so key advances by step.
+        $priceProposer->next();
+        $this->assertLessThanOrEqual($maxPercentile, $priceProposer->key());
+        $this->assertSame($minPercentile + $stepSize + $stepSize, $priceProposer->key());
+        $this->assertTrue($priceProposer->valid());
 
-        // $pp is not valid after three steps, so key wraps to start.
-        $pp->next();
-        $this->assertSame($minPercentile + $stepSize + $stepSize + $stepSize, $pp->key());
-        $this->assertFalse($pp->valid());
+        // $priceProposer is not valid after three steps, so key wraps to start.
+        $priceProposer->next();
+        $this->assertGreaterThan($maxPercentile, $priceProposer->key());
+        $this->assertSame($minPercentile + $stepSize + $stepSize + $stepSize, $priceProposer->key());
+        $this->assertFalse($priceProposer->valid());
 
-        // $pp is valid once more after a rewind.
-        $pp->rewind();
-        $this->assertSame($minPercentile, $pp->key());
-        $this->assertTrue($pp->valid());
+        // $priceProposer is valid once more after a rewind.
+        $priceProposer->rewind();
+        $this->assertLessThanOrEqual($maxPercentile, $priceProposer->key());
+        $this->assertSame($minPercentile, $priceProposer->key());
+        $this->assertTrue($priceProposer->valid());
     }
 
     /**
@@ -157,19 +157,20 @@ class PriceProposerTest extends WebTestCase
     {
         $minMaxStep = ['0.01', '0.1', '0.005'];
 
-        list($minPercentile, $maxPercentile, $stepSize) = $minMaxStep;
+        $minPercentile = $minMaxStep[0];
+        $stepSize = $minMaxStep[2];
 
-        $pp = new PriceProposer($this->orderbook(), $minMaxStep);
+        $priceProposer = new PriceProposer($this->orderbook(), $minMaxStep);
 
         $currentPercentile = $minPercentile;
-        foreach ($pp as $key => $value) {
+        foreach ($priceProposer as $key => $value) {
             // Test key().
             $this->assertSame($currentPercentile, $key);
 
             // Test current().
             $expectedValue = [
-                'bidUSDPrice' => Money::USD((int) ((1 - $key) * self::PERCENTILE_CAP_MULTIPLIER_BIDS)),
-                'askUSDPrice' => Money::USD((int) ($key * self::PERCENTILE_CAP_MULTIPLIER_ASKS)),
+                'bidUSDPrice' => Money::USD((int) ((1 - $key) * self::PERCENTILE_CAP_MULTIPLIER)),
+                'askUSDPrice' => Money::USD((int) ($key * self::PERCENTILE_CAP_MULTIPLIER)),
             ];
             $this->assertEquals($expectedValue, $value);
 
@@ -179,13 +180,13 @@ class PriceProposerTest extends WebTestCase
         }
 
         // Test rewind.
-        $pp->rewind();
-        $this->assertSame($minPercentile, $pp->key());
+        $priceProposer->rewind();
+        $this->assertSame($minPercentile, $priceProposer->key());
         $expectedValue = [
-            'bidUSDPrice' => Money::USD((int) ((1 - $pp->key()) * self::PERCENTILE_CAP_MULTIPLIER_BIDS)),
-            'askUSDPrice' => Money::USD((int) ($pp->key() * self::PERCENTILE_CAP_MULTIPLIER_ASKS)),
+            'bidUSDPrice' => Money::USD((int) ((1 - $priceProposer->key()) * self::PERCENTILE_CAP_MULTIPLIER)),
+            'askUSDPrice' => Money::USD((int) ($priceProposer->key() * self::PERCENTILE_CAP_MULTIPLIER)),
         ];
-        $this->assertEquals($expectedValue, $pp->current());
+        $this->assertEquals($expectedValue, $priceProposer->current());
     }
 
     /**
@@ -204,12 +205,12 @@ class PriceProposerTest extends WebTestCase
 
         list($minPercentile, $maxPercentile, $stepSize) = $minMaxStep;
 
-        $pp = new PriceProposer($orderbook, $minMaxStep);
+        $priceProposer = new PriceProposer($orderbook, $minMaxStep);
 
-        $this->assertSame($minPercentile, $pp->minPercentile());
-        $this->assertSame($maxPercentile, $pp->maxPercentile());
-        $this->assertSame($stepSize, $pp->stepSize());
-        $this->assertSame($minPercentile, $pp->key());
+        $this->assertSame($minPercentile, $priceProposer->minPercentile());
+        $this->assertSame($maxPercentile, $priceProposer->maxPercentile());
+        $this->assertSame($stepSize, $priceProposer->stepSize());
+        $this->assertSame($minPercentile, $priceProposer->key());
     }
 
     /**
@@ -235,9 +236,9 @@ class PriceProposerTest extends WebTestCase
 
             $expected = Money::USD((int) ($test[0] * 12345678));
 
-            $pp = new PriceProposer($orderbook, $test);
+            $priceProposer = new PriceProposer($orderbook, $test);
 
-            $this->assertEquals($expected, $pp->askUSDPrice(), 'Testing percentile ' . $test[0]);
+            $this->assertEquals($expected, $priceProposer->askUSDPrice(), 'Testing percentile ' . $test[0]);
         });
     }
 
@@ -264,11 +265,11 @@ class PriceProposerTest extends WebTestCase
             $orderbook = $this->orderbook();
 
             // bidPrice() passes (1 - $percentile) to percentileCap().
-            $expected = Money::USD((int) ((1 - $test[0]) * self::PERCENTILE_CAP_MULTIPLIER_BIDS));
+            $expected = Money::USD((int) ((1 - $test[0]) * self::PERCENTILE_CAP_MULTIPLIER));
 
-            $pp = new PriceProposer($orderbook, $test);
+            $priceProposer = new PriceProposer($orderbook, $test);
 
-            $this->assertEquals($expected, $pp->bidUSDPrice(), 'Testing percentile ' . $test[0]);
+            $this->assertEquals($expected, $priceProposer->bidUSDPrice(), 'Testing percentile ' . $test[0]);
         });
     }
 }

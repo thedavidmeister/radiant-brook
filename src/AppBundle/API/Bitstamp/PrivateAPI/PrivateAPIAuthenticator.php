@@ -9,10 +9,13 @@ class PrivateAPIAuthenticator
 {
 
     // Last used nonce storage.
-    protected $_nonce;
+    protected $nonce;
 
     // POST parameter storage.
     protected $params;
+
+    // Secrets service.
+    protected $secrets;
 
     // Nonce parameter name.
     const NONCE = 'nonce';
@@ -67,15 +70,15 @@ class PrivateAPIAuthenticator
     {
         // Generate a nonce as microtime, with as-string handling to avoid problems
         // with 32bits systems.
-        $mt = explode(' ', microtime());
-        $nonce = $mt[1] . substr($mt[0], 2, 6);
+        $microtime = explode(' ', microtime());
+        $nonce = $microtime[1] . substr($microtime[0], 2, 6);
 
-        $this->_nonce = (int) $nonce;
+        $this->nonce = (int) $nonce;
     }
 
     protected function nonce()
     {
-        return (int) $this->_nonce;
+        return (string) (int) $this->nonce;
     }
 
     /**
@@ -83,7 +86,7 @@ class PrivateAPIAuthenticator
      */
     protected function key()
     {
-        return $this->secrets->get(self::KEY_SECRET);
+        return (string) $this->secrets->get(self::KEY_SECRET);
     }
 
     /**
@@ -104,13 +107,13 @@ class PrivateAPIAuthenticator
     {
         $data = $this->nonce() . $this->secrets->get(self::CLIENT_ID_SECRET) . $this->secrets->get(self::KEY_SECRET);
 
-        return strtoupper(hash_hmac('sha256', $data, $this->secrets->get(self::SECRET_SECRET)));
+        return (string) strtoupper(hash_hmac('sha256', $data, $this->secrets->get(self::SECRET_SECRET)));
     }
 
     /**
      * Handles required authentication parameters for Bitstamp API security.
      *
-     * @return array
+     * @return string[]
      *   An associative array matching Bitstamp required private API key/value
      *   pairs.
      */
@@ -119,10 +122,17 @@ class PrivateAPIAuthenticator
         // Generate a new nonce for this set of params.
         $this->generateNonce();
 
-        return [
+        $params = [
             $this::NONCE => $this->nonce(),
             $this::KEY => $this->key(),
             $this::SIGNATURE => $this->ensureSignature(),
         ];
+
+        // Ensure strings.
+        $params = array_map(function($param) {
+            return (string) $param;
+        }, $params);
+
+        return $params;
     }
 }

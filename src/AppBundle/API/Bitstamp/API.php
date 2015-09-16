@@ -35,13 +35,16 @@ class API implements APIInterface
     // If set to true, the full JSON response will be logged during execute().
     protected $logFullResponse = true;
 
+    // A PSR compatible logger interface.
+    protected $logger;
+
     /**
      * Constructor.
      *
-     * @param Client $client
+     * @param Client                   $client
      *   A Guzzle compatible HTTP client.
      *
-     * @param Logger $logger
+     * @param \Psr\Log\LoggerInterface $logger
      *   A PSR3 compatible Logger.
      */
     public function __construct(Client $client, \Psr\Log\LoggerInterface $logger)
@@ -70,8 +73,8 @@ class API implements APIInterface
      * @param array $array
      *   An associative array of parameters to set.
      *
-     * @return PrivateAPI
-     *   Returns the PrivateAPI object to facilitate method chaining.
+     * @return API
+     *   Returns the API object to facilitate method chaining.
      */
     public function setParams(array $array)
     {
@@ -196,17 +199,19 @@ class API implements APIInterface
         $response = $this->sendRequest();
 
         if ($response->getStatusCode() !== 200) {
-            $e = new \Exception('Bitstamp response was not a 200');
+            $exception = new \Exception('Bitstamp response was not a 200');
             $this->logger->error('Bitstamp response was not a 200', ['response' => $response->getStatusCode()]);
-            throw $e;
+
+            throw $exception;
         }
 
         $data = $response->json();
 
         if (!empty($data['error'])) {
-            $e = new \Exception('Bitstamp error: ' . json_encode($data));
-            $this->logger->error('Bitstamp error', ['data' => $data, 'exception' => $e]);
-            throw $e;
+            $exception = new \Exception('Bitstamp error: ' . json_encode($data));
+            $this->logger->error('Bitstamp error', ['data' => $data, 'exception' => $exception]);
+
+            throw $exception;
         }
 
         // Logging all response data is impractical for some endpoints, such as
@@ -251,7 +256,7 @@ class API implements APIInterface
     /**
      * Returns the DateTime of the most recent execution.
      *
-     * @return DateTime
+     * @return \DateTime
      */
     public function datetime()
     {

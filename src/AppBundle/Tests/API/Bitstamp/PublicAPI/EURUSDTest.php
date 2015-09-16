@@ -5,7 +5,7 @@ namespace AppBundle\Tests\API\Bitstamp\PublicAPI;
 /**
  * Tests the Bitstamp EURUSD class.
  */
-class EURUSDTest extends PublicAPITest
+class EURUSDTest extends AbstractPublicAPITest
 {
     protected $endpoint = 'eur_usd';
     protected $sample = '{"sell": "1.1209", "buy": "1.1321"}';

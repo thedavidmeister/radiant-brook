@@ -5,7 +5,7 @@ namespace AppBundle\API\Bitstamp\PublicAPI;
 /**
  * Bitstamp ticker API endpoint wrapper.
  */
-class Ticker extends PublicAPI
+class Ticker extends AbstractPublicAPI
 {
     const ENDPOINT = 'ticker';
 }

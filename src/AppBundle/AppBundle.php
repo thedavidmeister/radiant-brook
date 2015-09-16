@@ -17,7 +17,7 @@ class AppBundle extends Bundle
         // If the PHP environment does not support 64 bit operations our integer
         // math on market capitalization can fail - the numbers we're dealing with
         // exceed the 32 bit bounds when cap is measured in satoshis.
-        if (!$this->phpEnvironmentIs64Bits()) {
+        if (!$this->isPhpEnvironment64Bits()) {
             // @codeCoverageIgnoreStart
             throw new \Exception('This is not a 64 bit PHP environment. Important math operations are unsupported without a 64 bit environment!');
             // @codeCoverageIgnoreEnd
@@ -31,7 +31,7 @@ class AppBundle extends Bundle
      * @return bool
      *   true if a 64 bit environment.
      */
-    protected function phpEnvironmentIs64Bits()
+    protected function isPhpEnvironment64Bits()
     {
         return strlen(decbin(~0)) === 64;
     }

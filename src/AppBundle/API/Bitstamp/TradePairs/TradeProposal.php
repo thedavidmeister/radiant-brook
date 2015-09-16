@@ -1,14 +1,10 @@
 <?php
-/**
- * @file
- * AppBundle\API\Bitstamp\TradePairs\TradeProposal.
- */
 
 namespace AppBundle\API\Bitstamp\TradePairs;
 
-use AppBundle\Secrets;
-use AppBundle\Cast;
+use AppBundle\CastUtil;
 use AppBundle\MoneyConstants;
+use AppBundle\Secrets;
 use Money\Money;
 use Respect\Validation\Validator as v;
 
@@ -21,6 +17,10 @@ class TradeProposal implements TradeProposalInterface
 
     protected $askUSDPrice;
 
+    protected $fees;
+
+    protected $secrets;
+
     const MIN_USD_VOLUME_SECRET = 'BITSTAMP_MIN_USD_VOLUME';
 
     const MIN_USD_PROFIT_SECRET = 'BITSTAMP_MIN_USD_PROFIT';
@@ -31,12 +31,14 @@ class TradeProposal implements TradeProposalInterface
 
     /**
      * DI Constructor.
-     * @param array $prices
-     * @param Fees  $fees
+     * @param array   $prices
+     * @param Fees    $fees
+     * @param Secrets $secrets
      */
     public function __construct(
         array $prices,
-        Fees $fees
+        Fees $fees,
+        Secrets $secrets
     )
     {
         // Ensure that $prices contains money.
@@ -48,7 +50,7 @@ class TradeProposal implements TradeProposalInterface
 
         $this->fees = $fees;
 
-        $this->secrets = new Secrets();
+        $this->secrets = $secrets;
     }
 
     /**
@@ -94,7 +96,7 @@ class TradeProposal implements TradeProposalInterface
     /**
      * {@inheritdoc}
      */
-    public function validate()
+    public function shouldBeValid()
     {
         // Only validate this if it wasn't previously invalidated.
         if ($this->valid !== false) {
@@ -107,7 +109,7 @@ class TradeProposal implements TradeProposalInterface
     /**
      * {@inheritdoc}
      */
-    public function invalidate($reason)
+    public function shouldNotBeValid($reason)
     {
         $this->valid = false;
         $this->addReason($reason);
@@ -127,12 +129,12 @@ class TradeProposal implements TradeProposalInterface
     /**
      * {@inheritdoc}
      */
-    public function ensureCompulsory($reason)
+    public function shouldBeCompulsory($reason)
     {
         $this->compulsory = true;
         $this->addReason($reason);
 
-        // Compulsory implies final. Avoid calling ensureFinal() so that we
+        // Compulsory implies final. Avoid calling shouldBeFinal() so that we
         // don't dupe the reason.
         $this->final = true;
 
@@ -151,7 +153,7 @@ class TradeProposal implements TradeProposalInterface
     /**
      * {@inheritdoc}
      */
-    public function ensureFinal($reason)
+    public function shouldBeFinal($reason)
     {
         $this->final = true;
         $this->addReason($reason);
@@ -166,7 +168,7 @@ class TradeProposal implements TradeProposalInterface
     /**
      * Gets $this->bidUSDPrice.
      *
-     * @return Money::USD
+     * @return Money
      */
     public function bidUSDPrice()
     {
@@ -176,11 +178,11 @@ class TradeProposal implements TradeProposalInterface
     /**
      * The base USD volume from config pre-isofee scaling.
      *
-     * @return Money::USD
+     * @return Money
      */
     public function bidUSDVolumeBase()
     {
-        $minUSDVolumeAmount = Cast::toInt($this->secrets->get(self::MIN_USD_VOLUME_SECRET));
+        $minUSDVolumeAmount = CastUtil::toInt($this->secrets->get(self::MIN_USD_VOLUME_SECRET));
 
         return Money::USD((int) $minUSDVolumeAmount);
     }
@@ -191,7 +193,7 @@ class TradeProposal implements TradeProposalInterface
      * We can simply scale the minimum USD volume allowable using the fee
      * structure as a limit.
      *
-     * @return Money::USD
+     * @return Money
      */
     public function bidUSDVolume()
     {
@@ -203,7 +205,7 @@ class TradeProposal implements TradeProposalInterface
      *
      * We can simply add the fees for this USD volume to the USD volume.
      *
-     * @return Money::USD
+     * @return Money
      */
     public function bidUSDVolumePlusFees()
     {
@@ -216,7 +218,7 @@ class TradeProposal implements TradeProposalInterface
      * The volume of BTC is simply the amount of USD we have to spend divided by
      * the amount we're willing to spend per Satoshi.
      *
-     * @return Money::BTC
+     * @return Money
      */
     public function bidBTCVolume()
     {
@@ -226,7 +228,7 @@ class TradeProposal implements TradeProposalInterface
         // that come out of this equation to avoid any risk of being one satoshi
         // over the limit from Bitstamp's perspective.
         //
-        // For this reason we do NOT use something like MoneyStrings.
+        // For this reason we do NOT use something like MoneyStringsUtil.
         $satoshis = (int) floor(($this->bidUSDVolume()->getAmount() / $this->bidUSDPrice()->getAmount()) * (10 ** MoneyConstants::BTC_PRECISION));
 
         // This must never happen.
@@ -248,7 +250,7 @@ class TradeProposal implements TradeProposalInterface
     /**
      * Gets $this->askUSDPrice.
      *
-     * @return Money::USD
+     * @return Money
      */
     public function askUSDPrice()
     {
@@ -270,20 +272,20 @@ class TradeProposal implements TradeProposalInterface
      *   - B + P = X * Fa
      *   - X = (B + P) / Fa
      *
-     * @return Money::USD
+     * @return Money
      */
     public function askUSDVolumeCoverFees()
     {
-        $x = ($this->bidUSDVolumePlusFees()->getAmount() + $this->secrets->get(self::MIN_USD_PROFIT_SECRET)) / $this->fees->asksMultiplier();
+        $askUSDVolumeCoverFees = ($this->bidUSDVolumePlusFees()->getAmount() + $this->secrets->get(self::MIN_USD_PROFIT_SECRET)) / $this->fees->asksMultiplier();
 
         // We have to ceil() $x or risk losing our USD profit to fees.
-        return Money::USD((int) ceil($x));
+        return Money::USD((int) ceil($askUSDVolumeCoverFees));
     }
 
     /**
      * How much USD can we keep from our sale, post fees?
      *
-     * @return Money::USD
+     * @return Money
      */
     public function askUSDVolumePostFees()
     {
@@ -296,7 +298,7 @@ class TradeProposal implements TradeProposalInterface
      * BTC volume is simply the amount of USD we need to sell divided by the
      * USD price per BTC.
      *
-     * @return Money::BTC
+     * @return Money
      */
     public function askBTCVolume()
     {
@@ -323,7 +325,7 @@ class TradeProposal implements TradeProposalInterface
     /**
      * Returns the USD profit of the suggested pair.
      *
-     * @return Money::USD
+     * @return Money
      */
     public function profitUSD()
     {
@@ -333,7 +335,7 @@ class TradeProposal implements TradeProposalInterface
     /**
      * Returns the BTC profit of the suggested pair.
      *
-     * @return Money::BTC
+     * @return Money
      */
     public function profitBTC()
     {
@@ -343,11 +345,11 @@ class TradeProposal implements TradeProposalInterface
     /**
      * Returns the minimum acceptable USD profit for a valid pair.
      *
-     * @return Money::USD
+     * @return Money
      */
     public function minProfitUSD()
     {
-        $minProfitUSD = Cast::toInt($this->secrets->get(self::MIN_USD_PROFIT_SECRET));
+        $minProfitUSD = CastUtil::toInt($this->secrets->get(self::MIN_USD_PROFIT_SECRET));
 
         return Money::USD($minProfitUSD);
     }
@@ -355,11 +357,11 @@ class TradeProposal implements TradeProposalInterface
     /**
      * Returns the minimum acceptable BTC profit for a valid pair.
      *
-     * @return Money::BTC
+     * @return Money
      */
     public function minProfitBTC()
     {
-        $minProfitBTC = Cast::toInt($this->secrets->get(self::MIN_BTC_PROFIT_SECRET));
+        $minProfitBTC = CastUtil::toInt($this->secrets->get(self::MIN_BTC_PROFIT_SECRET));
 
         return Money::BTC($minProfitBTC);
     }

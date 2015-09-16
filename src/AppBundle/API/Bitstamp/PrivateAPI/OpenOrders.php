@@ -7,7 +7,7 @@ namespace AppBundle\API\Bitstamp\PrivateAPI;
  *
  * This API call is cached for 10 seconds.
  */
-class OpenOrders extends PrivateAPI
+class OpenOrders extends AbstractPrivateAPI
 {
     // {@inheritdoc}
     const ENDPOINT = 'open_orders';

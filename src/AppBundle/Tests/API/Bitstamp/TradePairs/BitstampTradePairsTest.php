@@ -2,24 +2,23 @@
 
 namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use AppBundle\API\Bitstamp\TradePairs\Fees;
-use AppBundle\API\Bitstamp\PrivateAPI\Balance;
-use AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs;
-use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
-use AppBundle\Tests\GuzzleTestTrait;
-use AppBundle\Tests\EnvironmentTestTrait;
 use AppBundle\API\Bitstamp\Dupes;
+use AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs;
+use AppBundle\API\Bitstamp\TradePairs\Fees;
+use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
 use AppBundle\Secrets;
+use AppBundle\Tests\EnvironmentTestTrait;
 use Money\Money;
-use Prophecy\Prophet;
 use Prophecy\Argument;
+use Prophecy\Prophet;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Tests for AppBundle\API\Bitstamp\BitstampTradePairs.
  */
 class BitstampTradePairsTest extends WebTestCase
 {
+    protected $prophet;
 
     use EnvironmentTestTrait;
 
@@ -43,6 +42,11 @@ class BitstampTradePairsTest extends WebTestCase
         $this->setEnv('BITSTAMP_MIN_USD_VOLUME', $volume);
     }
 
+    /**
+     * @param string $class
+     *
+     * @return mixed
+     */
     protected function mock($class)
     {
         return $this
@@ -51,31 +55,54 @@ class BitstampTradePairsTest extends WebTestCase
             ->getMock();
     }
 
+    /**
+     * @return Fees
+     */
     protected function fees()
     {
         return $this->mock('\AppBundle\API\Bitstamp\TradePairs\Fees');
     }
 
+    /**
+     * @return \AppBundle\API\Bitstamp\TradePairs\Dupes
+     */
     protected function dupes()
     {
         return $this->mock('\AppBundle\API\Bitstamp\TradePairs\Dupes');
     }
 
+    /**
+     * @return \AppBundle\API\Bitstamp\TradePairs\BuySell
+     */
     protected function buysell()
     {
         return $this->mock('\AppBundle\API\Bitstamp\TradePairs\BuySell');
     }
 
+    /**
+     * @return \AppBundle\API\Bitstamp\TradePairs\PriceProposer
+     */
     protected function proposer()
     {
         return $this->mock('\AppBundle\API\Bitstamp\TradePairs\PriceProposer');
     }
 
-    protected function tp()
+    /**
+     * @return Secrets
+     */
+    protected function secrets()
     {
-        return new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $this->proposer());
+        return $this->mock('\AppBundle\Secrets');
     }
 
+    protected function tradePairs()
+    {
+        return new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $this->proposer(), $this->secrets());
+    }
+
+    /**
+     * @return \Prophecy\Prophecy\ObjectProphecy
+     */
     protected function statefulProposalMockRaw($isValid = false, $isCompulsory = false, $isFinal = false)
     {
         $proposal = $this->prophet->prophesize('\AppBundle\API\Bitstamp\TradePairs\TradeProposal');
@@ -93,7 +120,7 @@ class BitstampTradePairsTest extends WebTestCase
         return $proposal->reveal();
     }
 
-    protected function statefulProposalMockFiller ($isValid = false, $isCompulsory = false, $isFinal = false)
+    protected function statefulProposalMockFiller($isValid = false, $isCompulsory = false, $isFinal = false)
     {
         return array_fill(0, mt_rand(0, 10), $this->statefulProposalMock($isValid, $isCompulsory, $isFinal));
     }
@@ -102,7 +129,7 @@ class BitstampTradePairsTest extends WebTestCase
     {
         $i = 0;
         do {
-            $sequencer = function ($config) {
+            $sequencer = function($config) {
                 // Fill an array with statful mocks based on the config options.
                 $sequence = array_reduce($config, function(array $carry, array $args) {
                     // Merge arrays from the filler together to build the
@@ -120,14 +147,14 @@ class BitstampTradePairsTest extends WebTestCase
             $postSequence = $sequencer($post);
 
             // Convert the expectations config into mocks.
-            $testMocks = array_map(function ($test) {
+            $testMocks = array_map(function($test) {
                 return call_user_func_array([$this, 'statefulProposalMock'], $test);
             }, $tests);
 
-            array_walk($testMocks, function ($expected) use ($preSequence, $postSequence) {
+            array_walk($testMocks, function($expected) use ($preSequence, $postSequence) {
                 $sequence = array_merge($preSequence, [$expected], $postSequence);
 
-                $actionable = $this->tp()->reduceReportToActionableTradeProposal($sequence);
+                $actionable = $this->tradePairs()->reduceReportToActionableTradeProposal($sequence);
 
                 $this->assertSame($expected, $actionable);
             });
@@ -136,12 +163,25 @@ class BitstampTradePairsTest extends WebTestCase
         } while ($i < 5);
     }
 
-    protected function randomBool()
+    protected function isRandomBool()
     {
         return (bool) mt_rand(0, 1);
     }
 
-     /**
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::fees
+     *
+     * @group stable
+     */
+    public function testFees()
+    {
+        $fees = $this->fees();
+        $tradePairs = new BitstampTradePairs($fees, $this->dupes(), $this->buysell(), $this->proposer(), $this->secrets());
+
+        $this->assertSame($fees, $tradePairs->fees());
+    }
+
+    /**
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::validateTradeProposal
      * @covers AppBundle\API\Bitstamp\TradePairs\BitstampTradePairs::__construct
      *
@@ -168,19 +208,19 @@ class BitstampTradePairsTest extends WebTestCase
             // invalidation.
             $tradeProposalProphet->isProfitable()->willReturn($test[0])->shouldBeCalled();
 
-            // We expect invalidate to be called if the trade is not profitable
-            // or has dupes.
+            // We expect shouldNotBeValid to be called if the trade is not
+            // profitable or has dupes.
             $invalid = false;
             if (!$test[0]) {
                 $invalid = true;
-                $tradeProposalProphet->invalidate($test[3])->shouldBeCalled();
+                $tradeProposalProphet->shouldNotBeValid($test[3])->shouldBeCalled();
             }
             if (!empty($test[1]) || !empty($test[2])) {
                 $invalid = true;
-                $tradeProposalProphet->invalidate($test[4])->shouldBeCalled();
+                $tradeProposalProphet->shouldNotBeValid($test[4])->shouldBeCalled();
             }
             if (!$invalid) {
-                $tradeProposalProphet->invalidate(Argument::any())->shouldNotBeCalled();
+                $tradeProposalProphet->shouldNotBeValid(Argument::any())->shouldNotBeCalled();
             }
 
             // We expect the bid and ask USD prices to be called in the search
@@ -193,28 +233,28 @@ class BitstampTradePairsTest extends WebTestCase
             $dupesProphet->bids($priceReturn)->willReturn($test[1])->shouldBeCalled();
             $dupesProphet->asks($priceReturn)->willReturn($test[2])->shouldBeCalled();
 
-            // We only expect ensureFinal to be called if there is a dupe.
+            // We only expect shouldBeFinal to be called if there is a dupe.
             if (!empty($test[1]) || !empty($test[2])) {
-                $tradeProposalProphet->invalidate($test[4])->shouldBeCalled();
-                $tradeProposalProphet->ensureFinal($test[4])->shouldBeCalled();
+                $tradeProposalProphet->shouldNotBeValid($test[4])->shouldBeCalled();
+                $tradeProposalProphet->shouldBeFinal($test[4])->shouldBeCalled();
             } else {
-                $tradeProposalProphet->ensureFinal(Argument::any())->shouldNotBeCalled();
+                $tradeProposalProphet->shouldBeFinal(Argument::any())->shouldNotBeCalled();
             }
 
-            // We expect validate() to be called unconditionally as it is always
-            // overridden if appropriate anyway.
-            $tradeProposalProphet->validate()->shouldBeCalled();
+            // We expect shouldBeValid() to be called unconditionally as it is
+            // always overridden if appropriate anyway.
+            $tradeProposalProphet->shouldBeValid()->shouldBeCalled();
 
             // Attempt validation.
-            $tp = new BitstampTradePairs($this->fees(), $dupesProphet->reveal(), $this->buysell(), $this->proposer());
-            $tp->validateTradeProposal($tradeProposalProphet->reveal());
+            $tradePairs = new BitstampTradePairs($this->fees(), $dupesProphet->reveal(), $this->buysell(), $this->proposer(), $this->secrets());
+            $tradePairs->validateTradeProposal($tradeProposalProphet->reveal());
         });
     }
 
     /**
      * Data provider for invalid trade reports.
      *
-     * @return array
+     * @return array[]
      */
     public function dataReduceReportToActionableTradeProposalExceptions()
     {
@@ -249,7 +289,7 @@ class BitstampTradePairsTest extends WebTestCase
     {
         $this->setExpectedException('Exception', $message);
 
-        $this->tp()->reduceReportToActionableTradeProposal($invalidReport);
+        $this->tradePairs()->reduceReportToActionableTradeProposal($invalidReport);
     }
 
     /**
@@ -276,7 +316,7 @@ class BitstampTradePairsTest extends WebTestCase
         $second->isFinal()->shouldBeCalled();
 
         // Then whatever.
-        $third = $this->statefulProposalMockRaw($this->randomBool(), $this->randomBool(), $this->randomBool());
+        $third = $this->statefulProposalMockRaw($this->isRandomBool(), $this->isRandomBool(), $this->isRandomBool());
         $third->isValid()->shouldNotBeCalled();
         $third->isCompulsory()->shouldNotBeCalled();
         $third->isFinal()->shouldNotBeCalled();
@@ -288,7 +328,7 @@ class BitstampTradePairsTest extends WebTestCase
             return $item->reveal();
         }, $sequence);
 
-        $actionable = $this->tp()->reduceReportToActionableTradeProposal($sequence);
+        $actionable = $this->tradePairs()->reduceReportToActionableTradeProposal($sequence);
 
         $this->assertNull($actionable);
     }
@@ -317,7 +357,7 @@ class BitstampTradePairsTest extends WebTestCase
         $second->isFinal()->shouldBeCalled();
 
         // Then something else.
-        $third = $this->statefulProposalMockRaw($this->randomBool(), $this->randomBool(), $this->randomBool());
+        $third = $this->statefulProposalMockRaw($this->isRandomBool(), $this->isRandomBool(), $this->isRandomBool());
         // This should not be checked.
         $third->isValid()->shouldNotBeCalled();
         $third->isCompulsory()->shouldNotBeCalled();
@@ -330,7 +370,7 @@ class BitstampTradePairsTest extends WebTestCase
             return $item->reveal();
         }, $sequence);
 
-        $actionable = $this->tp()->reduceReportToActionableTradeProposal($sequence);
+        $actionable = $this->tradePairs()->reduceReportToActionableTradeProposal($sequence);
 
         $this->assertSame($sequence[0], $actionable);
     }
@@ -424,7 +464,7 @@ class BitstampTradePairsTest extends WebTestCase
         }, range(0, 5));
 
         array_walk($tests, function($test) {
-            $actionable = $this->tp()->reduceReportToActionableTradeProposal($test);
+            $actionable = $this->tradePairs()->reduceReportToActionableTradeProposal($test);
             $this->assertNull($actionable);
         });
     }
@@ -456,9 +496,10 @@ class BitstampTradePairsTest extends WebTestCase
             ['y', false],
             ['n', false],
         ];
-        array_walk($tests, function($test) {
+        $tpWithLiveSecrets = new BitstampTradePairs($this->fees(), $this->dupes(), $this->buysell(), $this->proposer(), new Secrets());
+        array_walk($tests, function($test) use ($tpWithLiveSecrets) {
             $this->setIsTrading($test[0]);
-            $this->assertEquals($test[1], $this->tp()->isTrading());
+            $this->assertEquals($test[1], $tpWithLiveSecrets->isTrading());
         });
     }
 
@@ -471,6 +512,6 @@ class BitstampTradePairsTest extends WebTestCase
     {
         $this->setIsTrading('0');
         $this->setExpectedException('Exception', 'Bitstamp trading is disabled at this time.');
-        $this->tp()->execute();
+        $this->tradePairs()->execute();
     }
 }

@@ -1,13 +1,7 @@
 <?php
-/**
- * @file
- * AppBundle\API\Bitstamp\TracePairs\PriceProposer.
- */
 
 namespace AppBundle\API\Bitstamp\TradePairs;
 
-use AppBundle\Secrets;
-use AppBundle\Cast;
 use Money\Money;
 use Respect\Validation\Validator as v;
 
@@ -27,7 +21,6 @@ class PriceProposer implements \Iterator
 
     protected $orderBook;
 
-
     /**
      * DI Constructor.
      *
@@ -44,9 +37,6 @@ class PriceProposer implements \Iterator
     {
         // DI.
         $this->orderBook = $orderBook;
-
-        // Secrets.
-        $this->secrets = new Secrets();
 
         // Ensure minMaxStep is 3 floats.
         v::length(3, 3, true)
@@ -90,7 +80,7 @@ class PriceProposer implements \Iterator
     /**
      * Read-only maxPercentile.
      *
-     * @return float
+     * @return integer|double
      */
     public function maxPercentile()
     {
@@ -113,7 +103,7 @@ class PriceProposer implements \Iterator
      * For bids, we use the cap percentile as it's harder for other users to
      * manipulate and we want 1 - PERCENTILE as bids are decending.
      *
-     * @return Money::USD
+     * @return Money
      */
     public function bidUSDPrice()
     {
@@ -124,9 +114,10 @@ class PriceProposer implements \Iterator
      * The asking USD price in the suggested pair.
      *
      * For asks, we use the BTC volume percentile as it's harder for other users
-     * to manipulate. Asks are sorted ascending so we can use $pc directly.
+     * to manipulate. Asks are sorted ascending so we can use $percentile
+     * directly.
      *
-     * @return Money::USD
+     * @return Money
      */
     public function askUSDPrice()
     {
@@ -138,7 +129,7 @@ class PriceProposer implements \Iterator
      *
      * @see http://php.net/manual/en/iterator.current.php
      *
-     * @return mixed
+     * @return array<string,Money>
      */
     public function current()
     {

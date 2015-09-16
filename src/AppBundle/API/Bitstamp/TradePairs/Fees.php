@@ -14,7 +14,7 @@ class Fees
     /**
      * DI constructor.
      *
-     * @param PrivateAPI\Balance $balance
+     * @param \AppBundle\API\Bitstamp\PrivateAPI\Balance $balance
      */
     public function __construct(\AppBundle\API\Bitstamp\PrivateAPI\Balance $balance)
     {
@@ -77,12 +77,15 @@ class Fees
      * calculations though because we can't guarantee that vendors will apply
      * rounding to fee calculations in the same way that Money handles rounding.
      *
+     * @param Money $usd
+     *   Some USD money to calculate a fee for (without rounding).
+     *
      * @return float
      *   The fees before rounding.
      */
-    protected function absoluteFeeUSDNoRounding(Money $USD)
+    protected function absoluteFeeUSDNoRounding(Money $usd)
     {
-        return $USD->getAmount() * $this->bidsMultiplier();
+        return $usd->getAmount() * $this->bidsMultiplier();
     }
 
     /**
@@ -91,15 +94,15 @@ class Fees
      * This amount is the same for bids and asks, it is simply added to bids and
      * subtracted from asks.
      *
-     * @param Money $USD
+     * @param Money $usd
      *   Some USD money to calculate a fee for.
      *
      * @return Money
      *   The fee, as Money.
      */
-    public function absoluteFeeUSD(Money $USD)
+    public function absoluteFeeUSD(Money $usd)
     {
-        if ($USD->getAmount() < 0) {
+        if ($usd->getAmount() < 0) {
             throw new \Exception('Cannot calculate fees for negative amounts');
         }
 
@@ -110,7 +113,7 @@ class Fees
         // digit value higher than it was before the rounding up. For example; a
         // fee of 0.111 will be charged as 0.12.
         // @see https://www.bitstamp.net/fee_schedule/
-        return Money::USD((int) ceil($this->absoluteFeeUSDNoRounding($USD)));
+        return Money::USD((int) ceil($this->absoluteFeeUSDNoRounding($usd)));
     }
 
     /**
@@ -138,18 +141,19 @@ class Fees
      * If Y itself is not an integer, we must floor it or incur the next band of
      * fees for that extra fraction of a cent.
      *
-     * @param Money::USD $USD
+     * @param Money $usd
      *   Some Money to scale to the maximum with the same fee.
      *
-     * @return Money::USD
+     * @return Money
      *   The maximum USD Money on the same isofee as $USD.
      */
-    public function isofeeMaxUSD(Money $USD)
+    public function isofeeMaxUSD(Money $usd)
     {
-        $y = $USD->getAmount() * ($this->absoluteFeeUSD($USD)->getAmount() / $this->absoluteFeeUSDNoRounding($USD));
-        // Yes, int casting floors things anyway, but this behaviour is clearer.
-        $y = (int) floor($y);
+        $isoFee = $usd->getAmount() * ($this->absoluteFeeUSD($usd)->getAmount() / $this->absoluteFeeUSDNoRounding($usd));
 
-        return Money::USD($y);
+        // Yes, int casting floors things anyway, but this behaviour is clearer.
+        $isoFee = (int) floor($isoFee);
+
+        return Money::USD($isoFee);
     }
 }

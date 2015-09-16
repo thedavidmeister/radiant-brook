@@ -2,7 +2,7 @@
 
 namespace AppBundle\API\Bitstamp\TradePairs;
 
-use AppBundle\MoneyStrings;
+use AppBundle\MoneyStringsUtil;
 use Money\Money;
 
 /**
@@ -10,17 +10,23 @@ use Money\Money;
  */
 class BuySell
 {
+    protected $buy;
+
+    protected $sell;
+
+    protected $logger;
+
     /**
      * DI constructor.
      *
-     * @param PrivateAPI\Buy           $buy
-     * @param PrivateAPI\Sell          $sell
-     * @param \Psr\Log\LoggerInterface $logger
+     * @param \AppBundle\API\Bitstamp\PrivateAPI\Buy  $buy
+     * @param \AppBundle\API\Bitstamp\PrivateAPI\Sell $sell
+     * @param \Psr\Log\LoggerInterface                $logger
      */
     public function __construct(
-      \AppBundle\API\Bitstamp\PrivateAPI\Buy $buy,
-      \AppBundle\API\Bitstamp\PrivateAPI\Sell $sell,
-      \Psr\Log\LoggerInterface $logger
+        \AppBundle\API\Bitstamp\PrivateAPI\Buy $buy,
+        \AppBundle\API\Bitstamp\PrivateAPI\Sell $sell,
+        \Psr\Log\LoggerInterface $logger
     )
     {
         $this->buy = $buy;
@@ -35,17 +41,37 @@ class BuySell
     protected function doBuy(Money $bidPrice, Money $bidVolume)
     {
         $this->buy
-            ->setParam(self::PRICE_KEY, MoneyStrings::USDToString($bidPrice))
-            ->setParam(self::VOLUME_KEY, MoneyStrings::BTCToString($bidVolume))
+            ->setParam(self::PRICE_KEY, MoneyStringsUtil::usdToString($bidPrice))
+            ->setParam(self::VOLUME_KEY, MoneyStringsUtil::btcToString($bidVolume))
             ->execute();
     }
 
     protected function doSell(Money $askPrice, Money $askVolume)
     {
         $this->sell
-            ->setParam(self::PRICE_KEY, MoneyStrings::USDToString($askPrice))
-            ->setParam(self::VOLUME_KEY, MoneyStrings::BTCToString($askVolume))
+            ->setParam(self::PRICE_KEY, MoneyStringsUtil::usdToString($askPrice))
+            ->setParam(self::VOLUME_KEY, MoneyStringsUtil::btcToString($askVolume))
             ->execute();
+    }
+
+    /**
+     * Read-only access to the protected $buy property.
+     *
+     * @return \AppBundle\API\Bitstamp\PrivateAPI\Buy
+     */
+    public function buy()
+    {
+        return $this->buy;
+    }
+
+    /**
+     * Read-only access to the protected $sell property.
+     *
+     * @return \AppBundle\API\Bitstamp\PrivateAPI\Sell
+     */
+    public function sell()
+    {
+        return $this->sell;
     }
 
     /**

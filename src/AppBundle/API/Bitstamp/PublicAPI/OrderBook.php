@@ -9,7 +9,7 @@ use AppBundle\API\Bitstamp\OrderList;
  *
  * Returns JSON dictionary with "bids" and "asks". Each is a list of open orders and each order is represented as a list of price and amount.
  */
-class OrderBook extends PublicAPI
+class OrderBook extends AbstractPublicAPI
 {
 
     const ENDPOINT = 'order_book';

@@ -2,13 +2,13 @@
 
 namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use AppBundle\Tests\GuzzleTestTrait;
-use AppBundle\Tests\EnvironmentTestTrait;
 use AppBundle\API\Bitstamp\PrivateAPI\OpenOrders;
 use AppBundle\API\Bitstamp\TradePairs\Dupes;
 use AppBundle\Secrets;
+use AppBundle\Tests\EnvironmentTestTrait;
+use AppBundle\Tests\GuzzleTestTrait;
 use Money\Money;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Tests AppBundle\API\Bitstamp\TradePairs\Dupes
@@ -18,15 +18,44 @@ class DupesTest extends WebTestCase
     use GuzzleTestTrait;
     use EnvironmentTestTrait;
 
+    protected function sample()
+    {
+        return $this->sample;
+    }
+
+    protected function sample2()
+    {
+        return $this->sample2;
+    }
+
     protected $sample = '[{"price":"237.50","amount":"0.03397937","type":1,"id":67290521,"datetime":"2015-05-16 21:30:19"},{"price":"232.95","amount":"0.03434213","type":0,"id":67290522,"datetime":"2015-05-16 21:30:19"},{"price":"241.45","amount":"0.03342358","type":1,"id":67009615,"datetime":"2015-05-14 01:30:54"},{"price":"246.00","amount":"0.03280538","type":1,"id":66672917,"datetime":"2015-05-10 12:17:32"}]';
     protected $sample2 = '[{"price":"241.45","amount":"0.03342358","type":1,"id":67009615,"datetime":"2015-05-14 01:30:54"},{"price":"246.00","amount":"0.03280538","type":1,"id":66672917,"datetime":"2015-05-10 12:17:32"}]';
+
+    protected $prophet;
+
+    protected function setup()
+    {
+        $this->prophet = new \Prophecy\Prophet;
+    }
 
     protected function openOrders()
     {
         return new OpenOrders($this->client(), $this->mockLogger(), $this->mockAuthenticator());
     }
 
+    protected function secrets()
+    {
+        $secretsMock = $this->prophet->prophesize('AppBundle\Secrets');
+
+        return $secretsMock->reveal();
+    }
+
     protected function dupes()
+    {
+        return new Dupes($this->openOrders(), $this->secrets());
+    }
+
+    protected function dupesLiveSecrets()
     {
         return new Dupes($this->openOrders(), new Secrets());
     }
@@ -45,7 +74,7 @@ class DupesTest extends WebTestCase
         ];
         foreach ($rms as $rm) {
             $this->setEnv('DUPES_RANGE_MULTIPLIER', $rm[0]);
-            $this->assertSame($rm[1], $this->dupes()->rangeMultiplier());
+            $this->assertSame($rm[1], $this->dupesLiveSecrets()->rangeMultiplier());
         }
     }
 
@@ -65,7 +94,7 @@ class DupesTest extends WebTestCase
         ];
         foreach ($tests as $test) {
             $this->setEnv('DUPES_RANGE_MULTIPLIER', $test[0]);
-            $this->assertEquals(['range' => $test[2], 'upper' => $test[3], 'lower' => $test[4]], $this->dupes()->bounds($test[1]));
+            $this->assertEquals(['range' => $test[2], 'upper' => $test[3], 'lower' => $test[4]], $this->dupesLiveSecrets()->bounds($test[1]));
         }
     }
 
@@ -90,8 +119,6 @@ class DupesTest extends WebTestCase
      * @group stable
      *
      * @see http://www.mathsisfun.com/algebra/inequality-solving.html
-     *
-     * @return [type] [description]
      */
     public function testDupes()
     {
@@ -163,7 +190,7 @@ class DupesTest extends WebTestCase
 
         foreach ($askTests as $test) {
             $this->setEnv('DUPES_RANGE_MULTIPLIER', $test[0]);
-            $this->assertEquals($test[3], $this->dupes()->$test[1]($test[2]));
+            $this->assertEquals($test[3], $this->dupesLiveSecrets()->$test[1]($test[2]));
         }
     }
 }

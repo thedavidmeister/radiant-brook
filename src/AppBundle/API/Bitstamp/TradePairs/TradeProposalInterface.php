@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * AppBundle\API\Bitstamp\TradePairs\TradeProposalInterface
- */
 
 namespace AppBundle\API\Bitstamp\TradePairs;
 
@@ -42,15 +38,15 @@ interface TradeProposalInterface
     /**
      * Sets the TradeProposal as valid, if not previously invalidated.
      *
-     * There is no reason for validate().
+     * There is no reason for shouldBeValid().
      *
-     * @see invalidate()
+     * @see shouldNotBeValid()
      * @see isValid()
      *
      * @return bool
      *   Returns the result of isValid().
      */
-    public function validate();
+    public function shouldBeValid();
 
     /**
      * Sets the TradeProposal as invalid.
@@ -63,13 +59,13 @@ interface TradeProposalInterface
      * @param string $reason
      *   The reason for the invalidation.
      *
-     * @see validate()
+     * @see shouldBeValid()
      * @see isValid()
      *
      * @return bool
      *   Returns the result of isValid().
      */
-    public function invalidate($reason);
+    public function shouldNotBeValid($reason);
 
     /**
      * Is this TradeProposal compulsory?
@@ -107,7 +103,7 @@ interface TradeProposalInterface
      * @return bool
      *   Returns the value of isCompulsory (which will be true).
      */
-    public function ensureCompulsory($reason);
+    public function shouldBeCompulsory($reason);
 
     /**
      * Is this TradeProposal final?
@@ -121,6 +117,8 @@ interface TradeProposalInterface
      *
      * @see isCompulsory()
      * @see isValid()
+     *
+     * @return boolean
      */
     public function isFinal();
 
@@ -140,5 +138,5 @@ interface TradeProposalInterface
      * @return bool
      *   Returns the value of isFinal (which will be true).
      */
-    public function ensureFinal($reason);
+    public function shouldBeFinal($reason);
 }

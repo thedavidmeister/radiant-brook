@@ -7,7 +7,7 @@ namespace AppBundle\API\Bitstamp\PrivateAPI;
  *
  * Returns your bitcoin deposit address.
  */
-class BitcoinDepositAddress extends PrivateAPI
+class BitcoinDepositAddress extends AbstractPrivateAPI
 {
     const ENDPOINT = 'bitcoin_deposit_address';
 }

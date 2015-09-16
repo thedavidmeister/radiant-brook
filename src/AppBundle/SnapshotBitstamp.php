@@ -8,6 +8,14 @@ class SnapshotBitstamp
 {
     protected $state;
 
+    protected $logger;
+
+    protected $secrets;
+
+    protected $keenio;
+
+    protected $balance;
+
     const EVENT_NAME = 'bitstamp_balance';
 
     const PROJECT_ID_SECRET_NAME = 'KEEN_PROJECT_ID';
@@ -25,10 +33,11 @@ class SnapshotBitstamp
      * @param API\Bitstamp\PrivateAPI\Balance $balance
      */
     public function __construct(
-    \KeenIO\Client\KeenIOClient $keenio,
-    \Psr\Log\LoggerInterface $logger,
-    Secrets $secrets,
-    API\Bitstamp\PrivateAPI\Balance $balance)
+        \KeenIO\Client\KeenIOClient $keenio,
+        \Psr\Log\LoggerInterface $logger,
+        Secrets $secrets,
+        API\Bitstamp\PrivateAPI\Balance $balance
+    )
     {
         $this->logger = $logger;
         $this->secrets = $secrets;
@@ -44,7 +53,7 @@ class SnapshotBitstamp
 
     /**
      * Updates the internal state of the snapshot to represent Bitstamp data.
-     * @return this
+     * @return SnapshotBitstamp
      */
     public function updateState()
     {

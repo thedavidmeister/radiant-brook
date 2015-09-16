@@ -5,7 +5,7 @@ namespace AppBundle\Tests\API\Bitstamp\PrivateAPI;
 /**
  * Tests the Bitstamp UserTransactions class.
  */
-class UserTransactionTest extends PrivateAPITest
+class UserTransactionTest extends AbstractPrivateAPITest
 {
     protected $endpoint = 'user_transactions';
     // @todo replace these samples with real data.

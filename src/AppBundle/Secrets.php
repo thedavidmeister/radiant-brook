@@ -13,14 +13,14 @@ class Secrets
 {
     const MISSING_ENV_EXCEPTION_MESSAGE = 'Loading .env file failed while attempting to access environment variable ';
     /**
-    * Returns the path that Dotenv should scan for a .env file.
-    *
-    * On Acquia, we need to handle their symlinky file system structure. On local
-    * dev we can simply dump our .env file into sites/all.
-    *
-    * @return string
-    *   Path to the directory containing .env.
-    */
+     * Returns the path that Dotenv should scan for a .env file.
+     *
+     * On Acquia, we need to handle their symlinky file system structure. On local
+     * dev we can simply dump our .env file into sites/all.
+     *
+     * @return string
+     *   Path to the directory containing .env.
+     */
     public function dotEnvPath()
     {
         return __DIR__;
@@ -85,7 +85,7 @@ class Secrets
                 // Attempt to load environment variables from .env if we didn't
                 // already have what we were looking for in memory.
                 $dotenv = new Dotenv($this->dotEnvPath());
-                $dotenv->load($this->dotEnvPath());
+                $dotenv->load();
 
                 // Try once more to find what we're looking for before giving
                 // up. It is not possible to test this on infrastructure with

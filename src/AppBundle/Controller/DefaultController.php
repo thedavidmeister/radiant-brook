@@ -2,11 +2,9 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use AppBundle\API\Bitstamp\OrderBook;
-use AppBundle\API\Bitstamp\BitstampTradePairs;
-use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -19,7 +17,7 @@ class DefaultController extends Controller
      *
      * @Route("/", name="index")
      *
-     * @return Response
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function indexAction()
     {
@@ -32,37 +30,37 @@ class DefaultController extends Controller
      *
      * @Route("trade/order_book", name="order_book")
      *
-     * @return Response
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function orderBookAction()
     {
-        $ob = $this->get('bitstamp.order_book');
+        $orderBook = $this->get('bitstamp.order_book');
 
         $stats = array();
         foreach (['bids', 'asks'] as $list) {
             $merge = [
-                $list . ' min' => [$ob->$list()->min()['usd']->getAmount(), $ob->$list()->min()['btc']->getAmount(), ''],
-                $list . ' max' => [$ob->$list()->max()['usd']->getAmount(), $ob->$list()->max()['btc']->getAmount(), ''],
-                $list . ' volume' => ['', $ob->$list()->totalVolume(), ''],
-                $list . ' 0.01%' => [$ob->$list()->percentileBTCVolume(0.0001), '', ''],
-                $list . ' 0.1%' => [$ob->$list()->percentileBTCVolume(0.001), '', ''],
-                $list . ' 1%' => [$ob->$list()->percentileBTCVolume(0.01), '', ''],
-                $list . ' Q1' => [$ob->$list()->percentileBTCVolume(0.25), '', ''],
-                $list . ' median' => [$ob->$list()->percentileBTCVolume(0.5), '', ''],
-                $list . ' Q2' => [$ob->$list()->percentileBTCVolume(0.75), '', ''],
-                $list . ' 99%' => [$ob->$list()->percentileBTCVolume(0.99), '', ''],
-                $list . ' 99.9%' => [$ob->$list()->percentileBTCVolume(0.999), '', ''],
-                $list . ' 99.99%' => [$ob->$list()->percentileBTCVolume(0.9999), '', ''],
-                $list . ' total cap' => ['', '', $ob->$list()->totalCap()],
-                $list . ' 0.01% cap' => [$ob->$list()->percentileCap(0.0001), '', ''],
-                $list . ' 0.1% cap' => [$ob->$list()->percentileCap(0.001), '', ''],
-                $list . ' 1% cap' => [$ob->$list()->percentileCap(0.01), '', ''],
-                $list . ' 25% cap' => [$ob->$list()->percentileCap(0.25), '', ''],
-                $list . ' 50% cap' => [$ob->$list()->percentileCap(0.50), '', ''],
-                $list . ' 75% cap' => [$ob->$list()->percentileCap(0.75), '', ''],
-                $list . ' 99% cap' => [$ob->$list()->percentileCap(0.99), '', ''],
-                $list . ' 99.9% cap' => [$ob->$list()->percentileCap(0.999), '', ''],
-                $list . ' 99.99% cap' => [$ob->$list()->percentileCap(0.9999), '', ''],
+                $list . ' min' => [$orderBook->$list()->min()['usd']->getAmount(), $orderBook->$list()->min()['btc']->getAmount(), ''],
+                $list . ' max' => [$orderBook->$list()->max()['usd']->getAmount(), $orderBook->$list()->max()['btc']->getAmount(), ''],
+                $list . ' volume' => ['', $orderBook->$list()->totalVolume(), ''],
+                $list . ' 0.01%' => [$orderBook->$list()->percentileBTCVolume(0.0001), '', ''],
+                $list . ' 0.1%' => [$orderBook->$list()->percentileBTCVolume(0.001), '', ''],
+                $list . ' 1%' => [$orderBook->$list()->percentileBTCVolume(0.01), '', ''],
+                $list . ' Q1' => [$orderBook->$list()->percentileBTCVolume(0.25), '', ''],
+                $list . ' median' => [$orderBook->$list()->percentileBTCVolume(0.5), '', ''],
+                $list . ' Q2' => [$orderBook->$list()->percentileBTCVolume(0.75), '', ''],
+                $list . ' 99%' => [$orderBook->$list()->percentileBTCVolume(0.99), '', ''],
+                $list . ' 99.9%' => [$orderBook->$list()->percentileBTCVolume(0.999), '', ''],
+                $list . ' 99.99%' => [$orderBook->$list()->percentileBTCVolume(0.9999), '', ''],
+                $list . ' total cap' => ['', '', $orderBook->$list()->totalCap()],
+                $list . ' 0.01% cap' => [$orderBook->$list()->percentileCap(0.0001), '', ''],
+                $list . ' 0.1% cap' => [$orderBook->$list()->percentileCap(0.001), '', ''],
+                $list . ' 1% cap' => [$orderBook->$list()->percentileCap(0.01), '', ''],
+                $list . ' 25% cap' => [$orderBook->$list()->percentileCap(0.25), '', ''],
+                $list . ' 50% cap' => [$orderBook->$list()->percentileCap(0.50), '', ''],
+                $list . ' 75% cap' => [$orderBook->$list()->percentileCap(0.75), '', ''],
+                $list . ' 99% cap' => [$orderBook->$list()->percentileCap(0.99), '', ''],
+                $list . ' 99.9% cap' => [$orderBook->$list()->percentileCap(0.999), '', ''],
+                $list . ' 99.99% cap' => [$orderBook->$list()->percentileCap(0.9999), '', ''],
                 $list . ' -end-' => ['-', '-', '-'],
             ];
             $stats += $merge;
@@ -83,25 +81,22 @@ class DefaultController extends Controller
      *
      * @codeCoverageIgnore
      *
-     * @param Request $request Symfony request
-     *
-     * @return Response
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function tradeAction(Request $request)
+    public function tradeAction()
     {
-        $tp = $this->get('bitstamp.trade_pairs');
-
-        $timeFormat = 'Y-m-d H:i:s';
+        $tradePairs = $this->get('bitstamp.trade_pairs');
 
         $stats = [
             '-Facts-' => '',
-            'Fees bids multiplier' => $tp->fees->bidsMultiplier(),
-            'Fees asks multiplier' => $tp->fees->asksMultiplier(),
-            'Is trading' => $tp->isTrading(),
+            'Fees bids multiplier' => $tradePairs->fees()->bidsMultiplier(),
+            'Fees asks multiplier' => $tradePairs->fees()->asksMultiplier(),
+            'Is trading' => $tradePairs->isTrading(),
         ];
 
-        $report = $tp->report();
+        $report = $tradePairs->report();
         $statsArrayFromProposal = function(TradeProposal $proposal, $prefix = '') {
+            $stats = [];
             $methods = [
                 'bidUSDPrice',
                 'bidUSDVolumeBase',
@@ -140,7 +135,7 @@ class DefaultController extends Controller
         };
 
         $stats['-Actionable proposal-'] = '';
-        $actionable = $tp->reduceReportToActionableTradeProposal($report);
+        $actionable = $tradePairs->reduceReportToActionableTradeProposal($report);
         if (isset($actionable)) {
             $stats += $statsArrayFromProposal($actionable, 'actionable');
         }

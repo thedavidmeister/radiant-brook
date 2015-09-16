@@ -3,7 +3,6 @@ namespace AppBundle\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -11,6 +10,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class SnapshotBitstampCommand extends Command
 {
+    protected $snapshot;
+
     /**
      * DI Constructor.
      * @param \AppBundle\SnapshotBitstamp $snapshot
@@ -18,6 +19,7 @@ class SnapshotBitstampCommand extends Command
     public function __construct(\AppBundle\SnapshotBitstamp $snapshot)
     {
         $this->snapshot = $snapshot;
+
         parent::__construct();
     }
 

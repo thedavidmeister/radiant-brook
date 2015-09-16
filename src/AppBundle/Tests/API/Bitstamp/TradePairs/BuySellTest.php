@@ -2,23 +2,34 @@
 
 namespace AppBundle\Tests\API\Bitstamp\TradePairs;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\API\Bitstamp\PrivateAPI\Buy;
 use AppBundle\API\Bitstamp\PrivateAPI\Sell;
 use AppBundle\API\Bitstamp\TradePairs\BuySell;
-use Money\Money;
 use AppBundle\Tests\GuzzleTestTrait;
 use GuzzleHttp\Client;
-use GuzzleHttp\Subscriber\Mock;
-use GuzzleHttp\Subscriber\History;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Stream\Stream;
+use GuzzleHttp\Subscriber\History;
+use GuzzleHttp\Subscriber\Mock;
+use Money\Money;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Tests AppBundle\API\Bitstamp\TradePairs\BuySell
  */
 class BuySellTest extends WebTestCase
 {
+    protected $prophet;
+
+    protected function sample()
+    {
+        return '{"foo": "bar"}';
+    }
+
+    protected function sample2()
+    {
+        return '{"bing": "baz"}';
+    }
 
     use GuzzleTestTrait;
 
@@ -31,10 +42,6 @@ class BuySellTest extends WebTestCase
     {
         $this->prophet->checkPredictions();
     }
-
-    // @todo - replace with real data sample.
-    protected $sample = '{"foo": "bar"}';
-    protected $sample2 = '{"bing": "baz"}';
 
     protected function buy()
     {
@@ -64,6 +71,32 @@ class BuySellTest extends WebTestCase
     }
 
     /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\BuySell::buy
+     *
+     * @group stable
+     */
+    public function testBuy()
+    {
+        $buy = $this->buy();
+        $buySell = new BuySell($buy, $this->sell(), $this->mockLogger());
+
+        $this->assertSame($buy, $buySell->buy());
+    }
+
+    /**
+     * @covers AppBundle\API\Bitstamp\TradePairs\BuySell::sell
+     *
+     * @group stable
+     */
+    public function testSell()
+    {
+        $sell = $this->sell();
+        $buySell = new BuySell($this->buy(), $sell, $this->mockLogger());
+
+        $this->assertSame($sell, $buySell->sell());
+    }
+
+    /**
      * @covers AppBundle\API\Bitstamp\TradePairs\BuySell::execute
      * @covers AppBundle\API\Bitstamp\TradePairs\BuySell::doBuy
      * @covers AppBundle\API\Bitstamp\TradePairs\BuySell::doSell
@@ -82,15 +115,15 @@ class BuySellTest extends WebTestCase
             [Money::USD(123), Money::BTC(123), Money::USD(20), Money::BTC(20), '1.23', '0.00000123', '0.20', '0.00000020'],
         ];
 
-        array_walk($tests, function($test){
+        array_walk($tests, function($test) {
             $buySell = $this->buySell();
 
             $tradeProposal = $this->tradeProposal($test[0], $test[1], $test[2], $test[3]);
             $tradeProposal->isValid()->willReturn(true)->shouldBeCalled();
 
             $buySell->execute($tradeProposal->reveal());
-            $buyRequest = $buySell->buy->client->history->getLastRequest();
-            $sellRequest = $buySell->sell->client->history->getLastRequest();
+            $buyRequest = $buySell->buy()->client->history->getLastRequest();
+            $sellRequest = $buySell->sell()->client->history->getLastRequest();
 
             $this->assertSame($test[4], $buyRequest->getBody()->getField('price'));
             $this->assertSame($test[5], $buyRequest->getBody()->getField('amount'));
@@ -151,7 +184,7 @@ class BuySellTest extends WebTestCase
 
         $buyfail->execute($tradeProposal->reveal());
 
-        $this->assertNotEmpty($buyfail->buy->client->history->getLastRequest());
-        $this->assertNotEmpty($buyfail->sell->client->history->getLastRequest());
+        $this->assertNotEmpty($buyfail->buy()->client->history->getLastRequest());
+        $this->assertNotEmpty($buyfail->sell()->client->history->getLastRequest());
     }
 }

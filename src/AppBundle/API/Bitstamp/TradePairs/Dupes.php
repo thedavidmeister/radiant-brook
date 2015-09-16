@@ -2,10 +2,10 @@
 
 namespace AppBundle\API\Bitstamp\TradePairs;
 
-use Money\Money;
+use AppBundle\MoneyStringsUtil;
 use AppBundle\Secrets;
-use AppBundle\API\Bitstamp\TradePairs\TradeProposal;
-use AppBundle\MoneyStrings;
+use Money\Money;
+use Respect\Validation\Validator as v;
 
 /**
  * Search for dupes in OpenOrders against a given ask/bid USD price.
@@ -27,15 +27,23 @@ class Dupes
     // The secret name for the range multiplier
     const DUPES_RANGE_MULTIPLIER_SECRET = 'DUPES_RANGE_MULTIPLIER';
 
+    protected $openOrders;
+
+    protected $secrets;
+
     /**
      * DI constructor.
      *
-     * @param PrivateAPI\OpenOrders $openOrders
+     * @param \AppBundle\API\Bitstamp\PrivateAPI\OpenOrders $openOrders
+     * @param \AppBundle\Secrets                            $secrets
      */
-    public function __construct(\AppBundle\API\Bitstamp\PrivateAPI\OpenOrders $openOrders)
+    public function __construct(
+        \AppBundle\API\Bitstamp\PrivateAPI\OpenOrders $openOrders,
+        Secrets $secrets
+    )
     {
         $this->openOrders = $openOrders;
-        $this->secrets = new Secrets();
+        $this->secrets = $secrets;
     }
 
     /**
@@ -44,9 +52,6 @@ class Dupes
      * @param Money $price
      *   The USD Money price to look for dupes of.
      *
-     * @param Money $range
-     *   The absolute USD Money price range to +/- against $price to set the
-     *   dupes range.
      *
      * @param int $type
      *   Bids or Asks type, as per Bitstamp API in open_orders.
@@ -64,7 +69,7 @@ class Dupes
             }
 
             // Check upper and lower bounds.
-            $orderPrice = MoneyStrings::stringToUSD($order[self::KEY_PRICE]);
+            $orderPrice = MoneyStringsUtil::stringToUSD($order[self::KEY_PRICE]);
             if ($orderPrice->greaterThan($this->bounds($price)['lower']) && $orderPrice->lessThan($this->bounds($price)['upper'])) {
                 $matches[] = $orderPrice;
             }
@@ -79,7 +84,7 @@ class Dupes
      * @param Money $price
      *   Price to calculate the bounds for.
      *
-     * @return array
+     * @return array<string,Money>
      *   Array with keys 'range', 'upper', 'lower', values are Money::USD.
      */
     public function bounds(Money $price)
@@ -89,7 +94,11 @@ class Dupes
         $upperPriceBound = $price->add($range);
         $lowerPriceBound = $price->subtract($range);
 
-        return ['range' => $range, 'upper' => $upperPriceBound, 'lower' => $lowerPriceBound];
+        $return = ['range' => $range, 'upper' => $upperPriceBound, 'lower' => $lowerPriceBound];
+
+        v::each(v::instance('Money\Money'))->check($return);
+
+        return $return;
     }
 
     /**

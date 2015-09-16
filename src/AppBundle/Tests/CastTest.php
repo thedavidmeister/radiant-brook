@@ -2,7 +2,7 @@
 
 namespace AppBundle\Tests;
 
-use AppBundle\Cast;
+use AppBundle\CastUtil;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
@@ -13,7 +13,7 @@ class CastTest extends WebTestCase
     /**
      * Data provider for dataToIntExceptions
      *
-     * @return array
+     * @return array[]
      */
     public function dataToIntExceptions()
     {
@@ -31,7 +31,7 @@ class CastTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\Cast::toInt
+     * @covers AppBundle\CastUtil::toInt
      *
      * @param mixed  $notInt
      *   Not an integer.
@@ -45,11 +45,12 @@ class CastTest extends WebTestCase
     public function testToIntExceptions($notInt, $message)
     {
         $this->setExpectedException('Exception', $message);
-        Cast::toInt($notInt);
+
+        CastUtil::toInt($notInt);
     }
 
     /**
-     * @covers AppBundle\Cast::toInt
+     * @covers AppBundle\CastUtil::toInt
      *
      * @group stable
      */
@@ -95,15 +96,15 @@ class CastTest extends WebTestCase
             [PHP_INT_MAX, PHP_INT_MAX],
         ];
         array_walk($tests, function($test) {
-            $this->assertTrue(is_int(Cast::toInt($test[1])));
-            $this->assertSame($test[0], Cast::toInt($test[1]));
+            $this->assertTrue(is_int(CastUtil::toInt($test[1])));
+            $this->assertSame($test[0], CastUtil::toInt($test[1]));
         });
     }
 
     /**
      * Data provider for testToFloatExceptions.
      *
-     * @return array
+     * @return array[]
      */
     public function dataToFloatExceptions()
     {
@@ -119,7 +120,7 @@ class CastTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\Cast::toFloat
+     * @covers AppBundle\CastUtil::toFloat
      *
      * @param mixed  $value
      *   Not a number.
@@ -135,11 +136,11 @@ class CastTest extends WebTestCase
     {
         $this->setExpectedException('Exception', $message);
 
-        Cast::toFloat($value);
+        CastUtil::toFloat($value);
     }
 
     /**
-     * @covers AppBundle\Cast::toFloat
+     * @covers AppBundle\CastUtil::toFloat
      *
      * @group stable
      */
@@ -160,7 +161,7 @@ class CastTest extends WebTestCase
         '-5',
         ];
         array_walk($tests, function($test) {
-            $this->assertSame((float) $test, Cast::toFloat($test));
+            $this->assertSame((float) $test, CastUtil::toFloat($test));
         });
     }
 }

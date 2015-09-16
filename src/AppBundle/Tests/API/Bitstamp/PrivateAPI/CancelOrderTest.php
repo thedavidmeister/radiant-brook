@@ -5,7 +5,7 @@ namespace AppBundle\Tests\API\Bitstamp\PrivateAPI;
 /**
  * Tests the Bitstamp CancelOrder class.
  */
-class CancelOrderTest extends PrivateAPITest
+class CancelOrderTest extends AbstractPrivateAPITest
 {
     protected $endpoint = 'cancel_order';
     // @todo replace these samples with real data.

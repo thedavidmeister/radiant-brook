@@ -2,14 +2,17 @@
 
 namespace AppBundle\Tests\API\Bitstamp\PrivateAPI;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Tests the Bitstamp Private API authenticator class.
  */
 class PrivateAPIAuthenticatorTest extends WebTestCase
 {
+    /**
+     * @return \AppBundle\Secrets
+     */
     protected function mockSecrets()
     {
         $secrets = $this
@@ -59,11 +62,11 @@ class PrivateAPIAuthenticatorTest extends WebTestCase
         $authParams = $authenticator->getAuthParams();
 
         $laterAuthParams = $authenticator->getAuthParams();
-        $this->assertTrue($laterAuthParams['nonce'] > $authParams['nonce']);
+        $this->assertGreaterThan($authParams['nonce'], $laterAuthParams['nonce']);
 
         // Check some basic things about the nonce.
-        $this->assertTrue(is_int($authParams['nonce']));
-        $this->assertTrue($authParams['nonce'] > 0);
+        $this->assertTrue((int) $authParams['nonce'] == $authParams['nonce']);
+        $this->assertGreaterThan(0, $authParams['nonce']);
 
         $this->assertSame($authParams['key'], $secrets->get('BITSTAMP_KEY'));
         $this->assertSame($authParams['signature'], $this->signature($authParams['nonce'], $secrets->get('BITSTAMP_CLIENT_ID'), $secrets->get('BITSTAMP_KEY'), $secrets->get('BITSTAMP_SECRET')));

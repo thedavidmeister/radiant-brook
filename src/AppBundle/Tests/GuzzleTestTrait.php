@@ -2,17 +2,36 @@
 
 namespace AppBundle\Tests;
 
+use AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator;
 use GuzzleHttp\Client;
-use GuzzleHttp\Subscriber\Mock;
-use GuzzleHttp\Subscriber\History;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Stream\Stream;
-use AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator;
+use GuzzleHttp\Subscriber\History;
+use GuzzleHttp\Subscriber\Mock;
 
 trait GuzzleTestTrait
 {
     // Traits cannot have constants.
     protected static $defaultMockType = 200;
+
+    /**
+     * @param string $className
+     *
+     * @see Symfony\Bundle\FrameworkBundle\Test\WebTestCase
+     *
+     * @return PHPUnit_Framework_MockObject_MockBuilder
+     */
+    abstract public function getMockBuilder($className);
+
+    /**
+     * @return string
+     */
+    abstract protected function sample();
+
+    /**
+     * @return string
+     */
+    abstract protected function sample2();
 
     /**
      * Creates a mock authenticator for private API tests.
@@ -49,26 +68,26 @@ trait GuzzleTestTrait
         switch ($type) {
             case 200:
                 return new Mock([
-                    new Response(200, [], Stream::factory($this->sample)),
-                    new Response(200, [], Stream::factory($this->sample2)),
+                    new Response(200, [], Stream::factory($this->sample())),
+                    new Response(200, [], Stream::factory($this->sample2())),
                 ]);
-                break;
 
             case 'error':
                 return new Mock([
                     new Response(200, [], Stream::factory('{"error":"Bitstamp likes to report errors as 200"}')),
                 ]);
-              break;
 
             // The default behaviour can just be setting the response status
             // code to whatever the "type" is.
             default:
                 return new Mock([new Response($type)]);
-                break;
 
         }
     }
 
+    /**
+     * @return \Psr\Log\LoggerInterface
+     */
     protected function mockLogger()
     {
         $logger = $this
@@ -90,6 +109,9 @@ trait GuzzleTestTrait
         return $client;
     }
 
+    /**
+     * @return array
+     */
     protected function objectToArrayRecursive($obj)
     {
         if (is_object($obj)) {

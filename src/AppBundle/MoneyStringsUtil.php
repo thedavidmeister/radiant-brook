@@ -2,15 +2,14 @@
 
 namespace AppBundle;
 
-use Money\Money;
-use Money\Currency;
 use AppBundle\MoneyConstants;
-use Respect\Validation\Validator as v;
+use Money\Currency;
+use Money\Money;
 
 /**
  * Converts strings to Money and vice-versa.
  */
-class MoneyStrings
+class MoneyStringsUtil
 {
     /**
      * Converts a string in USD (not cents) XXXX.YY to Money::USD
@@ -18,7 +17,7 @@ class MoneyStrings
      * @param string $string
      *   The string to convert.
      *
-     * @return Money::USD
+     * @return Money
      */
     public static function stringToUSD($string)
     {
@@ -46,7 +45,7 @@ class MoneyStrings
      * @param string $string
      *   The string to convert.
      *
-     * @return Money::BTC
+     * @return Money
      */
     public static function stringToBTC($string)
     {
@@ -67,26 +66,26 @@ class MoneyStrings
     /**
      * Converts Money::USD to a string in XXXX.YY format.
      *
-     * @param Money::USD $USD
+     * @param Money $usd
      *
      * @return string
      *   USD string in XXXX.YY format.
      */
-    public static function USDToString(Money $USD)
+    public static function usdToString(Money $usd)
     {
-        return (string) number_format(round($USD->getAmount() / 10 ** MoneyConstants::USD_PRECISION, MoneyConstants::USD_PRECISION), MoneyConstants::USD_PRECISION);
+        return (string) number_format(round($usd->getAmount() / 10 ** MoneyConstants::USD_PRECISION, MoneyConstants::USD_PRECISION), MoneyConstants::USD_PRECISION);
     }
 
     /**
      * Converts Money::BTC to a string in XXXX.YYYYYYYY format.
      *
-     * @param Money::BTC $BTC
+     * @param Money $btc
      *
      * @return string
      *   BTC string in XXXX.YYYYYYYY format.
      */
-    public static function BTCToString(Money $BTC)
+    public static function btcToString(Money $btc)
     {
-        return (string) number_format(round($BTC->getAmount() / 10 ** MoneyConstants::BTC_PRECISION, MoneyConstants::BTC_PRECISION), MoneyConstants::BTC_PRECISION);
+        return (string) number_format(round($btc->getAmount() / 10 ** MoneyConstants::BTC_PRECISION, MoneyConstants::BTC_PRECISION), MoneyConstants::BTC_PRECISION);
     }
 }

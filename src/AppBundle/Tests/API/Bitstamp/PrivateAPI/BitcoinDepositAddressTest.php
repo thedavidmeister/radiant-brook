@@ -5,7 +5,7 @@ namespace AppBundle\Tests\API\Bitstamp\PrivateAPI;
 /**
  * Tests the Bitstamp BitcoinDepositAddress class.
  */
-class BitcoinDepositAddressTest extends PrivateAPITest
+class BitcoinDepositAddressTest extends AbstractPrivateAPITest
 {
     protected $endpoint = 'bitcoin_deposit_address';
     // @todo replace these samples with real data.

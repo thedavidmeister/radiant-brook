@@ -15,6 +15,16 @@ class FeesTest extends WebTestCase
 {
     use GuzzleTestTrait;
 
+    protected function sample()
+    {
+        return $this->sample;
+    }
+
+    protected function sample2()
+    {
+        return $this->sample2;
+    }
+
     protected $sample = '{"btc_reserved":"0.10020833","fee":"0.2500","btc_available":"0.17213602","usd_reserved":"8.02","btc_balance":"0.27234435","usd_balance":"8.51","usd_available":"0.49"}';
     // Same as $sample but with 0.24 fees.
     protected $sample2 = '{"btc_reserved":"0.10020833","fee":"0.2400","btc_available":"0.17213602","usd_reserved":"8.02","btc_balance":"0.27234435","usd_balance":"8.51","usd_available":"0.49"}';
@@ -133,28 +143,28 @@ class FeesTest extends WebTestCase
     public function testIsofeeMaxUSD()
     {
         $tests = [
-          [200, 400, 416],
-          [250, 400, 416],
-          [300, 400, 416],
-          [350, 400, 416],
-          [400, 400, 416],
-          [450, 800, 833],
-          [500, 800, 833],
-          [550, 800, 833],
-          [600, 800, 833],
-          [650, 800, 833],
-          [700, 800, 833],
-          [750, 800, 833],
-          [800, 800, 833],
-          [850, 1200, 1250],
-          [900, 1200 ,1250],
-          [950, 1200, 1250],
-          [1000, 1200, 1250],
-          [1050, 1200, 1250],
-          [1100, 1200, 1250],
-          [1150, 1200, 1250],
-          [1200, 1200, 1250],
-          [1250, 1600, 1250],
+            [200, 400, 416],
+            [250, 400, 416],
+            [300, 400, 416],
+            [350, 400, 416],
+            [400, 400, 416],
+            [450, 800, 833],
+            [500, 800, 833],
+            [550, 800, 833],
+            [600, 800, 833],
+            [650, 800, 833],
+            [700, 800, 833],
+            [750, 800, 833],
+            [800, 800, 833],
+            [850, 1200, 1250],
+            [900, 1200, 1250],
+            [950, 1200, 1250],
+            [1000, 1200, 1250],
+            [1050, 1200, 1250],
+            [1100, 1200, 1250],
+            [1150, 1200, 1250],
+            [1200, 1200, 1250],
+            [1250, 1600, 1250],
         ];
         foreach ($tests as $test) {
             $this->assertEquals(Money::USD($test[1]), $this->fees()->isofeeMaxUSD(Money::USD($test[0])));

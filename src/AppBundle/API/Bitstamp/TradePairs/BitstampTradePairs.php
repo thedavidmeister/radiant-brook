@@ -2,9 +2,8 @@
 
 namespace AppBundle\API\Bitstamp\TradePairs;
 
-use AppBundle\Secrets;
-use Money\Money;
 use AppBundle\API\Bitstamp\TradePairs\PriceProposer;
+use AppBundle\Secrets;
 use Respect\Validation\Validator as v;
 
 /**
@@ -32,6 +31,21 @@ class BitstampTradePairs
 {
     const IS_TRADING_SECRET = 'BITSTAMP_IS_TRADING';
 
+    // Bitstamp Fees service.
+    protected $fees;
+
+    // Bitstamp Dupes service.
+    protected $dupes;
+
+    // Combined Bitstamp buy/sell service.
+    protected $buySell;
+
+    // Bitstamp proposer service.
+    protected $proposer;
+
+    // The Secrets service.
+    protected $secrets;
+
     /**
      * Constructor to store services passed by Symfony.
      *
@@ -46,19 +60,33 @@ class BitstampTradePairs
      *
      * @param PriceProposer $proposer
      *   Bitstamp proposer service.
+     *
+     * @param Secrets       $secrets
+     *   The Secrets service.
      */
     public function __construct(
         Fees $fees,
         Dupes $dupes,
         BuySell $buySell,
-        PriceProposer $proposer
+        PriceProposer $proposer,
+        Secrets $secrets
     )
     {
         $this->fees = $fees;
         $this->dupes = $dupes;
         $this->buySell = $buySell;
         $this->proposer = $proposer;
-        $this->secrets = new Secrets();
+        $this->secrets = $secrets;
+    }
+
+    /**
+     * Provides read-only access to the protected $fees property.
+     *
+     * @return Fees
+     */
+    public function fees()
+    {
+        return $this->fees;
     }
 
     /**
@@ -139,7 +167,7 @@ class BitstampTradePairs
     {
         $report = [];
         foreach ($this->proposer as $proposition) {
-            $tradeProposal = new TradeProposal($proposition, $this->fees);
+            $tradeProposal = new TradeProposal($proposition, $this->fees, $this->secrets);
             $report[] = $this->validateTradeProposal($tradeProposal);
         }
 
@@ -160,17 +188,17 @@ class BitstampTradePairs
     public function validateTradeProposal(TradeProposalInterface $tradeProposal)
     {
         // Validate the $tradeProposal so that it has a state.
-        $tradeProposal->validate();
+        $tradeProposal->shouldBeValid();
 
         // This proposition is not profitable, but others may be.
         if (!$tradeProposal->isProfitable()) {
-            $tradeProposal->invalidate('Not a profitable trade proposition.');
+            $tradeProposal->shouldNotBeValid('Not a profitable trade proposition.');
         }
 
         // If we found dupes, we cannot continue trading, ensureFinal.
         if (!empty($this->dupes->bids($tradeProposal->bidUSDPrice()) + $this->dupes->asks($tradeProposal->askUSDPrice()))) {
-            $tradeProposal->invalidate('Duplicate trade pairs found.');
-            $tradeProposal->ensureFinal('Duplicate trade pairs found.');
+            $tradeProposal->shouldNotBeValid('Duplicate trade pairs found.');
+            $tradeProposal->shouldBeFinal('Duplicate trade pairs found.');
         }
 
         return $tradeProposal;
