@@ -246,10 +246,7 @@ class OrderList
             // Get the last sum, so we can add a running total.
             $last = [] === $carry ? Money::BTC(0) : end($carry)[self::PERCENTILE_KEY];
 
-            $compare = $this->buildPercentileCompareArray($datum, $last->add($datum[self::BTC_KEY]));
-
-            // Add to the carry.
-            $carry[] = $compare;
+            $carry[] = $this->buildPercentileCompareArray($datum, $last->add($datum[self::BTC_KEY]));
 
             return $carry;
         }, []);
@@ -281,10 +278,7 @@ class OrderList
             // Get the last sum, so we can add to it for a running total.
             $last = [] === $carry ? Money::USD(0) : end($carry)[self::PERCENTILE_KEY];
 
-            $compare = $this->buildPercentileCompareArray($datum, $last->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount())));
-
-            // Add to the carry.
-            $carry[] = $compare;
+            $carry[] = $this->buildPercentileCompareArray($datum, $last->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount())));
 
             return $carry;
         }, []);
