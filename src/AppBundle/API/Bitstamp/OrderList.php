@@ -154,13 +154,9 @@ class OrderList
      */
     public function totalVolume()
     {
-        $function = function($carry, $datum) {
-            $carry = isset($carry) ? $carry : Money::BTC(0);
-
+        return $this->totalCachedReduce(__FUNCTION__, function($carry, $datum) {
             return $carry->add($datum[self::BTC_KEY]);
-        };
-
-        return $this->totalCachedReduce(__FUNCTION__, $function);
+        }, Money::BTC(0));
     }
 
     /**
@@ -171,13 +167,9 @@ class OrderList
      */
     public function totalCap()
     {
-        $function = function($carry, $datum) {
-            $carry = isset($carry) ? $carry : Money::USD(0);
-
+        return $this->totalCachedReduce(__FUNCTION__, function($carry, $datum) {
             return $carry->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
-        };
-
-        return $this->totalCachedReduce(__FUNCTION__, $function);
+        }, Money::USD(0));
     }
 
     /**
@@ -189,12 +181,15 @@ class OrderList
      *
      * @return int
      */
-    protected function totalCachedReduce($name, callable $function)
+    protected function totalCachedReduce($name, callable $function, Money $carry)
     {
         v::notEmpty()->string()->check($name);
 
         if (!isset($this->totalCachedReduce[$name])) {
-            $cap = array_reduce($this->data, $function);
+            // Do the reduce.
+            $cap = array_reduce($this->data, $function, $carry);
+
+            // Cache it.
             $this->totalCachedReduce[$name] = $cap->getAmount();
         }
 
