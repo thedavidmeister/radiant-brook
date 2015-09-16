@@ -96,13 +96,13 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\MoneyStringsUtil::btcToString
+     * Data provider for testBtcToString
      *
-     * @group stable
+     * @return array[]
      */
-    public function testBtcToString()
+    public function dataBtcToString()
     {
-        $tests = [
+        return [
             ['0.00000001', Money::BTC(1)],
             ['0.00000010', Money::BTC(10)],
             ['0.00000100', Money::BTC(100)],
@@ -115,10 +115,23 @@ class MoneyStringsTest extends WebTestCase
             ['1.23456789', Money::BTC(123456789)],
             ['12.34567891', Money::BTC(1234567891)],
         ];
+    }
 
-        foreach ($tests as $test) {
-            $this->assertSame($test[0], MoneyStringsUtil::btcToString($test[1]));
-        }
+    /**
+     * @covers AppBundle\MoneyStringsUtil::btcToString
+     *
+     * @dataProvider dataBtcToString
+     *
+     * @param string $string
+     * @param Money  $btc
+     *
+     * @group stable
+     */
+    public function testBtcToString($string, Money $btc)
+    {
+        v::string()->check($string);
+
+        $this->assertSame($string, MoneyStringsUtil::btcToString($btc));
     }
 
     /**
@@ -149,6 +162,8 @@ class MoneyStringsTest extends WebTestCase
      */
     public function testUsdToString($string, Money $usd)
     {
+        v::string()->check($string);
+
         $this->assertSame($string, MoneyStringsUtil::usdToString($usd));
     }
 
