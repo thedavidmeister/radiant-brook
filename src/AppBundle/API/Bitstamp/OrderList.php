@@ -242,7 +242,7 @@ class OrderList
     {
         $index = Money::BTC((int) ceil($this->totalVolume() * $this->percentileCheck($percentile)));
 
-        $compares = $this->buildPercentileCompares(__FUNCTION__, Money::BTC(0), function (array $datum, Money $last) {
+        $compares = $this->buildPercentileCompares(__FUNCTION__, Money::BTC(0), function(array $datum, Money $last) {
             return $last->add($datum[self::BTC_KEY]);
         });
 
