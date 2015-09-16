@@ -174,12 +174,13 @@ class OrderList
 
     /**
      * Array reduce and cache based on provided function.
-     * @param string $name
+     * @param string   $name
      *   Cache ID.
      * @param callable $function
      *   Array reduce function.
+     * @param mixed    $carry
      *
-     * @return int
+     * @return mixed
      */
     protected function totalCachedReduce($name, callable $function, $carry)
     {
@@ -245,11 +246,7 @@ class OrderList
                 // Get the last sum, so we can add a running total.
                 $last = [] === $carry ? Money::BTC(0) : end($carry)[self::PERCENTILE_KEY];
 
-                // Build a simple array we can compare the index against.
-                $compare = [
-                    self::USD_KEY => $datum[self::USD_KEY]->getAmount(),
-                    self::PERCENTILE_KEY => $last->add($datum[self::BTC_KEY]),
-                ];
+                $compare = $this->buildPercentileCompareArray($datum, $last->add($datum[self::BTC_KEY]));
 
                 // Add to the carry.
                 $carry[] = $compare;
@@ -284,11 +281,7 @@ class OrderList
             // Get the last sum, so we can add to it for a running total.
             $last = [] === $carry ? Money::USD(0) : end($carry)[self::PERCENTILE_KEY];
 
-            // Build a simple array we can compare the index against.
-            $compare = [
-                self::USD_KEY => $datum[self::USD_KEY]->getAmount(),
-                self::PERCENTILE_KEY => $last->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount())),
-            ];
+            $compare = $this->buildPercentileCompareArray($datum, $last->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount())));
 
             // Add to the carry.
             $carry[] = $compare;
@@ -301,7 +294,16 @@ class OrderList
         return $this->percentileIndexCompare($index, $percentileCap);
     }
 
-    protected function prePercentileCheck($percentile) {
+    protected function buildPercentileCompareArray(array $datum, Money $percentile)
+    {
+        return [
+            self::USD_KEY => $datum[self::USD_KEY]->getAmount(),
+            self::PERCENTILE_KEY => $percentile,
+        ];
+    }
+
+    protected function prePercentileCheck($percentile)
+    {
         v::numeric()->between(0, 1, true)->check($percentile);
         $percentile = (float) $percentile;
         $this->sortUSDAsc();
