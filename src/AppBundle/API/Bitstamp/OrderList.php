@@ -244,7 +244,7 @@ class OrderList
 
         $percentileBTCVolume = $this->totalCachedReduce(__FUNCTION__, function($carry, $datum) {
             // Get the last sum, so we can add a running total.
-            $last = [] === $carry ? Money::BTC(0) : end($carry)[self::PERCENTILE_KEY];
+            $last = $this->runningTotalFromPercentileCarry($carry, Money::BTC(0));
 
             $carry[] = $this->buildPercentileCompareArray($datum, $last->add($datum[self::BTC_KEY]));
 
@@ -276,7 +276,7 @@ class OrderList
 
         $percentileCap = $this->totalCachedReduce(__FUNCTION__, function($carry, $datum) {
             // Get the last sum, so we can add to it for a running total.
-            $last = [] === $carry ? Money::USD(0) : end($carry)[self::PERCENTILE_KEY];
+            $last = $this->runningTotalFromPercentileCarry($carry, Money::USD(0));
 
             $carry[] = $this->buildPercentileCompareArray($datum, $last->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount())));
 
@@ -286,6 +286,10 @@ class OrderList
         $index = Money::USD((int) ceil($this->totalCap() * $percentile));
 
         return $this->percentileIndexCompare($index, $percentileCap);
+    }
+
+    protected function runningTotalFromPercentileCarry(array $carry, Money $start) {
+        return [] === $carry ? $start : end($carry)[self::PERCENTILE_KEY];
     }
 
     protected function buildPercentileCompareArray(array $datum, Money $percentile)
