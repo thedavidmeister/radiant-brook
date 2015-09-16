@@ -1,28 +1,48 @@
-bitstamp-symfony
-================
+# Radiant brook
 
-A Symfony project created on April 6, 2015, 2:38 pm.
+## What is Radiant brook?
 
+A simple command line process that scans a market, calculates percentiles of the market, then places bids/asks across the spread based on these percentiles.
 
-## Release steps for major versions
+Additionally, historical data of your account balance can be collected using a snapshot tool and pushed to Keen.IO.
 
-1. Disable the trade scheduler on Heroku
+## What things can be traded?
 
-$ php app/console trade:bitstamp
+Currently only Bitcoin.
 
-2. Check environment variables on Heroku
+## Why bitcoin?
 
-3. Check tests
+Because it's possible to trade bitcoin with a relatively low balance (a few hundred $USD is enough to get started) which makes it easy to prototype things and make mistakes without losing the house.
 
-$ rake tests
+## What markets are supported?
 
-4. Screenshot stats from prod
+Only Bitstamp currently.
 
-https://radiant-brook-3028.herokuapp.com/trade/trade
-https://radiant-brook-3028.herokuapp.com/trade/order_book
+## What markets might be supported in the future?
 
-5. Push to master so that Codeship picks it up
+Other Bitcoin markets are obvious candidates for relatively swift integrations. Kraken is high on the list of candidates, for example.
 
-6. After deploy check screenshots vs prod
+Gold/Silver markets with APIs, like [BullionVault](https://www.bullionvault.com/help/API_terms.html), for example.
 
-7. Enable the trade scheduler on Heroku
+Other cryptocurrency markets.
+
+Other things that can be bought/sold relatively easily through an API, with a public order book for gauging market depth.
+
+## What is it written in?
+
+Symfony 2, PHP.
+
+Also, for snapshots to work, you will need a free [Keen.IO](https://keen.io/) subscription.
+
+## Why don't you write it in X?
+
+Maybe, someday.
+
+## Does it have unit tests?
+
+Yes.
+
+## How do I set this up for myself?
+
+1. Find the `.env.example` file (check `src/AppBundle`) and then create a `.env` file with your own settings/API keys OR export environment variables for each.
+2. Run `app/console trade:bitstamp` whenever you like, this could even be a cron job or whatever
