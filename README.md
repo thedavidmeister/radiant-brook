@@ -15,7 +15,7 @@ Additionally, historical data of your account balance can be collected using a s
 
 ## What things can be traded?
 
-Currently only Bitcoin.
+Currently only bitcoin.
 
 ## Why bitcoin?
 
@@ -23,11 +23,11 @@ Because it's possible to trade bitcoin with a relatively low balance (a few hund
 
 ## What markets are supported?
 
-Only Bitstamp currently.
+Only [Bitstamp](https://www.bitstamp.net/) currently.
 
 ## What markets might be supported in the future?
 
-Other Bitcoin markets are obvious candidates for relatively swift integrations. Kraken is high on the list of candidates, for example.
+Other bitcoin markets are obvious candidates for relatively swift integrations. Kraken is high on the list of candidates, for example.
 
 Gold/Silver markets with APIs, like [BullionVault](https://www.bullionvault.com/help/API_terms.html), for example.
 
@@ -45,13 +45,13 @@ No, for a few reasons:
 
 ## What is it written in?
 
-Symfony 2, PHP.
+Symfony 2, PHP. There are no plans to maintain backwards compatibility for PHP versions - I am fully planning to jump to PHP7 and not look back (although I will bump the major version number of the repo when I do this).
 
 Also, for snapshots to work, you will need a free [Keen.IO](https://keen.io/) subscription.
 
 ## Why don't you write it in X?
 
-Maybe, someday.
+Maybe, someday. I mean, it would be a lot of work, so there would need to be a very good reason.
 
 ## Why did you make this?
 
@@ -64,7 +64,7 @@ Yes.
 ## How do I set this up for myself?
 
 1. Find the `.env.example` file (check `src/AppBundle`) and then create a `.env` file with your own settings/API keys OR export environment variables for each.
-2. Run `app/console trade:bitstamp` whenever you like, this could even be a cron job or whatever
+2. Run `app/console trade:bitstamp` whenever you like, this could even be a cron job or whatevs.
 
 ## What is the license?
 
