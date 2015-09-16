@@ -34,6 +34,10 @@ Symfony 2, PHP.
 
 Also, for snapshots to work, you will need a free [Keen.IO](https://keen.io/) subscription.
 
+## What is the license?
+
+MIT license, same as Symfony 2. See License.md.
+
 ## Why don't you write it in X?
 
 Maybe, someday.
