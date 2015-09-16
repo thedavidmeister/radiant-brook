@@ -210,7 +210,7 @@ class MoneyStringsTest extends WebTestCase
      */
     public function dataStringToBTC()
     {
-        return array_map(function($test) { return [Money::BTC($test[0]), $test[1]]; }, [
+        $data = [
             [1, '.00000001'],
             [1, '0.00000001'],
             [10, '0.0000001'],
@@ -226,13 +226,23 @@ class MoneyStringsTest extends WebTestCase
             [123456789, '1.23456789'],
             [123456790, '1.234567899'],
             [123456789, '1.234567893'],
-        ]);
+        ];
+
+        return array_map(function($test) {
+            return [Money::BTC($test[0]), $test[1]];
+        }, $data);
     }
 
     /**
      * @covers AppBundle\MoneyStringsUtil::stringToBTC
      *
      * @dataProvider dataStringToBTC
+     *
+     * @param Money  $btc
+     *   The expected BTC.
+     *
+     * @param string $string
+     *   The string that should result in the expected BTC.
      *
      * @group stable
      */
