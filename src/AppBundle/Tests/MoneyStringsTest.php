@@ -203,33 +203,43 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
+     * Data provider for testStringToBTC
+     *
+     * @return array[]
+     */
+    public function dataStringToBTC()
+    {
+        return array_map(function($test) { return [Money::BTC($test[0]), $test[1]]; }, [
+            [1, '.00000001'],
+            [1, '0.00000001'],
+            [10, '0.0000001'],
+            [100, '0.000001'],
+            [1000, '0.00001'],
+            [10000, '0.0001'],
+            [100000, '0.001'],
+            [1000000, '0.01'],
+            [10000000, '0.1'],
+            [100000000, '1'],
+            [100000000, '1.'],
+            [100000000, '1.0'],
+            [123456789, '1.23456789'],
+            [123456790, '1.234567899'],
+            [123456789, '1.234567893'],
+        ]);
+    }
+
+    /**
      * @covers AppBundle\MoneyStringsUtil::stringToBTC
+     *
+     * @dataProvider dataStringToBTC
      *
      * @group stable
      */
-    public function testStringToBTC()
+    public function testStringToBTC(Money $btc, $string)
     {
-        $tests = [
-            [Money::BTC(1), '.00000001'],
-            [Money::BTC(1), '0.00000001'],
-            [Money::BTC(10), '0.0000001'],
-            [Money::BTC(100), '0.000001'],
-            [Money::BTC(1000), '0.00001'],
-            [Money::BTC(10000), '0.0001'],
-            [Money::BTC(100000), '0.001'],
-            [Money::BTC(1000000), '0.01'],
-            [Money::BTC(10000000), '0.1'],
-            [Money::BTC(100000000), '1'],
-            [Money::BTC(100000000), '1.'],
-            [Money::BTC(100000000), '1.0'],
-            [Money::BTC(123456789), '1.23456789'],
-            [Money::BTC(123456790), '1.234567899'],
-            [Money::BTC(123456789), '1.234567893'],
-        ];
+        v::string()->check($string);
 
-        foreach ($tests as $test) {
-            $this->assertEquals($test[0], MoneyStringsUtil::stringToBTC($test[1]));
-        }
+        $this->assertEquals($btc, MoneyStringsUtil::stringToBTC($string));
     }
 
     /**
