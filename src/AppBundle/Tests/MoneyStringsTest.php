@@ -148,23 +148,19 @@ class MoneyStringsTest extends WebTestCase
      */
     public function dataStringToUSD()
     {
-        $data = [
-            [10000, '$100'],
-            [10000, '$$100'],
-            [10000, '100'],
-            [10000, '100.0'],
-            [10000, '100.00'],
-            [100, '1.00'],
-            [1, '0.01'],
-            [1, '.01'],
-            [123, '1.23'],
-            [123, '1.234'],
-            [124, '1.235'],
+        return [
+            [Money::USD(10000), '$100'],
+            [Money::USD(10000), '$$100'],
+            [Money::USD(10000), '100'],
+            [Money::USD(10000), '100.0'],
+            [Money::USD(10000), '100.00'],
+            [Money::USD(100), '1.00'],
+            [Money::USD(1), '0.01'],
+            [Money::USD(1), '.01'],
+            [Money::USD(123), '1.23'],
+            [Money::USD(123), '1.234'],
+            [Money::USD(124), '1.235'],
         ];
-
-        return array_map(function($test) {
-            return [Money::USD($test[0]), $test[1]];
-        }, $data);
     }
 
     /**
