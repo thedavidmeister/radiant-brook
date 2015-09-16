@@ -86,7 +86,6 @@ class OrderListTest extends WebTestCase
             'min' => ['pair'],
             'max' => ['pair'],
             'totalVolume' => ['aggregate'],
-            'totalCap' => ['aggregate'],
             'percentileBTCVolume' => ['aggregate', 0.2],
             'percentileCap' => ['aggregate', 0.2],
         ];

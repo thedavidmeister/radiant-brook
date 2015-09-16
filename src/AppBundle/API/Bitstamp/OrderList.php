@@ -154,16 +154,14 @@ class OrderList
      */
     public function totalVolume()
     {
-        if (!isset($this->totalVolume)) {
-            $volume = array_reduce($this->data, function($carry, $datum) {
-                return $carry->add($datum[self::BTC_KEY]);
-            }, Money::BTC(0));
-            $this->totalVolume = $volume->getAmount();
-        }
+        $function = function($carry, $datum) {
+            $carry = isset($carry) ? $carry : Money::BTC(0);
 
-        return $this->totalVolume;
+            return $carry->add($datum[self::BTC_KEY]);
+        };
+
+        return $this->totalCachedReduce(__FUNCTION__, $function);
     }
-    protected $totalVolume;
 
     /**
      * Calculates total capitalisation of the order list.
@@ -173,16 +171,36 @@ class OrderList
      */
     public function totalCap()
     {
-        if (!isset($this->totalCap)) {
-            $cap = array_reduce($this->data, function($carry, $datum) {
-                return $carry->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
-            }, Money::USD(0));
-            $this->totalCap = $cap->getAmount();
+        $function = function($carry, $datum) {
+            $carry = isset($carry) ? $carry : Money::USD(0);
+
+            return $carry->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
+        };
+
+        return $this->totalCachedReduce(__FUNCTION__, $function);
+    }
+
+    /**
+     * Array reduce and cache based on provided function.
+     * @param string $name
+     *   Cache ID.
+     * @param callable $function
+     *   Array reduce function.
+     *
+     * @return int
+     */
+    protected function totalCachedReduce($name, callable $function)
+    {
+        v::notEmpty()->string()->check($name);
+
+        if (!isset($this->totalCachedReduce[$name])) {
+            $cap = array_reduce($this->data, $function);
+            $this->totalCachedReduce[$name] = $cap->getAmount();
         }
 
-        return $this->totalCap;
+        return $this->totalCachedReduce[$name];
     }
-    protected $totalCap;
+    protected $totalCachedReduce = [];
 
     /**
      * Calculate a percentiles using the "Nearest rank" method.
