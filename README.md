@@ -1,6 +1,6 @@
 # Radiant brook
 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/thedavidmeister/radiant-brook/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/thedavidmeister/radiant-brook/?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/thedavidmeister/radiant-brook/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/thedavidmeister/radiant-brook/?branch=master) [![Build Status](https://scrutinizer-ci.com/g/thedavidmeister/radiant-brook/badges/build.png?b=master)](https://scrutinizer-ci.com/g/thedavidmeister/radiant-brook/build-status/master)
 
 ## What is Radiant brook?
 
