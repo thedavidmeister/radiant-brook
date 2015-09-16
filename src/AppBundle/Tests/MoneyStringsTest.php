@@ -5,6 +5,7 @@ namespace AppBundle\Tests;
 use AppBundle\MoneyStringsUtil;
 use Money\Money;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Respect\Validation\Validator as v;
 
 /**
  * Tests for AppBundle\MoneyStringsUtil
