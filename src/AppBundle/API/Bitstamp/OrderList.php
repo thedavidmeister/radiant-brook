@@ -243,15 +243,15 @@ class OrderList
         $percentile = $this->prePercentileCheck($percentile);
 
         $percentileBTCVolume = $this->totalCachedReduce(__FUNCTION__, function($carry, $datum) {
-                // Get the last sum, so we can add a running total.
-                $last = [] === $carry ? Money::BTC(0) : end($carry)[self::PERCENTILE_KEY];
+            // Get the last sum, so we can add a running total.
+            $last = [] === $carry ? Money::BTC(0) : end($carry)[self::PERCENTILE_KEY];
 
-                $compare = $this->buildPercentileCompareArray($datum, $last->add($datum[self::BTC_KEY]));
+            $compare = $this->buildPercentileCompareArray($datum, $last->add($datum[self::BTC_KEY]));
 
-                // Add to the carry.
-                $carry[] = $compare;
+            // Add to the carry.
+            $carry[] = $compare;
 
-                return $carry;
+            return $carry;
         }, []);
 
         $index = Money::BTC((int) ceil($this->totalVolume() * $percentile));
