@@ -8,6 +8,7 @@ namespace AppBundle\API\Bitstamp;
 
 use AppBundle\MoneyStringsUtil;
 use Money\Money;
+use Money\Currency;
 use Respect\Validation\Validator as v;
 
 /**
@@ -240,13 +241,11 @@ class OrderList
      */
     public function percentileBTCVolume($percentile)
     {
-        $index = Money::BTC((int) ceil($this->totalVolume() * $this->percentileCheck($percentile)));
-
         $compares = $this->buildPercentileCompares(__FUNCTION__, Money::BTC(0), function (array $datum, Money $last) {
             return $last->add($datum[self::BTC_KEY]);
         });
 
-        return $this->percentileIndexCompare($index, $compares);
+        return $this->percentileIndexCompare($this->percentileIndex($percentile, [$this, 'totalVolume'], new Currency('BTC')), $compares);
     }
 
     /**
@@ -265,13 +264,19 @@ class OrderList
      */
     public function percentileCap($percentile)
     {
-        $index = Money::USD((int) ceil($this->totalCap() * $this->percentileCheck($percentile)));
-
         $compares = $this->buildPercentileCompares(__FUNCTION__, Money::USD(0), function(array $datum, Money $last) {
             return $last->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
         });
 
-        return $this->percentileIndexCompare($index, $compares);
+        return $this->percentileIndexCompare($this->percentileIndex($percentile, [$this, 'totalCap'], new Currency('USD')), $compares);
+    }
+
+    protected function percentileIndex($percentile, $function, Currency $currency)
+    {
+        v::numeric()->between(0, 1, true)->check($percentile);
+        $percentile = (float) $percentile;
+
+        return new Money((int) ceil(call_user_func($function) * $percentile), $currency);
     }
 
     protected function buildPercentileCompares($name, Money $start, callable $amountCalculator)
@@ -288,14 +293,6 @@ class OrderList
 
             return $carry;
         }, []);
-    }
-
-    protected function percentileCheck($percentile)
-    {
-        v::numeric()->between(0, 1, true)->check($percentile);
-        $percentile = (float) $percentile;
-
-        return $percentile;
     }
 
     /**
