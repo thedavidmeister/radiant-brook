@@ -5,11 +5,13 @@
 
 ## What is Radiant brook?
 
-A simple command line process that scans a market, calculates percentiles of the market, then places bids/asks across the spread based on these percentiles.
+A simple command line process that scans a market, calculates configurable [percentiles](http://en.wikipedia.org/wiki/Percentile) of the market depth, then places bids/asks across the spread based on these percentiles.
+
+The minimum and maximum percentiles for a spread, and a step size, are configurable. The bot will loop from the minimum to the maximum percentile in increments of the step size and place a trade pair at the first spread found that meets the minimum USD and BTC profit requirements (also configurable).
 
 Duplicates trades are detected, within a configurable tolerance, and will not be placed.
 
-Additionally, historical data of your account balance can be collected using a snapshot tool and pushed to Keen.IO.
+Additionally, historical data of your account balance can be collected using a snapshot tool and pushed to [Keen.IO](https://keen.io/).
 
 ## What things can be traded?
 
