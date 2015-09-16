@@ -5,6 +5,7 @@ namespace AppBundle\Tests;
 use AppBundle\MoneyStringsUtil;
 use Money\Money;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Respect\Validation\Validator as v;
 
 /**
  * Tests for AppBundle\MoneyStringsUtil
@@ -95,13 +96,13 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\MoneyStringsUtil::btcToString
+     * Data provider for testBtcToString
      *
-     * @group stable
+     * @return array[]
      */
-    public function testBtcToString()
+    public function dataBtcToString()
     {
-        $tests = [
+        return [
             ['0.00000001', Money::BTC(1)],
             ['0.00000010', Money::BTC(10)],
             ['0.00000100', Money::BTC(100)],
@@ -114,40 +115,66 @@ class MoneyStringsTest extends WebTestCase
             ['1.23456789', Money::BTC(123456789)],
             ['12.34567891', Money::BTC(1234567891)],
         ];
-
-        foreach ($tests as $test) {
-            $this->assertSame($test[0], MoneyStringsUtil::btcToString($test[1]));
-        }
     }
 
     /**
-     * @covers AppBundle\MoneyStringsUtil::usdToString
+     * @covers AppBundle\MoneyStringsUtil::btcToString
+     *
+     * @dataProvider dataBtcToString
+     *
+     * @param string $string
+     * @param Money  $btc
      *
      * @group stable
      */
-    public function testUsdToString()
+    public function testBtcToString($string, Money $btc)
     {
-        $tests = [
+        v::string()->check($string);
+
+        $this->assertSame($string, MoneyStringsUtil::btcToString($btc));
+    }
+
+    /**
+     * Data provider for testUsdToString
+     *
+     * @return array[]
+     */
+    public function dataUsdToString()
+    {
+        return [
             ['0.01', Money::USD(1)],
             ['0.10', Money::USD(10)],
             ['1.00', Money::USD(100)],
             ['1.23', Money::USD(123)],
             ['12.34', Money::USD(1234)],
         ];
-
-        foreach ($tests as $test) {
-            $this->assertSame($test[0], MoneyStringsUtil::usdToString($test[1]));
-        }
     }
 
     /**
-     * @covers AppBundle\MoneyStringsUtil::stringToUSD
+     * @covers AppBundle\MoneyStringsUtil::usdToString
+     *
+     * @dataProvider dataUsdToString
+     *
+     * @param string $string
+     * @param Money  $usd
      *
      * @group stable
      */
-    public function testStringToUSD()
+    public function testUsdToString($string, Money $usd)
     {
-        $tests = [
+        v::string()->check($string);
+
+        $this->assertSame($string, MoneyStringsUtil::usdToString($usd));
+    }
+
+    /**
+     * Data provider for testStringToUSD
+     *
+     * @return array[]
+     */
+    public function dataStringToUSD()
+    {
+        return [
             [Money::USD(10000), '$100'],
             [Money::USD(10000), '$$100'],
             [Money::USD(10000), '100'],
@@ -160,10 +187,26 @@ class MoneyStringsTest extends WebTestCase
             [Money::USD(123), '1.234'],
             [Money::USD(124), '1.235'],
         ];
+    }
 
-        foreach ($tests as $test) {
-            $this->assertEquals($test[0], MoneyStringsUtil::stringToUSD($test[1]));
-        }
+    /**
+     * @covers AppBundle\MoneyStringsUtil::stringToUSD
+     *
+     * @dataProvider dataStringToUSD
+     *
+     * @param Money  $usd
+     *   The expected USD.
+     *
+     * @param string $string
+     *   The string that should result in the expected USD.
+     *
+     * @group stable
+     */
+    public function testStringToUSD(Money $usd, $string)
+    {
+        v::string()->check($string);
+
+        $this->assertEquals($usd, MoneyStringsUtil::stringToUSD($string));
     }
 
     /**
@@ -203,13 +246,13 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\MoneyStringsUtil::stringToBTC
+     * Data provider for testStringToBTC
      *
-     * @group stable
+     * @return array[]
      */
-    public function testStringToBTC()
+    public function dataStringToBTC()
     {
-        $tests = [
+        return [
             [Money::BTC(1), '.00000001'],
             [Money::BTC(1), '0.00000001'],
             [Money::BTC(10), '0.0000001'],
@@ -226,10 +269,26 @@ class MoneyStringsTest extends WebTestCase
             [Money::BTC(123456790), '1.234567899'],
             [Money::BTC(123456789), '1.234567893'],
         ];
+    }
 
-        foreach ($tests as $test) {
-            $this->assertEquals($test[0], MoneyStringsUtil::stringToBTC($test[1]));
-        }
+    /**
+     * @covers AppBundle\MoneyStringsUtil::stringToBTC
+     *
+     * @dataProvider dataStringToBTC
+     *
+     * @param Money  $btc
+     *   The expected BTC.
+     *
+     * @param string $string
+     *   The string that should result in the expected BTC.
+     *
+     * @group stable
+     */
+    public function testStringToBTC(Money $btc, $string)
+    {
+        v::string()->check($string);
+
+        $this->assertEquals($btc, MoneyStringsUtil::stringToBTC($string));
     }
 
     /**
