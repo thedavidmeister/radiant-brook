@@ -1,5 +1,7 @@
 # Radiant brook
 
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/thedavidmeister/radiant-brook/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/thedavidmeister/radiant-brook/?branch=master)
+
 ## What is Radiant brook?
 
 A simple command line process that scans a market, calculates percentiles of the market, then places bids/asks across the spread based on these percentiles.
