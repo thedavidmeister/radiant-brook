@@ -240,13 +240,13 @@ class OrderList
      */
     public function percentileBTCVolume($percentile)
     {
-        $percentileBTCVolume = $this->buildPercentileCompares(__FUNCTION__, Money::BTC(0), function (array $datum, Money $last) {
+        $index = Money::BTC((int) ceil($this->totalVolume() * $this->percentileCheck($percentile)));
+
+        $compares = $this->buildPercentileCompares(__FUNCTION__, Money::BTC(0), function (array $datum, Money $last) {
             return $last->add($datum[self::BTC_KEY]);
         });
 
-        $index = Money::BTC((int) ceil($this->totalVolume() * $this->percentileCheck($percentile)));
-
-        return $this->percentileIndexCompare($index, $percentileBTCVolume);
+        return $this->percentileIndexCompare($index, $compares);
     }
 
     /**
@@ -265,14 +265,13 @@ class OrderList
      */
     public function percentileCap($percentile)
     {
+        $index = Money::USD((int) ceil($this->totalCap() * $this->percentileCheck($percentile)));
 
-        $percentileCap = $this->buildPercentileCompares(__FUNCTION__, Money::USD(0), function(array $datum, Money $last) {
+        $compares = $this->buildPercentileCompares(__FUNCTION__, Money::USD(0), function(array $datum, Money $last) {
             return $last->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
         });
 
-        $index = Money::USD((int) ceil($this->totalCap() * $this->percentileCheck($percentile)));
-
-        return $this->percentileIndexCompare($index, $percentileCap);
+        return $this->percentileIndexCompare($index, $compares);
     }
 
     protected function buildPercentileCompares($name, Money $start, callable $amountCalculator)
@@ -281,25 +280,15 @@ class OrderList
 
         return $this->totalCachedReduce($name, function($carry, $datum) use ($start, $amountCalculator) {
             // \Psy\Shell::debug(get_defined_vars(), $this);
-            $last = $this->runningTotalFromPercentileCarry($carry, $start);
+            $last = [] === $carry ? $start : end($carry)[self::PERCENTILE_KEY];
 
-            $carry[] = $this->buildPercentileCompareArray($datum, $amountCalculator($datum, $last));
+            $carry[] = [
+                self::USD_KEY => $datum[self::USD_KEY]->getAmount(),
+                self::PERCENTILE_KEY => $amountCalculator($datum, $last),
+            ];
 
             return $carry;
         }, []);
-    }
-
-    protected function runningTotalFromPercentileCarry(array $carry, Money $start)
-    {
-        return [] === $carry ? $start : end($carry)[self::PERCENTILE_KEY];
-    }
-
-    protected function buildPercentileCompareArray(array $datum, Money $percentile)
-    {
-        return [
-            self::USD_KEY => $datum[self::USD_KEY]->getAmount(),
-            self::PERCENTILE_KEY => $percentile,
-        ];
     }
 
     protected function percentileCheck($percentile)
