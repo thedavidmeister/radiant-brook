@@ -122,23 +122,34 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
-     * @covers AppBundle\MoneyStringsUtil::usdToString
+     * Data provider for testUsdToString
      *
-     * @group stable
+     * @return array[]
      */
-    public function testUsdToString()
+    public function dataUsdToString()
     {
-        $tests = [
+        return [
             ['0.01', Money::USD(1)],
             ['0.10', Money::USD(10)],
             ['1.00', Money::USD(100)],
             ['1.23', Money::USD(123)],
             ['12.34', Money::USD(1234)],
         ];
+    }
 
-        foreach ($tests as $test) {
-            $this->assertSame($test[0], MoneyStringsUtil::usdToString($test[1]));
-        }
+    /**
+     * @covers AppBundle\MoneyStringsUtil::usdToString
+     *
+     * @dataProvider dataUsdToString
+     *
+     * @param string $string
+     * @param Money  $usd
+     *
+     * @group stable
+     */
+    public function testUsdToString($string, Money $usd)
+    {
+        $this->assertSame($string, MoneyStringsUtil::usdToString($usd));
     }
 
     /**
