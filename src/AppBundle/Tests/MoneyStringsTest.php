@@ -142,29 +142,49 @@ class MoneyStringsTest extends WebTestCase
     }
 
     /**
+     * Data provider for testStringToUSD
+     *
+     * @return array[]
+     */
+    public function dataStringToUSD()
+    {
+        $data = [
+            [10000, '$100'],
+            [10000, '$$100'],
+            [10000, '100'],
+            [10000, '100.0'],
+            [10000, '100.00'],
+            [100, '1.00'],
+            [1, '0.01'],
+            [1, '.01'],
+            [123, '1.23'],
+            [123, '1.234'],
+            [124, '1.235'],
+        ];
+
+        return array_map(function($test) {
+            return [Money::USD($test[0]), $test[1]];
+        }, $data);
+    }
+
+    /**
      * @covers AppBundle\MoneyStringsUtil::stringToUSD
+     *
+     * @dataProvider dataStringToUSD
+     *
+     * @param Money  $usd
+     *   The expected USD.
+     *
+     * @param string $string
+     *   The string that should result in the expected USD.
      *
      * @group stable
      */
-    public function testStringToUSD()
+    public function testStringToUSD(Money $usd, $string)
     {
-        $tests = [
-            [Money::USD(10000), '$100'],
-            [Money::USD(10000), '$$100'],
-            [Money::USD(10000), '100'],
-            [Money::USD(10000), '100.0'],
-            [Money::USD(10000), '100.00'],
-            [Money::USD(100), '1.00'],
-            [Money::USD(1), '0.01'],
-            [Money::USD(1), '.01'],
-            [Money::USD(123), '1.23'],
-            [Money::USD(123), '1.234'],
-            [Money::USD(124), '1.235'],
-        ];
+        v::string()->check($string);
 
-        foreach ($tests as $test) {
-            $this->assertEquals($test[0], MoneyStringsUtil::stringToUSD($test[1]));
-        }
+        $this->assertEquals($usd, MoneyStringsUtil::stringToUSD($string));
     }
 
     /**
