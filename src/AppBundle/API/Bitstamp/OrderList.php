@@ -279,7 +279,6 @@ class OrderList
         $this->sortUSDAsc();
 
         return $this->totalCachedReduce($name, function($carry, $datum) use ($start, $amountCalculator) {
-            // \Psy\Shell::debug(get_defined_vars(), $this);
             $last = [] === $carry ? $start : end($carry)[self::PERCENTILE_KEY];
 
             $carry[] = [
