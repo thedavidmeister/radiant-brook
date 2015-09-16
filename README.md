@@ -53,6 +53,10 @@ Also, for snapshots to work, you will need a free [Keen.IO](https://keen.io/) su
 
 Maybe, someday.
 
+## Why did you make this?
+
+Because YOLO.
+
 ## Does it have unit tests?
 
 Yes.
