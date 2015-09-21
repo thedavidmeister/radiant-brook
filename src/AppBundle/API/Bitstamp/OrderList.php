@@ -147,59 +147,6 @@ class OrderList
      */
 
     /**
-     * Calculates the total BTC Volume of the order list.
-     *
-     * @return int
-     *   An aggregate value representing the BTC total volume of the order list
-     *   in Satoshis.
-     */
-    public function totalVolume()
-    {
-        return $this->totalCachedReduce(__FUNCTION__, function($carry, $datum) {
-            return $carry->add($datum[self::BTC_KEY]);
-        }, Money::BTC(0))->getAmount();
-    }
-
-    /**
-     * Calculates total capitalisation of the order list.
-     *
-     * @return int
-     *   An aggregate value representing the market cap in USDcentsSatoshis.
-     */
-    public function totalCap()
-    {
-        return $this->totalCachedReduce(__FUNCTION__, function($carry, $datum) {
-            return $carry->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
-        }, Money::USD(0))->getAmount();
-    }
-
-    /**
-     * Array reduce and cache based on provided function.
-     * @param string   $name
-     *   Cache ID.
-     * @param callable $function
-     *   Array reduce function.
-     * @param mixed    $carry
-     *
-     * @return mixed
-     */
-    protected function totalCachedReduce($name, callable $function, $carry)
-    {
-        v::notEmpty()->string()->check($name);
-
-        if (!isset($this->totalCachedReduce[$name])) {
-            // Do the reduce.
-            $reduce = array_reduce($this->data, $function, $carry);
-
-            // Cache it.
-            $this->totalCachedReduce[$name] = $reduce;
-        }
-
-        return $this->totalCachedReduce[$name];
-    }
-    protected $totalCachedReduce = [];
-
-    /**
      * Calculate a percentiles using the "Nearest rank" method.
      *
      * There are multiple ways to calculate percentiles around, the
@@ -250,6 +197,20 @@ class OrderList
         );
     }
 
+    /**
+     * Calculates the total BTC Volume of the order list.
+     *
+     * @return int
+     *   An aggregate value representing the BTC total volume of the order list
+     *   in Satoshis.
+     */
+    public function totalVolume()
+    {
+        return $this->totalCachedReduce(__FUNCTION__, function($carry, $datum) {
+            return $carry->add($datum[self::BTC_KEY]);
+        }, Money::BTC(0))->getAmount();
+    }
+
     protected function totalVolumeCompare(array $datum, Money $last)
     {
         return $last->add($datum[self::BTC_KEY]);
@@ -280,6 +241,23 @@ class OrderList
         );
     }
 
+    /**
+     * Calculates total capitalisation of the order list.
+     *
+     * @return int
+     *   An aggregate value representing the market cap in USDcentsSatoshis.
+     */
+    public function totalCap()
+    {
+        return $this->totalCachedReduce(__FUNCTION__, function($carry, $datum) {
+            return $carry->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
+        }, Money::USD(0))->getAmount();
+    }
+
+    /**
+     * Percentile utility methods.
+     */
+
     protected function totalCapCompare(array $datum, Money $last)
     {
         return $last->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
@@ -289,7 +267,7 @@ class OrderList
     {
         $index = $this->percentileIndex($percentile, $indexFunction, $currency);
 
-        $compares = $this->buildPercentileCompares($name, new Money(0, $currency), $compareFunction);
+        $compares = $this->buildPercentileCompares($name, $currency, $compareFunction);
 
         return $this->percentileIndexCompare($index, $compares);
     }
@@ -302,9 +280,23 @@ class OrderList
         return new Money((int) ceil(call_user_func($function) * $percentile), $currency);
     }
 
-    protected function buildPercentileCompares($name, Money $start, callable $amountCalculator)
+    /**
+     * Build an array of comparisons for a percentile index.
+     *
+     * @param string $name
+     *   The name of the percentile this compares array is for. Used for caches.
+     * @param Currency $currency
+     *   The currency this percentile is denominated in.
+     * @param callable $amountCalculator
+     *   The callback to process an amount through array_reduce.
+     *
+     * @return array[]
+     */
+    protected function buildPercentileCompares($name, Currency $currency, callable $amountCalculator)
     {
         $this->sortUSDAsc();
+
+        $start = new Money(0, $currency);
 
         return $this->totalCachedReduce($name, function($carry, $datum) use ($start, $amountCalculator) {
             $last = [] === $carry ? $start : end($carry)[self::PERCENTILE_KEY];
@@ -355,4 +347,31 @@ class OrderList
         // Return the lowest element remaining.
         return reset($noBelowIndex)[self::USD_KEY];
     }
+
+    /**
+     * Array reduce and cache based on provided function.
+     *
+     * @param string   $name
+     *   Cache ID.
+     * @param callable $function
+     *   Array reduce function.
+     * @param mixed    $carry
+     *
+     * @return mixed
+     */
+    protected function totalCachedReduce($name, callable $function, $carry)
+    {
+        v::notEmpty()->string()->check($name);
+
+        if (!isset($this->totalCachedReduce[$name])) {
+            // Do the reduce.
+            $reduce = array_reduce($this->data, $function, $carry);
+
+            // Cache it.
+            $this->totalCachedReduce[$name] = $reduce;
+        }
+
+        return $this->totalCachedReduce[$name];
+    }
+    protected $totalCachedReduce = [];
 }

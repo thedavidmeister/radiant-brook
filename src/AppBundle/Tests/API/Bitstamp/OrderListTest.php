@@ -185,6 +185,8 @@ class OrderListTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\OrderList::percentileBTCVolume
+     * @covers AppBundle\API\Bitstamp\OrderList::percentileIndexCompare
+     * @covers AppBundle\API\Bitstamp\OrderList::doPercentile
      *
      * @dataProvider dataPercentileCapExceptions
      *
@@ -206,6 +208,7 @@ class OrderListTest extends WebTestCase
     /**
      * @covers AppBundle\API\Bitstamp\OrderList::percentileBTCVolume
      * @covers AppBundle\API\Bitstamp\OrderList::percentileIndexCompare
+     * @covers AppBundle\API\Bitstamp\OrderList::doPercentile
      *
      * @group stable
      * @slowThreshold 750
@@ -269,6 +272,8 @@ class OrderListTest extends WebTestCase
 
     /**
      * @covers AppBundle\API\Bitstamp\OrderList::percentileCap
+     * @covers AppBundle\API\Bitstamp\OrderList::percentileIndexCompare
+     * @covers AppBundle\API\Bitstamp\OrderList::doPercentile
      *
      * @dataProvider dataPercentileCapExceptions
      *
@@ -290,6 +295,7 @@ class OrderListTest extends WebTestCase
     /**
      * @covers AppBundle\API\Bitstamp\OrderList::percentileCap
      * @covers AppBundle\API\Bitstamp\OrderList::percentileIndexCompare
+     * @covers AppBundle\API\Bitstamp\OrderList::doPercentile
      *
      * @group stable
      *
