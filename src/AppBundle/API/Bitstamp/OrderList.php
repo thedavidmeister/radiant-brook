@@ -241,13 +241,18 @@ class OrderList
      */
     public function percentileBTCVolume($percentile)
     {
-        $indexFunction = [$this, 'totalVolume'];
-        $compareFunction = function(array $datum, Money $last) {
-            return $last->add($datum[self::BTC_KEY]);
-        };
-        $currency = new Currency('BTC');
+        return $this->doPercentile(
+            __FUNCTION__,
+            $percentile,
+            [$this, 'totalVolume'],
+            [$this, 'totalVolumeCompare'],
+            new Currency('BTC')
+        );
+    }
 
-        return $this->doPercentile(__FUNCTION__, $percentile, $indexFunction, $compareFunction, $currency);
+    protected function totalVolumeCompare(array $datum, Money $last)
+    {
+        return $last->add($datum[self::BTC_KEY]);
     }
 
     /**
@@ -266,13 +271,18 @@ class OrderList
      */
     public function percentileCap($percentile)
     {
-        $indexFunction = [$this, 'totalCap'];
-        $compareFunction = function(array $datum, Money $last) {
-            return $last->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
-        };
-        $currency = new Currency('USD');
+        return $this->doPercentile(
+            __FUNCTION__,
+            $percentile,
+            [$this, 'totalCap'],
+            [$this, 'totalCapCompare'],
+            new Currency('USD')
+        );
+    }
 
-        return $this->doPercentile(__FUNCTION__, $percentile, $indexFunction, $compareFunction, $currency);
+    protected function totalCapCompare(array $datum, Money $last)
+    {
+        return $last->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
     }
 
     protected function doPercentile($name, $percentile, $indexFunction, $compareFunction, Currency $currency)
