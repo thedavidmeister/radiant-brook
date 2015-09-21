@@ -254,14 +254,14 @@ class OrderList
         }, Money::USD(0))->getAmount();
     }
 
-    /**
-     * Percentile utility methods.
-     */
-
     protected function totalCapCompare(array $datum, Money $last)
     {
         return $last->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
     }
+
+    /**
+     * Percentile utility methods.
+     */
 
     protected function doPercentile($name, $percentile, $indexFunction, $compareFunction, Currency $currency)
     {
@@ -272,7 +272,18 @@ class OrderList
         return $this->percentileIndexCompare($index, $compares);
     }
 
-    protected function percentileIndex($percentile, $function, Currency $currency)
+    /**
+     * Calculate an index for doPercentile.
+     *
+     * @param float    $percentile
+     *   Float between 0 and 1 (inclusive).
+     * @param callable $function
+     *   Callback to generate the total to multiply the percentile against.
+     * @param Currency $currency
+     *
+     * @return Money
+     */
+    protected function percentileIndex($percentile, callable $function, Currency $currency)
     {
         v::numeric()->between(0, 1, true)->check($percentile);
         $percentile = (float) $percentile;
