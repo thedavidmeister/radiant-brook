@@ -8,7 +8,6 @@ use AppBundle\API\Bitstamp\TradePairs\BuySell;
 use AppBundle\Tests\GuzzleTestTrait;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Stream\Stream;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Handler\MockHandler;
 use Money\Money;
@@ -171,7 +170,7 @@ class BuySellTest extends WebTestCase
         // Bitstamp returns us an error that looks like this if we have no USD
         // left.
         $buyfail = new MockHandler([
-            new Response(200, [], Stream::factory('{"error":{"__all__":["You need $8.02 to open that order. You have only $0.55 available. Check your account balance for details."]}}')),
+            new Response(200, [], '{"error":{"__all__":["You need $8.02 to open that order. You have only $0.55 available. Check your account balance for details."]}}'),
         ]);
 
         // Add the mock subscriber to the client.

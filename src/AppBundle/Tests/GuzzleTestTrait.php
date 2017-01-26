@@ -5,7 +5,6 @@ namespace AppBundle\Tests;
 use AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Stream\Stream;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Handler\MockHandler;
 
@@ -68,8 +67,8 @@ trait GuzzleTestTrait
         switch ($type) {
             case 200:
                 return new MockHandler([
-                    new Response(200, [], Stream::factory($this->sample())),
-                    new Response(200, [], Stream::factory($this->sample2())),
+                    new Response(200, [], $this->sample()),
+                    new Response(200, [], $this->sample2()),
                 ]);
 
             case 'error':
