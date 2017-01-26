@@ -205,7 +205,7 @@ class API implements APIInterface
             throw $exception;
         }
 
-        $data = $response->json();
+        $data = json_decode($response->getBody(), true);
 
         if (!empty($data['error'])) {
             $exception = new \Exception('Bitstamp error: ' . json_encode($data));
