@@ -37,7 +37,7 @@ class Secrets
      */
     public function set($name, $value)
     {
-        v::PHPLabel()->check($name);
+        v::PhpLabel()->check($name);
         v::string()->check($value);
 
         // Get a mutable loader.
@@ -55,7 +55,7 @@ class Secrets
      */
     public function clear($name)
     {
-        v::PHPLabel()->check($name);
+        v::PhpLabel()->check($name);
 
         putenv($name);
         unset($_ENV[$name]);
@@ -73,7 +73,7 @@ class Secrets
      */
     public function get($name)
     {
-        v::PHPLabel()->check($name);
+        v::PhpLabel()->check($name);
 
         $loader = new Loader($this->dotEnvPath());
 
