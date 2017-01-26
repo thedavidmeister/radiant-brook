@@ -7,7 +7,7 @@ use AppBundle\API\Bitstamp\PrivateAPI\Sell;
 use AppBundle\API\Bitstamp\TradePairs\BuySell;
 use AppBundle\Tests\GuzzleTestTrait;
 use GuzzleHttp\Client;
-use GuzzleHttp\Message\Response;
+use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Stream\Stream;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Handler\MockHandler;

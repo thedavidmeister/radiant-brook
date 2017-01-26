@@ -4,7 +4,7 @@ namespace AppBundle\Tests;
 
 use AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator;
 use GuzzleHttp\Client;
-use GuzzleHttp\Message\Response;
+use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Stream\Stream;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Handler\MockHandler;
