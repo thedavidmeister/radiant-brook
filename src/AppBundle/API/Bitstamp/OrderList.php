@@ -8,6 +8,7 @@ namespace AppBundle\API\Bitstamp;
 
 use AppBundle\MoneyStringsUtil;
 use Money\Money;
+use Money\Currency;
 use Respect\Validation\Validator as v;
 
 /**
@@ -146,58 +147,6 @@ class OrderList
      */
 
     /**
-     * Calculates the total BTC Volume of the order list.
-     *
-     * @return int
-     *   An aggregate value representing the BTC total volume of the order list
-     *   in Satoshis.
-     */
-    public function totalVolume()
-    {
-        return $this->totalCachedReduce(__FUNCTION__, function($carry, $datum) {
-            return $carry->add($datum[self::BTC_KEY]);
-        }, Money::BTC(0));
-    }
-
-    /**
-     * Calculates total capitalisation of the order list.
-     *
-     * @return int
-     *   An aggregate value representing the market cap in USDcentsSatoshis.
-     */
-    public function totalCap()
-    {
-        return $this->totalCachedReduce(__FUNCTION__, function($carry, $datum) {
-            return $carry->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
-        }, Money::USD(0));
-    }
-
-    /**
-     * Array reduce and cache based on provided function.
-     * @param string $name
-     *   Cache ID.
-     * @param callable $function
-     *   Array reduce function.
-     *
-     * @return int
-     */
-    protected function totalCachedReduce($name, callable $function, Money $carry)
-    {
-        v::notEmpty()->string()->check($name);
-
-        if (!isset($this->totalCachedReduce[$name])) {
-            // Do the reduce.
-            $cap = array_reduce($this->data, $function, $carry);
-
-            // Cache it.
-            $this->totalCachedReduce[$name] = $cap->getAmount();
-        }
-
-        return $this->totalCachedReduce[$name];
-    }
-    protected $totalCachedReduce = [];
-
-    /**
      * Calculate a percentiles using the "Nearest rank" method.
      *
      * There are multiple ways to calculate percentiles around, the
@@ -239,36 +188,33 @@ class OrderList
      */
     public function percentileBTCVolume($percentile)
     {
-        v::numeric()->between(0, 1, true)->check($percentile);
-        $percentile = (float) $percentile;
-
-        if (!isset($this->percentileBTCVolumeData)) {
-            $this->sortUSDAsc();
-
-            // Build a data array with USD prices as keys and comparison amounts
-            // as values.
-            $this->percentileBTCVolumeData = array_reduce($this->data, function($carry, $datum) {
-                // Get the last sum, so we can add a running total.
-                $last = [] === $carry ? Money::BTC(0) : end($carry)[self::PERCENTILE_KEY];
-
-                // Build a simple array we can compare the index against.
-                $compare = [
-                    self::USD_KEY => $datum[self::USD_KEY]->getAmount(),
-                    self::PERCENTILE_KEY => $last->add($datum[self::BTC_KEY]),
-                ];
-
-                // Add to the carry.
-                $carry[] = $compare;
-
-                return $carry;
-            }, []);
-        }
-
-        $index = Money::BTC((int) ceil($this->totalVolume() * $percentile));
-
-        return $this->percentileIndexCompare($index, $this->percentileBTCVolumeData);
+        return $this->doPercentile(
+            __FUNCTION__,
+            $percentile,
+            [$this, 'totalVolume'],
+            [$this, 'totalVolumeCompare'],
+            new Currency('BTC')
+        );
     }
-    protected $percentileBTCVolumeData;
+
+    /**
+     * Calculates the total BTC Volume of the order list.
+     *
+     * @return int
+     *   An aggregate value representing the BTC total volume of the order list
+     *   in Satoshis.
+     */
+    public function totalVolume()
+    {
+        return $this->totalCachedReduce(__FUNCTION__, function($carry, $datum) {
+            return $carry->add($datum[self::BTC_KEY]);
+        }, Money::BTC(0))->getAmount();
+    }
+
+    protected function totalVolumeCompare(array $datum, Money $last)
+    {
+        return $last->add($datum[self::BTC_KEY]);
+    }
 
     /**
      * Calculates a given percentile based off order list capitalisation.
@@ -286,36 +232,94 @@ class OrderList
      */
     public function percentileCap($percentile)
     {
+        return $this->doPercentile(
+            __FUNCTION__,
+            $percentile,
+            [$this, 'totalCap'],
+            [$this, 'totalCapCompare'],
+            new Currency('USD')
+        );
+    }
+
+    /**
+     * Calculates total capitalisation of the order list.
+     *
+     * @return int
+     *   An aggregate value representing the market cap in USDcentsSatoshis.
+     */
+    public function totalCap()
+    {
+        return $this->totalCachedReduce(__FUNCTION__, function($carry, $datum) {
+            return $carry->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
+        }, Money::USD(0))->getAmount();
+    }
+
+    protected function totalCapCompare(array $datum, Money $last)
+    {
+        return $last->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount()));
+    }
+
+    /**
+     * Percentile utility methods.
+     */
+
+    protected function doPercentile($name, $percentile, $indexFunction, $compareFunction, Currency $currency)
+    {
+        $index = $this->percentileIndex($percentile, $indexFunction, $currency);
+
+        $compares = $this->buildPercentileCompares($name, $currency, $compareFunction);
+
+        return $this->percentileIndexCompare($index, $compares);
+    }
+
+    /**
+     * Calculate an index for doPercentile.
+     *
+     * @param float    $percentile
+     *   Float between 0 and 1 (inclusive).
+     * @param callable $function
+     *   Callback to generate the total to multiply the percentile against.
+     * @param Currency $currency
+     *
+     * @return Money
+     */
+    protected function percentileIndex($percentile, callable $function, Currency $currency)
+    {
         v::numeric()->between(0, 1, true)->check($percentile);
         $percentile = (float) $percentile;
 
-        if (!isset($this->percentileCapData)) {
-            $this->sortUSDAsc();
-
-            // Build a data array with USD prices as keys and comparison cap
-            // amounts as values.
-            $this->percentileCapData = array_reduce($this->data, function($carry, $datum) {
-                // Get the last sum, so we can add to it for a running total.
-                $last = [] === $carry ? Money::USD(0) : end($carry)[self::PERCENTILE_KEY];
-
-                // Build a simple array we can compare the index against.
-                $compare = [
-                    self::USD_KEY => $datum[self::USD_KEY]->getAmount(),
-                    self::PERCENTILE_KEY => $last->add($datum[self::USD_KEY]->multiply($datum[self::BTC_KEY]->getAmount())),
-                ];
-
-                // Add to the carry.
-                $carry[] = $compare;
-
-                return $carry;
-            }, []);
-        }
-
-        $index = Money::USD((int) ceil($this->totalCap() * $percentile));
-
-        return $this->percentileIndexCompare($index, $this->percentileCapData);
+        return new Money((int) ceil(call_user_func($function) * $percentile), $currency);
     }
-    protected $percentileCapData;
+
+    /**
+     * Build an array of comparisons for a percentile index.
+     *
+     * @param string $name
+     *   The name of the percentile this compares array is for. Used for caches.
+     * @param Currency $currency
+     *   The currency this percentile is denominated in.
+     * @param callable $amountCalculator
+     *   The callback to process an amount through array_reduce.
+     *
+     * @return array[]
+     */
+    protected function buildPercentileCompares($name, Currency $currency, callable $amountCalculator)
+    {
+        $this->sortUSDAsc();
+
+        $start = new Money(0, $currency);
+
+        return $this->totalCachedReduce($name, function($carry, $datum) use ($start, $amountCalculator) {
+            $last = [] === $carry ? $start : end($carry)[self::PERCENTILE_KEY];
+
+            $carry[] = [
+                self::USD_KEY => $datum[self::USD_KEY]->getAmount(),
+                self::PERCENTILE_KEY => $amountCalculator($datum, $last),
+            ];
+
+            return $carry;
+        }, []);
+    }
 
     /**
      * Takes an index and an array of comparisons and returns the percentile.
@@ -354,4 +358,31 @@ class OrderList
         // Return the lowest element remaining.
         return reset($noBelowIndex)[self::USD_KEY];
     }
+
+    /**
+     * Array reduce and cache based on provided function.
+     *
+     * @param string   $name
+     *   Cache ID.
+     * @param callable $function
+     *   Array reduce function.
+     * @param mixed    $carry
+     *
+     * @return mixed
+     */
+    protected function totalCachedReduce($name, callable $function, $carry)
+    {
+        v::notEmpty()->string()->check($name);
+
+        if (!isset($this->totalCachedReduce[$name])) {
+            // Do the reduce.
+            $reduce = array_reduce($this->data, $function, $carry);
+
+            // Cache it.
+            $this->totalCachedReduce[$name] = $reduce;
+        }
+
+        return $this->totalCachedReduce[$name];
+    }
+    protected $totalCachedReduce = [];
 }
