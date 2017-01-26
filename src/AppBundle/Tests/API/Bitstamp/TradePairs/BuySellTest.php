@@ -9,7 +9,7 @@ use AppBundle\Tests\GuzzleTestTrait;
 use GuzzleHttp\Client;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Stream\Stream;
-use GuzzleHttp\Subscriber\History;
+use GuzzleHttp\Middleware;
 use GuzzleHttp\Subscriber\Mock;
 use Money\Money;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -165,7 +165,8 @@ class BuySellTest extends WebTestCase
     public function testExecuteErrors()
     {
         $client = new Client();
-        $client->history = new History();
+        $container = [];
+        $client->history = Middleware::history($container);
 
         // Bitstamp returns us an error that looks like this if we have no USD
         // left.
