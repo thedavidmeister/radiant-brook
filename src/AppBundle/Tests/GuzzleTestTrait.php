@@ -7,7 +7,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Stream\Stream;
 use GuzzleHttp\Middleware;
-use GuzzleHttp\Subscriber\Mock;
+use GuzzleHttp\Handler\MockHandler;
 
 trait GuzzleTestTrait
 {
@@ -67,20 +67,20 @@ trait GuzzleTestTrait
 
         switch ($type) {
             case 200:
-                return new Mock([
+                return new MockHandler([
                     new Response(200, [], Stream::factory($this->sample())),
                     new Response(200, [], Stream::factory($this->sample2())),
                 ]);
 
             case 'error':
-                return new Mock([
+                return new MockHandler([
                     new Response(200, [], Stream::factory('{"error":"Bitstamp likes to report errors as 200"}')),
                 ]);
 
             // The default behaviour can just be setting the response status
             // code to whatever the "type" is.
             default:
-                return new Mock([new Response($type)]);
+                return new MockHandler([new Response($type)]);
 
         }
     }

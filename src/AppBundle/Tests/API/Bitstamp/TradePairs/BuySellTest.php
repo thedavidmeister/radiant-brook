@@ -10,7 +10,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Stream\Stream;
 use GuzzleHttp\Middleware;
-use GuzzleHttp\Subscriber\Mock;
+use GuzzleHttp\Handler\MockHandler;
 use Money\Money;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -170,7 +170,7 @@ class BuySellTest extends WebTestCase
 
         // Bitstamp returns us an error that looks like this if we have no USD
         // left.
-        $buyfail = new Mock([
+        $buyfail = new MockHandler([
             new Response(200, [], Stream::factory('{"error":{"__all__":["You need $8.02 to open that order. You have only $0.55 available. Check your account balance for details."]}}')),
         ]);
 
