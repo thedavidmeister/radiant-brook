@@ -87,7 +87,7 @@ class TradeProposal implements TradeProposalInterface
      */
     public function isValid()
     {
-        v::not(v::nullValue())->check($this->valid);
+        v::not(v::nullType())->check($this->valid);
 
         return $this->valid;
     }
