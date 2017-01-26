@@ -45,16 +45,18 @@ class BitstampDocumentationTest extends WebTestCase
     /**
      * Tests that the expected and current body represents the same API docs.
      *
+     * This does not actually run atm because of the fn name. @todo - fix it.
+     *
      * @group slow
      *
      * @slowThreshold 5000
      */
-    public function testBody()
+    public function todoTestBody()
     {
-        // $current = $this->extractAPIDocumentation($this->response()->getBody());
-        // $hash = md5($current);
-        // // Hashes are easier to compare than big strings or arrays.
-        // $this->assertEquals($this->expectedExtractHash(), $hash, 'Hashes do not match. expected: ' . $this->expectedExtractHash() . ' actual: ' . $hash . ' full text: ' . $current);
+        $current = $this->extractAPIDocumentation($this->response()->getBody());
+        $hash = md5($current);
+        // Hashes are easier to compare than big strings or arrays.
+        $this->assertEquals($this->expectedExtractHash(), $hash, 'Hashes do not match. expected: ' . $this->expectedExtractHash() . ' actual: ' . $hash . ' full text: ' . $current);
     }
 
     /**
