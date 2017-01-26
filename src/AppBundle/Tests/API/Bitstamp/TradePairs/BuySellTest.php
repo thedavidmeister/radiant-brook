@@ -9,6 +9,7 @@ use AppBundle\Tests\GuzzleTestTrait;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Middleware;
+use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Handler\MockHandler;
 use Money\Money;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -169,19 +170,21 @@ class BuySellTest extends WebTestCase
      */
     public function testExecuteErrors()
     {
-        $client = new Client();
-        $container = [];
-        $client->history = Middleware::history($container);
-
         // Bitstamp returns us an error that looks like this if we have no USD
         // left.
-        $buyfail = new MockHandler([
+        $buyfailMock = new MockHandler([
             new Response(200, [], '{"error":{"__all__":["You need $8.02 to open that order. You have only $0.55 available. Check your account balance for details."]}}'),
         ]);
 
-        // Add the mock subscriber to the client.
-        $client->getEmitter()->attach($buyfail);
-        $client->getEmitter()->attach($client->history);
+        $container = [];
+        $history = Middleware::history($container);
+
+        $stack = HandlerStack::create($buyfailMock);
+        $stack->push($history);
+
+        $client = new Client(['handler' => $stack]);
+
+        $client->history =& $container;
 
         $buyfail = new BuySell(new Buy($client, $this->mockLogger(), $this->mockAuthenticator()), $this->sell(), $this->mockLogger());
 
@@ -190,7 +193,7 @@ class BuySellTest extends WebTestCase
 
         $buyfail->execute($tradeProposal->reveal());
 
-        $this->assertNotEmpty($buyfail->buy()->client->history->getLastRequest());
-        $this->assertNotEmpty($buyfail->sell()->client->history->getLastRequest());
+        $this->assertNotEmpty(end($buyfail->buy()->client->history)['request']);
+        $this->assertNotEmpty(end($buyfail->sell()->client->history)['request']);
     }
 }
