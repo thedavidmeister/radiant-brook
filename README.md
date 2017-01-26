@@ -49,6 +49,12 @@ Symfony 2, PHP. There are no plans to maintain backwards compatibility for PHP v
 
 Also, for snapshots to work, you will need a free [Keen.IO](https://keen.io/) subscription.
 
+Thanks to the `HTTP_POXY` [security vulnerability in PHP](https://httpoxy.org/), it is not recommended to use versions of PHP lower than:
+
+- 5.5.38
+- 5.6.24
+- 7.0.9
+
 ## Why don't you write it in X?
 
 Maybe, someday. I mean, it would be a lot of work, so there would need to be a very good reason.
