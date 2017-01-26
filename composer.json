@@ -22,7 +22,6 @@
         "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
         "guzzlehttp/guzzle": "^6.2",
-        "raulfraile/ladybug-bundle": "~1.0",
         "keen-io/keen-io": "~2.5",
         "vlucas/phpdotenv": "^2.0",
         "masterminds/html5": "^2.1",
