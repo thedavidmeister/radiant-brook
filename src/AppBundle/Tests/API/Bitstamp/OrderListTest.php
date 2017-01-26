@@ -261,9 +261,9 @@ class OrderListTest extends WebTestCase
             [(object) [], '`[object] (stdClass: { })` must be numeric'],
             ['foo', 'foo'],
             // Things that are outside range.
-            [1.1, '1.1 must be lower than or equals 1'],
-            [-1, '-1 must be greater than or equals 0'],
-            [-0.1, '-0.1 must be greater than or equals 0'],
+            [1.1, '1.1 must be less than or equal to 1'],
+            [-1, '-1 must be greater than or equal to 0'],
+            [-0.1, '-0.1 must be greater than or equal to 0'],
         ];
     }
 
