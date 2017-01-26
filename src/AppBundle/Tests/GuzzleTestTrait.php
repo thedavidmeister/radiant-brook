@@ -6,7 +6,7 @@ use AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator;
 use GuzzleHttp\Client;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Stream\Stream;
-use GuzzleHttp\Subscriber\History;
+use GuzzleHttp\Middleware;
 use GuzzleHttp\Subscriber\Mock;
 
 trait GuzzleTestTrait
@@ -100,7 +100,8 @@ trait GuzzleTestTrait
     protected function client($mockType = null)
     {
         $client = new Client();
-        $client->history = new History();
+        $container = [];
+        $client->history = Middleware::history($container);
 
         // Add the mock subscriber to the client.
         $client->getEmitter()->attach($this->mock($mockType));
