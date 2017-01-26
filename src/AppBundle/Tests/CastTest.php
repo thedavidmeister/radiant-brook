@@ -115,7 +115,7 @@ class CastTest extends WebTestCase
             [null, 'null must be numeric'],
             [[], '{ } must be numeric'],
             [new \StdClass(), '`[object] (stdClass: { })` must be numeric'],
-            ['', 'These rules must pass for ""'],
+            ['', '"" must be numeric'],
         ];
     }
 

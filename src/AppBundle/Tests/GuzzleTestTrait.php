@@ -4,10 +4,10 @@ namespace AppBundle\Tests;
 
 use AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator;
 use GuzzleHttp\Client;
-use GuzzleHttp\Message\Response;
-use GuzzleHttp\Stream\Stream;
-use GuzzleHttp\Subscriber\History;
-use GuzzleHttp\Subscriber\Mock;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Handler\MockHandler;
 
 trait GuzzleTestTrait
 {
@@ -67,20 +67,20 @@ trait GuzzleTestTrait
 
         switch ($type) {
             case 200:
-                return new Mock([
-                    new Response(200, [], Stream::factory($this->sample())),
-                    new Response(200, [], Stream::factory($this->sample2())),
+                return new MockHandler([
+                    new Response(200, [], $this->sample()),
+                    new Response(200, [], $this->sample2()),
                 ]);
 
             case 'error':
-                return new Mock([
-                    new Response(200, [], Stream::factory('{"error":"Bitstamp likes to report errors as 200"}')),
+                return new MockHandler([
+                    new Response(200, [], '{"error":"Bitstamp likes to report errors as 200"}'),
                 ]);
 
             // The default behaviour can just be setting the response status
             // code to whatever the "type" is.
             default:
-                return new Mock([new Response($type)]);
+                return new MockHandler([new Response($type)]);
 
         }
     }
@@ -99,12 +99,16 @@ trait GuzzleTestTrait
 
     protected function client($mockType = null)
     {
-        $client = new Client();
-        $client->history = new History();
+        $container = [];
 
-        // Add the mock subscriber to the client.
-        $client->getEmitter()->attach($this->mock($mockType));
-        $client->getEmitter()->attach($client->history);
+        $history = Middleware::history($container);
+
+        $stack = HandlerStack::create($this->mock($mockType));
+        $stack->push($history);
+
+        $client = new Client(['handler' => $stack]);
+
+        $client->history =& $container;
 
         return $client;
     }

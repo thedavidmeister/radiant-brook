@@ -22,6 +22,8 @@ class AppBundle extends Bundle
             throw new \Exception('This is not a 64 bit PHP environment. Important math operations are unsupported without a 64 bit environment!');
             // @codeCoverageIgnoreEnd
         }
+
+        ini_set('memory_limit', '256M');
     }
 
     /**

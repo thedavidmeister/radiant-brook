@@ -7,10 +7,10 @@ use AppBundle\API\Bitstamp\PrivateAPI\Sell;
 use AppBundle\API\Bitstamp\TradePairs\BuySell;
 use AppBundle\Tests\GuzzleTestTrait;
 use GuzzleHttp\Client;
-use GuzzleHttp\Message\Response;
-use GuzzleHttp\Stream\Stream;
-use GuzzleHttp\Subscriber\History;
-use GuzzleHttp\Subscriber\Mock;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Handler\MockHandler;
 use Money\Money;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -122,14 +122,20 @@ class BuySellTest extends WebTestCase
             $tradeProposal->isValid()->willReturn(true)->shouldBeCalled();
 
             $buySell->execute($tradeProposal->reveal());
-            $buyRequest = $buySell->buy()->client->history->getLastRequest();
-            $sellRequest = $buySell->sell()->client->history->getLastRequest();
+            $buyRequest = end($buySell->buy()->client->history)['request'];
+            $sellRequest = end($buySell->sell()->client->history)['request'];
 
-            $this->assertSame($test[4], $buyRequest->getBody()->getField('price'));
-            $this->assertSame($test[5], $buyRequest->getBody()->getField('amount'));
+            $buyRequestParams = [];
+            parse_str($buyRequest->getBody()->getContents(), $buyRequestParams);
 
-            $this->assertSame($test[6], $sellRequest->getBody()->getField('price'));
-            $this->assertSame($test[7], $sellRequest->getBody()->getField('amount'));
+            $sellRequestParams = [];
+            parse_str($sellRequest->getBody()->getContents(), $sellRequestParams);
+
+            $this->assertSame($test[4], $buyRequestParams['price']);
+            $this->assertSame($test[5], $buyRequestParams['amount']);
+
+            $this->assertSame($test[6], $sellRequestParams['price']);
+            $this->assertSame($test[7], $sellRequestParams['amount']);
         });
     }
 
@@ -164,18 +170,21 @@ class BuySellTest extends WebTestCase
      */
     public function testExecuteErrors()
     {
-        $client = new Client();
-        $client->history = new History();
-
         // Bitstamp returns us an error that looks like this if we have no USD
         // left.
-        $buyfail = new Mock([
-            new Response(200, [], Stream::factory('{"error":{"__all__":["You need $8.02 to open that order. You have only $0.55 available. Check your account balance for details."]}}')),
+        $buyfailMock = new MockHandler([
+            new Response(200, [], '{"error":{"__all__":["You need $8.02 to open that order. You have only $0.55 available. Check your account balance for details."]}}'),
         ]);
 
-        // Add the mock subscriber to the client.
-        $client->getEmitter()->attach($buyfail);
-        $client->getEmitter()->attach($client->history);
+        $container = [];
+        $history = Middleware::history($container);
+
+        $stack = HandlerStack::create($buyfailMock);
+        $stack->push($history);
+
+        $client = new Client(['handler' => $stack]);
+
+        $client->history =& $container;
 
         $buyfail = new BuySell(new Buy($client, $this->mockLogger(), $this->mockAuthenticator()), $this->sell(), $this->mockLogger());
 
@@ -184,7 +193,7 @@ class BuySellTest extends WebTestCase
 
         $buyfail->execute($tradeProposal->reveal());
 
-        $this->assertNotEmpty($buyfail->buy()->client->history->getLastRequest());
-        $this->assertNotEmpty($buyfail->sell()->client->history->getLastRequest());
+        $this->assertNotEmpty(end($buyfail->buy()->client->history)['request']);
+        $this->assertNotEmpty(end($buyfail->sell()->client->history)['request']);
     }
 }

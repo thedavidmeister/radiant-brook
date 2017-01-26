@@ -23,12 +23,15 @@ abstract class AbstractPrivateAPITest extends AbstractAPITest
         // Trigger an execute to test what is being sent off.
         $class->execute();
 
-        $lastRequest = $class->client->history->getLastRequest();
+        $lastRequest = end($class->client->history)['request'];
+        $lastRequestParams = [];
+
+        parse_str($lastRequest->getBody()->getContents(), $lastRequestParams);
 
         // All the authentication params should match our mock.
-        $this->assertSame($lastRequest->getBody()->getField('key'), 'foo');
-        $this->assertSame($lastRequest->getBody()->getField('nonce'), 'bar');
-        $this->assertSame($lastRequest->getBody()->getField('signature'), 'baz');
+        $this->assertSame($lastRequestParams['key'], 'foo');
+        $this->assertSame($lastRequestParams['nonce'], 'bar');
+        $this->assertSame($lastRequestParams['signature'], 'baz');
     }
 
     /**

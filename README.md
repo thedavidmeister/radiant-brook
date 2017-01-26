@@ -70,7 +70,9 @@ Yes.
 ## How do I set this up for myself?
 
 1. Find the `.env.example` file (check `src/AppBundle`) and then create a `.env` file with your own settings/API keys OR export environment variables for each.
-2. Run `app/console trade:bitstamp` whenever you like, this could even be a cron job or whatevs.
+2. `composer install`
+3. `rake phpunit:all`
+4. Run `app/console trade:bitstamp` whenever you like, this could even be a cron job or whatevs.
 
 ## What is the license?
 

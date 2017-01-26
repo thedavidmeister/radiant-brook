@@ -183,7 +183,7 @@ class OrderList
      */
     protected function totalCachedReduce($name, callable $function, Money $carry)
     {
-        v::notEmpty()->string()->check($name);
+        v::notEmpty()->stringType()->check($name);
 
         if (!isset($this->totalCachedReduce[$name])) {
             // Do the reduce.
@@ -337,7 +337,7 @@ class OrderList
             return $item['percentile'];
         }, $comparisons));
 
-        v::each(v::int())->check(array_map(function($item) {
+        v::each(v::intVal())->check(array_map(function($item) {
             return $item['usd'];
         }, $comparisons));
 

@@ -190,7 +190,7 @@ class DupesTest extends WebTestCase
 
         foreach ($askTests as $test) {
             $this->setEnv('DUPES_RANGE_MULTIPLIER', $test[0]);
-            $this->assertEquals($test[3], $this->dupesLiveSecrets()->$test[1]($test[2]));
+            $this->assertEquals($test[3], $this->dupesLiveSecrets()->{$test[1]}($test[2]));
         }
     }
 }
