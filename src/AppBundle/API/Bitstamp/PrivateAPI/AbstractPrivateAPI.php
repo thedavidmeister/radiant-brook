@@ -40,7 +40,7 @@ abstract class AbstractPrivateAPI extends API
     {
         $body = array_merge((array) $this->params, $this->auth->getAuthParams());
 
-        return $this->client->post($this->url(), ['body' => $body]);
+        return $this->client->request('POST', $this->url(), ['form_params' => $body]);
     }
 
     /**
