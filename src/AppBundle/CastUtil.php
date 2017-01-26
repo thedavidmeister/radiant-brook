@@ -22,7 +22,7 @@ final class CastUtil
     public static function toInt($value)
     {
         // Cast the value to an int, if it's int-y.
-        v::int()->check($value);
+        v::intVal()->check($value);
 
         return (int) $value;
     }

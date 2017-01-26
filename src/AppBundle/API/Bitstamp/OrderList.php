@@ -337,7 +337,7 @@ class OrderList
             return $item['percentile'];
         }, $comparisons));
 
-        v::each(v::int())->check(array_map(function($item) {
+        v::each(v::intVal())->check(array_map(function($item) {
             return $item['usd'];
         }, $comparisons));
 

@@ -71,6 +71,8 @@ class DefaultControllerTest extends WebTestCase
             fwrite(STDERR, print_r($authClient->getResponse(), true));
         }
 
+        print 'foooo';
+
         $this->assertSame(200, $authClient->getResponse()->getStatusCode());
     }
 
