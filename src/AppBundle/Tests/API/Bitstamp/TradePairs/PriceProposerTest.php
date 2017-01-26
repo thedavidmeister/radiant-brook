@@ -68,10 +68,10 @@ class PriceProposerTest extends WebTestCase
             [['1', '1', null], 'null must be a finite number'],
             [[null, '1', '1'], 'null must be a finite number'],
             [['1', null, '1'], 'null must be a finite number'],
-            // This will throw because min is not less than max.
-            [['1', '1', '0.5'], '"1" must be greater than "1"'],
+            // This will throw because step is larger than the min/max diff.
+            [['1', '1', '0.5'], '"0.5" must be less than or equal to "0"'],
             // Step size must be less than max - min.
-            [['1', '2', '3'], '"3" must be lower than or equals "1"'],
+            [['1', '2', '3'], '"3" must be less than or equal to "1"'],
             // max - min must be cleanly divisible by step size.
             // minMaxStep must be 3 long.
             [['1', '2'], '{ "1", "2" } must have a length between 3 and 3'],
@@ -93,7 +93,7 @@ class PriceProposerTest extends WebTestCase
      * @param string $message
      *   The expected exception message.
      *
-     * @group stable
+     * @group stabl
      */
     public function testMinMaxStepExceptions($minMaxStep, $message)
     {
