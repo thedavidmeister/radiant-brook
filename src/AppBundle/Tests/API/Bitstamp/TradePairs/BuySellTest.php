@@ -121,14 +121,20 @@ class BuySellTest extends WebTestCase
             $tradeProposal->isValid()->willReturn(true)->shouldBeCalled();
 
             $buySell->execute($tradeProposal->reveal());
-            $buyRequest = $buySell->buy()->client->history->getLastRequest();
-            $sellRequest = $buySell->sell()->client->history->getLastRequest();
+            $buyRequest = end($buySell->buy()->client->history)['request'];
+            $sellRequest = end($buySell->sell()->client->history)['request'];
 
-            $this->assertSame($test[4], $buyRequest->getBody()->getField('price'));
-            $this->assertSame($test[5], $buyRequest->getBody()->getField('amount'));
+            $buyRequestParams = [];
+            parse_str($buyRequest->getBody()->getContents(), $buyRequestParams);
 
-            $this->assertSame($test[6], $sellRequest->getBody()->getField('price'));
-            $this->assertSame($test[7], $sellRequest->getBody()->getField('amount'));
+            $sellRequestParams = [];
+            parse_str($sellRequest->getBody()->getContents(), $sellRequestParams);
+
+            $this->assertSame($test[4], $buyRequestParams['price']);
+            $this->assertSame($test[5], $buyRequestParams['amount']);
+
+            $this->assertSame($test[6], $sellRequestParams['price']);
+            $this->assertSame($test[7], $sellRequestParams['amount']);
         });
     }
 

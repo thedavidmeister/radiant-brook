@@ -6,6 +6,7 @@ use AppBundle\API\Bitstamp\PrivateAPI\PrivateAPIAuthenticator;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Middleware;
+use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Handler\MockHandler;
 
 trait GuzzleTestTrait
@@ -73,7 +74,7 @@ trait GuzzleTestTrait
 
             case 'error':
                 return new MockHandler([
-                    new Response(200, [], Stream::factory('{"error":"Bitstamp likes to report errors as 200"}')),
+                    new Response(200, [], '{"error":"Bitstamp likes to report errors as 200"}'),
                 ]);
 
             // The default behaviour can just be setting the response status
@@ -98,13 +99,16 @@ trait GuzzleTestTrait
 
     protected function client($mockType = null)
     {
-        $client = new Client();
         $container = [];
-        $client->history = Middleware::history($container);
 
-        // Add the mock subscriber to the client.
-        $client->getEmitter()->attach($this->mock($mockType));
-        $client->getEmitter()->attach($client->history);
+        $history = Middleware::history($container);
+
+        $stack = HandlerStack::create($this->mock($mockType));
+        $stack->push($history);
+
+        $client = new Client(['handler' => $stack]);
+
+        $client->history =& $container;
 
         return $client;
     }
