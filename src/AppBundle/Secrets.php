@@ -38,7 +38,7 @@ class Secrets
     public function set($name, $value)
     {
         v::PhpLabel()->check($name);
-        v::string()->check($value);
+        v::stringType()->check($value);
 
         // Get a mutable loader.
         $loader = new Loader($this->dotEnvPath());
