@@ -21,17 +21,17 @@
         "sensio/distribution-bundle": "~3.0,>=3.0.12",
         "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
-        "guzzlehttp/guzzle": "~5.0",
+        "guzzlehttp/guzzle": "^6.2",
         "raulfraile/ladybug-bundle": "~1.0",
         "keen-io/keen-io": "~2.5",
-        "mathiasverraes/money": "dev-master",
         "vlucas/phpdotenv": "^2.0",
         "masterminds/html5": "^2.1",
         "psy/psysh": "@stable",
         "lstrojny/functional-php": "^1.0",
         "satooshi/php-coveralls": "^0.6.1",
         "fzaninotto/faker": "~1.5",
-        "respect/validation": "dev-master"
+        "respect/validation": "dev-master",
+        "moneyphp/money": "^3.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
