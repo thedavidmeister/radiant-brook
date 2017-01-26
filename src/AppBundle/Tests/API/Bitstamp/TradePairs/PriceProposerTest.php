@@ -93,7 +93,7 @@ class PriceProposerTest extends WebTestCase
      * @param string $message
      *   The expected exception message.
      *
-     * @group stabl
+     * @group stable
      */
     public function testMinMaxStepExceptions($minMaxStep, $message)
     {
