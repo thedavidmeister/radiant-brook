@@ -333,7 +333,7 @@ abstract class AbstractAPITest extends WebTestCase
     {
         $this->setExpectedExceptionRegExp(
             'Exception',
-            '/^Server error response|^Client error response|^Bitstamp response was not a 200/'
+            '/^Server error:|^Client error:|^Bitstamp response was not a 200/'
         );
         $class = $this->getClass($responseCode);
         $class->execute();
