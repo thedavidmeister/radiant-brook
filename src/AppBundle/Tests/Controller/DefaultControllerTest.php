@@ -45,7 +45,7 @@ class DefaultControllerTest extends WebTestCase
      */
     protected function assertNoAnonymousAccess($uri)
     {
-        v::string()->check($uri);
+        v::stringType()->check($uri);
 
         $client = $this->createAnonClient();
 
@@ -105,8 +105,8 @@ class DefaultControllerTest extends WebTestCase
      */
     protected function standardTests($uri, $expecteds)
     {
-        v::string()->check($uri);
-        v::each(v::string()->notEmpty())->check($expecteds);
+        v::stringType()->check($uri);
+        v::each(v::stringType()->notEmpty())->check($expecteds);
 
         $this->assertNoAnonymousAccess($uri);
 

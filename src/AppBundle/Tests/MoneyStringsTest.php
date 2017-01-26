@@ -129,7 +129,7 @@ class MoneyStringsTest extends WebTestCase
      */
     public function testBtcToString($string, Money $btc)
     {
-        v::string()->check($string);
+        v::stringType()->check($string);
 
         $this->assertSame($string, MoneyStringsUtil::btcToString($btc));
     }
@@ -162,7 +162,7 @@ class MoneyStringsTest extends WebTestCase
      */
     public function testUsdToString($string, Money $usd)
     {
-        v::string()->check($string);
+        v::stringType()->check($string);
 
         $this->assertSame($string, MoneyStringsUtil::usdToString($usd));
     }
@@ -204,7 +204,7 @@ class MoneyStringsTest extends WebTestCase
      */
     public function testStringToUSD(Money $usd, $string)
     {
-        v::string()->check($string);
+        v::stringType()->check($string);
 
         $this->assertEquals($usd, MoneyStringsUtil::stringToUSD($string));
     }
@@ -286,7 +286,7 @@ class MoneyStringsTest extends WebTestCase
      */
     public function testStringToBTC(Money $btc, $string)
     {
-        v::string()->check($string);
+        v::stringType()->check($string);
 
         $this->assertEquals($btc, MoneyStringsUtil::stringToBTC($string));
     }

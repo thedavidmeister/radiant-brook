@@ -100,7 +100,7 @@ class TradeProposalTest extends WebTestCase
      */
     protected function methodRangeArray($method, $start = 0, $end = 5)
     {
-        v::string()->check($method);
+        v::stringType()->check($method);
         v::int()->check($start);
         v::int()->check($end);
 

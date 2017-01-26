@@ -46,7 +46,7 @@ abstract class AbstractAPITest extends WebTestCase
      */
     protected function getClass($mockType = null)
     {
-        v::notEmpty()->string()->check($this->className);
+        v::notEmpty()->stringType()->check($this->className);
 
         return new $this->className($this->client($mockType), $this->mockLogger());
     }
@@ -361,8 +361,8 @@ abstract class AbstractAPITest extends WebTestCase
     {
         $class = $this->getClass();
 
-        v::notEmpty()->string()->check($this->sample);
-        v::notEmpty()->string()->check($this->sample2);
+        v::notEmpty()->stringType()->check($this->sample);
+        v::notEmpty()->stringType()->check($this->sample2);
 
         // Guzzle uses the json_decode() method of PHP and uses arrays rather than
         // stdClass objects for objects.
@@ -385,7 +385,7 @@ abstract class AbstractAPITest extends WebTestCase
     {
         $class = $this->getClass();
 
-        v::notEmpty()->string()->check($this->sample);
+        v::notEmpty()->stringType()->check($this->sample);
 
         // Guzzle uses the json_decode() method of PHP and uses arrays rather than
         // stdClass objects for objects.

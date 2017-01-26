@@ -77,7 +77,7 @@ class TradeProposal implements TradeProposalInterface
     protected function addReason($reason)
     {
         // Don't allow empty string reasons (although the string '0' is fine).
-        v::string()->not(v::equals(''))->check($reason);
+        v::stringType()->not(v::equals(''))->check($reason);
 
         $this->reasons[] = $reason;
     }
